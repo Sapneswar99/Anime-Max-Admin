@@ -324,7 +324,7 @@ function initializeUI() {
 
 
 /* =========================================================
-   ADMIN AUTHORIZATION
+   ADMIN AUTHORIZATION (YAHAN CHANGE KIYA GAYA HAI)
 ========================================================= */
 
 /*
@@ -332,14 +332,11 @@ function initializeUI() {
 
   admins
     YOUR_FIREBASE_AUTH_UID: true
+    OR
+    YOUR_FIREBASE_AUTH_UID: { role: "admin" }
 
   The user must first authenticate with Firebase.
   Then the code checks /admins/{authenticated-user-uid}.
-
-  IMPORTANT:
-  Client-side authorization is not a substitute for
-  Realtime Database Security Rules. Protect sensitive
-  data and writes with server-enforced rules.
 */
 
 async function verifyAdminAccess(user) {
@@ -353,7 +350,14 @@ async function verifyAdminAccess(user) {
 
     const snapshot = await get(adminRef);
 
-    return snapshot.exists() && snapshot.val() === true;
+    if (!snapshot.exists()) {
+      return false;
+    }
+
+    const adminData = snapshot.val();
+
+    // Check karega agar value true hai YA role "admin" hai
+    return adminData === true || adminData?.role === "admin";
 
   } catch (error) {
     console.error("Admin verification failed:", error);
