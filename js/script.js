@@ -1,10 +1,10 @@
 /* =========================================================
    ANIME MAX ADMIN PANEL
    Firebase Authentication + Dashboard
+   Complete JavaScript
 ========================================================= */
 
 "use strict";
-
 
 /* =========================================================
    FIREBASE IMPORTS
@@ -30,8 +30,7 @@ import {
 import {
   getDatabase,
   ref,
-  get,
-  child
+  get
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 
@@ -47,125 +46,155 @@ const firebaseConfig = {
   projectId: "sm-studio-7",
   storageBucket: "sm-studio-7.firebasestorage.app",
   messagingSenderId: "126291501472",
-  appId: "1:126291501472:web:a55c94b5b87581177204c5",
+  appId: "1:291501501472:web:a55c94b5b87581177204c5",
   measurementId: "G-Q1LVJRDPEF"
 };
-
-
-/* =========================================================
-   INITIALIZE FIREBASE
-========================================================= */
-
-let app;
-let auth;
-let database;
-
-try {
-  app = getApps().length
-    ? getApp()
-    : initializeApp(firebaseConfig);
-
-  auth = getAuth(app);
-  database = getDatabase(app);
-
-} catch (error) {
-  console.error("Firebase initialization failed:", error);
-}
-
-
-/* =========================================================
-   DOM ELEMENTS
-========================================================= */
-
-const $ = (selector) => document.querySelector(selector);
-
-const pageLoader = $("#pageLoader");
-const notificationMessage = $("#notificationMessage");
-
-const loginScreen = $("#loginScreen");
-const adminApp = $("#adminApp");
-
-const adminLoginForm = $("#adminLoginForm");
-const adminEmail = $("#adminEmail");
-const adminPassword = $("#adminPassword");
-
-const togglePassword = $("#togglePassword");
-const rememberAdmin = $("#rememberAdmin");
-
-const forgotPasswordButton = $("#forgotPasswordButton");
-const adminLoginButton = $("#adminLoginButton");
-const loginError = $("#loginError");
-
-const logoutButton = $("#logoutButton");
-
-const menuToggle = $("#menuToggle");
-const sidebarOverlay = $("#sidebarOverlay");
-const adminSidebar = $("#adminSidebar");
-
-const sidebarAdminName = $("#sidebarAdminName");
-const sidebarAdminEmail = $("#sidebarAdminEmail");
-
-const currentYear = $("#currentYear");
-const dashboardYear = $("#dashboardYear");
-
-const firebaseStatus = $("#firebaseStatus");
-const authStatus = $("#authStatus");
-
-const refreshDashboardButton = $("#refreshDashboardButton");
 
 
 /* =========================================================
    APPLICATION STATE
 ========================================================= */
 
+let app = null;
+let auth = null;
+let database = null;
+
 let currentAdmin = null;
 let notificationTimer = null;
 let loginInProgress = false;
+let authListenerStarted = false;
 
 
 /* =========================================================
-   GENERAL UTILITIES
+   DOM HELPERS
+========================================================= */
+
+const $ = (selector) =>
+  document.querySelector(selector);
+
+const byId = (id) =>
+  document.getElementById(id);
+
+
+/* =========================================================
+   DOM ELEMENTS
+========================================================= */
+
+const pageLoader = byId("pageLoader");
+const notificationMessage = byId("notificationMessage");
+
+const loginScreen = byId("loginScreen");
+const adminApp = byId("adminApp");
+
+const adminLoginForm = byId("adminLoginForm");
+const adminEmail = byId("adminEmail");
+const adminPassword = byId("adminPassword");
+
+const togglePassword = byId("togglePassword");
+const rememberAdmin = byId("rememberAdmin");
+
+const forgotPasswordButton = byId("forgotPasswordButton");
+const adminLoginButton = byId("adminLoginButton");
+const loginError = byId("loginError");
+
+const logoutButton = byId("logoutButton");
+
+const menuToggle = byId("menuToggle");
+const sidebarOverlay = byId("sidebarOverlay");
+const adminSidebar = byId("adminSidebar");
+
+const sidebarAdminName = byId("sidebarAdminName");
+const sidebarAdminEmail = byId("sidebarAdminEmail");
+
+const currentYear = byId("currentYear");
+const dashboardYear = byId("dashboardYear");
+
+const firebaseStatus = byId("firebaseStatus");
+const authStatus = byId("authStatus");
+
+const refreshDashboardButton =
+  byId("refreshDashboardButton");
+
+
+/* =========================================================
+   LOADING SCREEN
 ========================================================= */
 
 function showLoader(show = true) {
   if (!pageLoader) return;
 
+  pageLoader.hidden = !show;
+
   pageLoader.classList.toggle("hidden", !show);
-  pageLoader.setAttribute("aria-hidden", String(!show));
+  pageLoader.classList.toggle("is-hidden", !show);
+
+  pageLoader.setAttribute(
+    "aria-hidden",
+    String(!show)
+  );
 }
+
+
+/* =========================================================
+   SCREEN MANAGEMENT
+========================================================= */
 
 function showLoginScreen() {
   if (loginScreen) {
     loginScreen.hidden = false;
     loginScreen.style.display = "";
+    loginScreen.setAttribute("aria-hidden", "false");
   }
 
   if (adminApp) {
     adminApp.hidden = true;
     adminApp.style.display = "none";
+    adminApp.setAttribute("aria-hidden", "true");
   }
 }
+
 
 function showAdminDashboard() {
   if (loginScreen) {
     loginScreen.hidden = true;
     loginScreen.style.display = "none";
+    loginScreen.setAttribute("aria-hidden", "true");
   }
 
   if (adminApp) {
     adminApp.hidden = false;
     adminApp.style.display = "";
+    adminApp.setAttribute("aria-hidden", "false");
   }
 }
 
+
+/* =========================================================
+   LOGIN ERROR
+========================================================= */
+
 function showLoginError(message = "") {
-  if (!loginError) return;
+  if (!loginError) {
+    if (message) {
+      console.error("Login:", message);
+    }
+
+    return;
+  }
 
   loginError.textContent = message;
   loginError.hidden = !message;
 }
 
-function showNotification(message, type = "success") {
+
+/* =========================================================
+   NOTIFICATIONS
+========================================================= */
+
+function showNotification(
+  message,
+  type = "success"
+) {
   if (!notificationMessage) {
     console.log(`[${type}] ${message}`);
     return;
@@ -174,15 +203,27 @@ function showNotification(message, type = "success") {
   clearTimeout(notificationTimer);
 
   notificationMessage.textContent = message;
-  notificationMessage.className = `notification-message ${type}`;
+
+  notificationMessage.className =
+    `notification-message ${type} show`;
+
   notificationMessage.hidden = false;
 
-  notificationMessage.setAttribute("role", "status");
+  notificationMessage.setAttribute(
+    "role",
+    "status"
+  );
 
   notificationTimer = setTimeout(() => {
     notificationMessage.hidden = true;
+    notificationMessage.classList.remove("show");
   }, 4000);
 }
+
+
+/* =========================================================
+   FIREBASE ERROR MESSAGES
+========================================================= */
 
 function getFirebaseErrorMessage(error) {
   const code = error?.code || "";
@@ -219,11 +260,64 @@ function getFirebaseErrorMessage(error) {
       "Please use a stronger password.",
 
     "auth/email-already-in-use":
-      "This email is already registered."
+      "This email is already registered.",
+
+    "auth/unauthorized-domain":
+      "This website domain is not authorized in Firebase.",
+
+    "auth/invalid-api-key":
+      "Firebase API key is invalid. Check your configuration.",
+
+    "auth/operation-not-supported-in-this-environment":
+      "Login is not supported in this browser environment."
   };
 
   return messages[code] ||
-    "Something went wrong. Please try again.";
+    `Something went wrong. ${code || "Please try again."}`;
+}
+
+
+/* =========================================================
+   FIREBASE INITIALIZATION
+========================================================= */
+
+function initializeFirebase() {
+  try {
+    app = getApps().length > 0
+      ? getApp()
+      : initializeApp(firebaseConfig);
+
+    auth = getAuth(app);
+    database = getDatabase(app);
+
+    console.log("Firebase initialized successfully.");
+
+    if (firebaseStatus) {
+      firebaseStatus.textContent = "Connected";
+    }
+
+    return true;
+
+  } catch (error) {
+    app = null;
+    auth = null;
+    database = null;
+
+    console.error(
+      "Firebase initialization failed:",
+      error
+    );
+
+    if (firebaseStatus) {
+      firebaseStatus.textContent = "Not connected";
+    }
+
+    showLoginError(
+      "Firebase initialization failed. Check the Firebase configuration and internet connection."
+    );
+
+    return false;
+  }
 }
 
 
@@ -244,22 +338,46 @@ function initializeUI() {
 
   showLoginScreen();
   closeSidebar();
+}
 
-  if (!app || !auth || !database) {
-    if (firebaseStatus) {
-      firebaseStatus.textContent = "Not connected";
-    }
 
-    showLoginError(
-      "Firebase could not initialize. Check your configuration and internet connection."
+/* =========================================================
+   ADMIN AUTHORIZATION
+========================================================= */
+
+/*
+  SECURITY REQUIREMENT:
+
+  An authorized admin must have the Firebase custom claim:
+
+      admin: true
+
+  Configure this claim through a trusted backend using
+  the Firebase Admin SDK.
+
+  Do not grant admin access based only on a client-side
+  email check.
+
+  Do not place a Firebase service-account private key
+  in this JavaScript file.
+*/
+
+async function verifyAdminAccess(user) {
+  if (!user) return false;
+
+  try {
+    const tokenResult =
+      await user.getIdTokenResult(true);
+
+    return tokenResult.claims?.admin === true;
+
+  } catch (error) {
+    console.error(
+      "Admin verification failed:",
+      error
     );
 
-    showLoader(false);
-    return;
-  }
-
-  if (firebaseStatus) {
-    firebaseStatus.textContent = "Configured";
+    return false;
   }
 }
 
@@ -279,7 +397,9 @@ if (togglePassword && adminPassword) {
 
     togglePassword.setAttribute(
       "aria-label",
-      isPassword ? "Hide password" : "Show password"
+      isPassword
+        ? "Hide password"
+        : "Show password"
     );
 
     togglePassword.setAttribute(
@@ -290,44 +410,17 @@ if (togglePassword && adminPassword) {
     const icon = togglePassword.querySelector("i");
 
     if (icon) {
-      icon.classList.toggle("fa-eye", !isPassword);
-      icon.classList.toggle("fa-eye-slash", isPassword);
+      icon.classList.toggle(
+        "fa-eye",
+        !isPassword
+      );
+
+      icon.classList.toggle(
+        "fa-eye-slash",
+        isPassword
+      );
     }
   });
-}
-
-
-/* =========================================================
-   ADMIN AUTHORIZATION
-========================================================= */
-
-/*
-  IMPORTANT:
-  This code checks the Firebase custom claim "admin".
-
-  A user must have:
-      admin: true
-
-  in their Firebase Authentication custom claims.
-
-  Custom claims must be assigned through a trusted
-  Firebase Admin SDK environment.
-
-  Never trust a client-side email check as admin security.
-*/
-
-async function verifyAdminAccess(user) {
-  if (!user) return false;
-
-  try {
-    const tokenResult = await user.getIdTokenResult(true);
-
-    return tokenResult.claims?.admin === true;
-
-  } catch (error) {
-    console.error("Admin verification failed:", error);
-    return false;
-  }
 }
 
 
@@ -336,89 +429,125 @@ async function verifyAdminAccess(user) {
 ========================================================= */
 
 if (adminLoginForm) {
-  adminLoginForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
+  adminLoginForm.addEventListener(
+    "submit",
+    async (event) => {
+      event.preventDefault();
 
-    if (loginInProgress) return;
+      if (loginInProgress) return;
 
-    if (!auth) {
-      showLoginError("Firebase Authentication is unavailable.");
-      return;
-    }
-
-    const email = adminEmail?.value.trim() || "";
-    const password = adminPassword?.value || "";
-
-    if (!email || !password) {
-      showLoginError("Enter your email and password.");
-      return;
-    }
-
-    loginInProgress = true;
-    showLoginError("");
-
-    if (adminLoginButton) {
-      adminLoginButton.disabled = true;
-      adminLoginButton.setAttribute("aria-busy", "true");
-
-      adminLoginButton.dataset.originalText =
-        adminLoginButton.textContent;
-
-      adminLoginButton.textContent = "Signing in...";
-    }
-
-    showLoader(true);
-
-    try {
-      const persistence = rememberAdmin?.checked
-        ? browserLocalPersistence
-        : browserSessionPersistence;
-
-      await setPersistence(auth, persistence);
-
-      const credential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
-      const isAdmin = await verifyAdminAccess(
-        credential.user
-      );
-
-      if (!isAdmin) {
-        await signOut(auth);
-
-        showLoginScreen();
-
+      if (!auth) {
         showLoginError(
-          "Access denied. This account is not authorized as an admin."
+          "Firebase Authentication is unavailable."
         );
-
         return;
       }
 
-      showNotification("Admin login successful.", "success");
+      const email =
+        adminEmail?.value.trim() || "";
 
-    } catch (error) {
-      console.error("Login error:", error);
-      showLoginError(getFirebaseErrorMessage(error));
+      const password =
+        adminPassword?.value || "";
 
-    } finally {
-      loginInProgress = false;
-
-      if (adminLoginButton) {
-        adminLoginButton.disabled = false;
-        adminLoginButton.removeAttribute("aria-busy");
-
-        adminLoginButton.textContent =
-          adminLoginButton.dataset.originalText ||
-          "Sign In";
+      if (!email || !password) {
+        showLoginError(
+          "Enter your email and password."
+        );
+        return;
       }
 
-      showLoader(false);
+      loginInProgress = true;
+
+      showLoginError("");
+      showLoader(true);
+
+      if (adminLoginButton) {
+        adminLoginButton.disabled = true;
+
+        adminLoginButton.setAttribute(
+          "aria-busy",
+          "true"
+        );
+
+        if (!adminLoginButton.dataset.originalText) {
+          adminLoginButton.dataset.originalText =
+            adminLoginButton.textContent.trim();
+        }
+
+        adminLoginButton.textContent =
+          "Signing in...";
+      }
+
+      try {
+        const persistence =
+          rememberAdmin?.checked
+            ? browserLocalPersistence
+            : browserSessionPersistence;
+
+        await setPersistence(auth, persistence);
+
+        const credential =
+          await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
+
+        const isAdmin =
+          await verifyAdminAccess(credential.user);
+
+        if (!isAdmin) {
+          await signOut(auth);
+
+          currentAdmin = null;
+          showLoginScreen();
+
+          showLoginError(
+            "Access denied. This account is not authorized as an admin."
+          );
+
+          if (authStatus) {
+            authStatus.textContent = "Unauthorized";
+          }
+
+          return;
+        }
+
+        currentAdmin = credential.user;
+
+        showAdminDashboard();
+
+        showNotification(
+          "Admin login successful.",
+          "success"
+        );
+
+      } catch (error) {
+        console.error("Login error:", error);
+
+        showLoginError(
+          getFirebaseErrorMessage(error)
+        );
+
+      } finally {
+        loginInProgress = false;
+
+        if (adminLoginButton) {
+          adminLoginButton.disabled = false;
+
+          adminLoginButton.removeAttribute(
+            "aria-busy"
+          );
+
+          adminLoginButton.textContent =
+            adminLoginButton.dataset.originalText ||
+            "Sign In";
+        }
+
+        showLoader(false);
+      }
     }
-  });
+  );
 }
 
 
@@ -427,51 +556,59 @@ if (adminLoginForm) {
 ========================================================= */
 
 if (forgotPasswordButton) {
-  forgotPasswordButton.addEventListener("click", async () => {
-    if (!auth) {
-      showNotification(
-        "Firebase Authentication is unavailable.",
-        "error"
-      );
-      return;
+  forgotPasswordButton.addEventListener(
+    "click",
+    async () => {
+      if (!auth) {
+        showNotification(
+          "Firebase Authentication is unavailable.",
+          "error"
+        );
+        return;
+      }
+
+      const email =
+        adminEmail?.value.trim() || "";
+
+      if (!email) {
+        showLoginError(
+          "Enter your email address first."
+        );
+
+        adminEmail?.focus();
+        return;
+      }
+
+      showLoginError("");
+      showLoader(true);
+
+      try {
+        await sendPasswordResetEmail(
+          auth,
+          email
+        );
+
+        showNotification(
+          "If this account exists, a password reset email will be sent.",
+          "success"
+        );
+
+      } catch (error) {
+        console.error(
+          "Password reset error:",
+          error
+        );
+
+        showNotification(
+          getFirebaseErrorMessage(error),
+          "error"
+        );
+
+      } finally {
+        showLoader(false);
+      }
     }
-
-    const email = adminEmail?.value.trim() || "";
-
-    if (!email) {
-      showLoginError(
-        "Enter your email address first, then select Forgot Password."
-      );
-
-      adminEmail?.focus();
-      return;
-    }
-
-    showLoginError("");
-    showLoader(true);
-
-    try {
-      await sendPasswordResetEmail(auth, email);
-
-      showNotification(
-        "If this account exists, a password reset email will be sent.",
-        "success"
-      );
-
-    } catch (error) {
-      console.error("Password reset error:", error);
-
-      showNotification(
-        error?.code === "auth/network-request-failed"
-          ? "Network error. Check your internet connection."
-          : "Unable to send the reset email. Check your email and Firebase settings.",
-        "error"
-      );
-
-    } finally {
-      showLoader(false);
-    }
-  });
+  );
 }
 
 
@@ -480,38 +617,45 @@ if (forgotPasswordButton) {
 ========================================================= */
 
 if (logoutButton) {
-  logoutButton.addEventListener("click", async () => {
-    if (!auth) return;
+  logoutButton.addEventListener(
+    "click",
+    async () => {
+      if (!auth) return;
 
-    const confirmed = window.confirm(
-      "Are you sure you want to log out?"
-    );
+      if (!window.confirm(
+        "Are you sure you want to log out?"
+      )) {
+        return;
+      }
 
-    if (!confirmed) return;
+      showLoader(true);
 
-    showLoader(true);
+      try {
+        await signOut(auth);
 
-    try {
-      await signOut(auth);
+        currentAdmin = null;
 
-      currentAdmin = null;
-      closeSidebar();
+        closeSidebar();
+        showLoginScreen();
 
-      showLoginScreen();
-      showNotification("You have been logged out.", "success");
+        showNotification(
+          "You have been logged out.",
+          "success"
+        );
 
-    } catch (error) {
-      console.error("Logout error:", error);
+      } catch (error) {
+        console.error("Logout error:", error);
 
-      showNotification(
-        "Unable to log out. Please try again.",
-        "error"
-      );
+        showNotification(
+          getFirebaseErrorMessage(error),
+          "error"
+        );
 
-    } finally {
-      showLoader(false);
+      } finally {
+        showLoader(false);
+      }
     }
-  });
+  );
 }
 
 
@@ -519,90 +663,131 @@ if (logoutButton) {
    AUTH STATE LISTENER
 ========================================================= */
 
-if (auth) {
-  onAuthStateChanged(auth, async (user) => {
-    showLoader(true);
+function startAuthListener() {
+  if (!auth || authListenerStarted) return;
 
-    try {
-      if (!user) {
-        currentAdmin = null;
+  authListenerStarted = true;
 
-        showLoginScreen();
+  onAuthStateChanged(
+    auth,
 
-        if (authStatus) {
-          authStatus.textContent = "Signed out";
+    async (user) => {
+      showLoader(true);
+
+      try {
+        if (!user) {
+          currentAdmin = null;
+
+          showLoginScreen();
+
+          if (authStatus) {
+            authStatus.textContent = "Signed out";
+          }
+
+          showLoginError("");
+
+          return;
         }
 
-        return;
-      }
+        const isAdmin =
+          await verifyAdminAccess(user);
 
-      const isAdmin = await verifyAdminAccess(user);
+        if (!isAdmin) {
+          currentAdmin = null;
 
-      if (!isAdmin) {
+          if (authStatus) {
+            authStatus.textContent = "Unauthorized";
+          }
+
+          await signOut(auth);
+
+          showLoginScreen();
+
+          showLoginError(
+            "Access denied. Your account does not have admin permission."
+          );
+
+          return;
+        }
+
+        currentAdmin = user;
+
+        if (sidebarAdminEmail) {
+          sidebarAdminEmail.textContent =
+            user.email || "Admin";
+        }
+
+        if (sidebarAdminName) {
+          sidebarAdminName.textContent =
+            user.displayName ||
+            (
+              user.email
+                ? user.email.split("@")[0]
+                : "Admin"
+            );
+        }
+
+        if (authStatus) {
+          authStatus.textContent = "Authenticated";
+        }
+
+        showLoginError("");
+        showAdminDashboard();
+
+        await loadDashboardStatistics();
+
+      } catch (error) {
+        console.error(
+          "Authentication state error:",
+          error
+        );
+
         currentAdmin = null;
-
-        await signOut(auth);
-
         showLoginScreen();
 
         showLoginError(
-          "Access denied. Ask the system administrator to authorize your account."
+          "Unable to verify admin access. Check Firebase Authentication and admin permissions."
         );
 
-        if (authStatus) {
-          authStatus.textContent = "Unauthorized";
-        }
-
-        return;
+      } finally {
+        showLoader(false);
       }
+    },
 
-      currentAdmin = user;
+    (error) => {
+      console.error(
+        "Firebase auth listener error:",
+        error
+      );
 
-      if (sidebarAdminEmail) {
-        sidebarAdminEmail.textContent =
-          user.email || "Admin";
-      }
-
-      if (sidebarAdminName) {
-        sidebarAdminName.textContent =
-          user.displayName ||
-          (user.email ? user.email.split("@")[0] : "Admin");
-      }
-
-      if (authStatus) {
-        authStatus.textContent = "Authenticated";
-      }
-
-      showAdminDashboard();
-
-      await loadDashboardStatistics();
-
-    } catch (error) {
-      console.error("Authentication state error:", error);
+      currentAdmin = null;
 
       showLoginScreen();
 
       showLoginError(
-        "Unable to verify admin access. Check your Firebase configuration and security settings."
+        getFirebaseErrorMessage(error)
       );
 
-    } finally {
       showLoader(false);
     }
-  });
+  );
 }
 
 
 /* =========================================================
-   DASHBOARD STATISTICS
+   DATABASE ITEM COUNT
 ========================================================= */
 
 async function countDatabaseItems(path) {
   if (!database) {
-    throw new Error("Firebase Database is unavailable.");
+    throw new Error(
+      "Firebase Realtime Database is unavailable."
+    );
   }
 
-  const snapshot = await get(ref(database, path));
+  const snapshot = await get(
+    ref(database, path)
+  );
 
   if (!snapshot.exists()) {
     return 0;
@@ -611,23 +796,38 @@ async function countDatabaseItems(path) {
   const value = snapshot.val();
 
   if (Array.isArray(value)) {
-    return value.filter((item) => item !== null).length;
+    return value.filter(
+      (item) => item !== null
+    ).length;
   }
 
-  if (value && typeof value === "object") {
+  if (
+    value !== null &&
+    typeof value === "object"
+  ) {
     return Object.keys(value).length;
   }
 
   return 0;
 }
 
+
+/* =========================================================
+   UPDATE STATISTIC
+========================================================= */
+
 function updateCount(elementId, value) {
-  const element = document.getElementById(elementId);
+  const element = byId(elementId);
 
   if (element) {
     element.textContent = String(value);
   }
 }
+
+
+/* =========================================================
+   DASHBOARD STATISTICS
+========================================================= */
 
 async function loadDashboardStatistics() {
   if (!currentAdmin || !database) return;
@@ -637,12 +837,6 @@ async function loadDashboardStatistics() {
   }
 
   try {
-    /*
-      These are assumed database paths.
-      Confirm your actual Firebase Realtime Database structure
-      before relying on these counts.
-    */
-
     const results = await Promise.allSettled([
       countDatabaseItems("animes"),
       countDatabaseItems("movies"),
@@ -661,9 +855,12 @@ async function loadDashboardStatistics() {
       const elementId = elementIds[index];
 
       if (result.status === "fulfilled") {
-        updateCount(elementId, result.value);
+        updateCount(
+          elementId,
+          result.value
+        );
       } else {
-        console.warn(
+        console.error(
           `Unable to load ${elementId}:`,
           result.reason
         );
@@ -675,7 +872,10 @@ async function loadDashboardStatistics() {
     await loadRecentContent();
 
   } catch (error) {
-    console.error("Dashboard loading error:", error);
+    console.error(
+      "Dashboard loading error:",
+      error
+    );
 
     showNotification(
       "Some dashboard data could not be loaded.",
@@ -695,27 +895,28 @@ async function loadDashboardStatistics() {
 ========================================================= */
 
 async function loadRecentContent() {
-  const container = $("#recentContentList");
+  const container =
+    byId("recentContentList");
 
-  if (!container || !database || !currentAdmin) return;
+  if (
+    !container ||
+    !database ||
+    !currentAdmin
+  ) {
+    return;
+  }
 
   container.replaceChildren();
 
-  const emptyMessage = document.createElement("p");
+  const emptyMessage =
+    document.createElement("p");
+
   emptyMessage.className = "empty-state";
+
   emptyMessage.textContent =
-    "Recent content will appear here when content loading is configured.";
+    "Your recent content will appear here when content management is configured.";
 
   container.appendChild(emptyMessage);
-
-  /*
-    The exact Anime Max content schema has not yet been
-    confirmed. This function intentionally does not invent
-    fields or display incorrect content.
-
-    Once the actual database structure is confirmed, this
-    section can render real anime, movies and episodes.
-  */
 }
 
 
@@ -726,122 +927,165 @@ async function loadRecentContent() {
 function openSidebar() {
   if (adminSidebar) {
     adminSidebar.classList.add("active");
-    adminSidebar.setAttribute("aria-hidden", "false");
+    adminSidebar.classList.add("open");
+
+    adminSidebar.setAttribute(
+      "aria-hidden",
+      "false"
+    );
   }
 
   if (sidebarOverlay) {
-    sidebarOverlay.classList.add("active");
     sidebarOverlay.hidden = false;
+
+    sidebarOverlay.classList.add("active");
+    sidebarOverlay.classList.add("visible");
   }
 
   if (menuToggle) {
-    menuToggle.setAttribute("aria-expanded", "true");
+    menuToggle.setAttribute(
+      "aria-expanded",
+      "true"
+    );
   }
 
   document.body.classList.add("sidebar-open");
 }
 
+
 function closeSidebar() {
   if (adminSidebar) {
     adminSidebar.classList.remove("active");
-    adminSidebar.setAttribute("aria-hidden", "true");
+    adminSidebar.classList.remove("open");
+
+    adminSidebar.setAttribute(
+      "aria-hidden",
+      "true"
+    );
   }
 
   if (sidebarOverlay) {
     sidebarOverlay.classList.remove("active");
+    sidebarOverlay.classList.remove("visible");
+
     sidebarOverlay.hidden = true;
   }
 
   if (menuToggle) {
-    menuToggle.setAttribute("aria-expanded", "false");
+    menuToggle.setAttribute(
+      "aria-expanded",
+      "false"
+    );
   }
 
   document.body.classList.remove("sidebar-open");
 }
 
-if (menuToggle) {
-  menuToggle.addEventListener("click", () => {
-    const isOpen =
-      adminSidebar?.classList.contains("active");
 
-    if (isOpen) {
-      closeSidebar();
-    } else {
-      openSidebar();
+if (menuToggle) {
+  menuToggle.addEventListener(
+    "click",
+    () => {
+      const isOpen =
+        adminSidebar?.classList.contains("active") ||
+        adminSidebar?.classList.contains("open");
+
+      if (isOpen) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
     }
-  });
+  );
 }
+
 
 if (sidebarOverlay) {
-  sidebarOverlay.addEventListener("click", closeSidebar);
+  sidebarOverlay.addEventListener(
+    "click",
+    closeSidebar
+  );
 }
 
-document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") {
-    closeSidebar();
+
+document.addEventListener(
+  "keydown",
+  (event) => {
+    if (event.key === "Escape") {
+      closeSidebar();
+    }
   }
-});
+);
 
 
 /* =========================================================
    SIDEBAR NAVIGATION
 ========================================================= */
 
-const navigationLinks = document.querySelectorAll(
-  "[data-page]"
-);
+const navigationLinks =
+  document.querySelectorAll("[data-page]");
 
-const implementedPages = new Set([
-  "dashboard"
-]);
+const implementedPages =
+  new Set(["dashboard"]);
+
 
 navigationLinks.forEach((link) => {
-  link.addEventListener("click", (event) => {
-    event.preventDefault();
+  link.addEventListener(
+    "click",
+    (event) => {
+      event.preventDefault();
 
-    const pageName = link.dataset.page;
+      const pageName =
+        link.dataset.page || "";
 
-    closeSidebar();
+      closeSidebar();
 
-    if (!currentAdmin) {
-      showLoginScreen();
-      return;
-    }
-
-    if (pageName === "dashboard") {
-      document.querySelectorAll("[data-page]").forEach((item) => {
-        item.classList.toggle(
-          "active",
-          item.dataset.page === "dashboard"
-        );
-      });
-
-      const dashboardPage = $("#dashboardPage");
-
-      if (dashboardPage) {
-        dashboardPage.hidden = false;
-        dashboardPage.style.display = "";
+      if (!currentAdmin) {
+        showLoginScreen();
+        return;
       }
 
-      loadDashboardStatistics();
-      return;
-    }
+      if (pageName === "dashboard") {
+        navigationLinks.forEach((item) => {
+          item.classList.toggle(
+            "active",
+            item.dataset.page === "dashboard"
+          );
+        });
 
-    if (!implementedPages.has(pageName)) {
-      showNotification(
-        `${formatPageName(pageName)} page will be implemented in the next step.`,
-        "info"
-      );
+        const dashboardPage =
+          byId("dashboardPage");
 
-      return;
+        if (dashboardPage) {
+          dashboardPage.hidden = false;
+          dashboardPage.style.display = "";
+        }
+
+        loadDashboardStatistics();
+        return;
+      }
+
+      if (!implementedPages.has(pageName)) {
+        showNotification(
+          `${formatPageName(pageName)} page is not implemented yet.`,
+          "info"
+        );
+      }
     }
-  });
+  );
 });
+
+
+/* =========================================================
+   FORMAT PAGE NAME
+========================================================= */
 
 function formatPageName(name = "") {
   return name
     .replace(/-/g, " ")
-    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+    .replace(/\b\w/g, (letter) =>
+      letter.toUpperCase()
+    );
 }
 
 
@@ -849,21 +1093,27 @@ function formatPageName(name = "") {
    DASHBOARD QUICK ACTIONS
 ========================================================= */
 
-document.querySelectorAll("[data-action]").forEach((button) => {
-  button.addEventListener("click", () => {
-    if (!currentAdmin) {
-      showLoginScreen();
-      return;
-    }
+document
+  .querySelectorAll("[data-action]")
+  .forEach((button) => {
+    button.addEventListener(
+      "click",
+      () => {
+        if (!currentAdmin) {
+          showLoginScreen();
+          return;
+        }
 
-    const action = button.dataset.action;
+        const action =
+          button.dataset.action || "";
 
-    showNotification(
-      `${formatPageName(action)} will be connected when its page is implemented.`,
-      "info"
+        showNotification(
+          `${formatPageName(action)} is not implemented yet.`,
+          "info"
+        );
+      }
     );
   });
-});
 
 
 /* =========================================================
@@ -871,16 +1121,26 @@ document.querySelectorAll("[data-action]").forEach((button) => {
 ========================================================= */
 
 if (refreshDashboardButton) {
-  refreshDashboardButton.addEventListener("click", async () => {
-    if (!currentAdmin) return;
+  refreshDashboardButton.addEventListener(
+    "click",
+    async () => {
+      if (!currentAdmin) return;
 
-    await loadDashboardStatistics();
+      showLoader(true);
 
-    showNotification(
-      "Dashboard refresh completed.",
-      "success"
-    );
-  });
+      try {
+        await loadDashboardStatistics();
+
+        showNotification(
+          "Dashboard refresh completed.",
+          "success"
+        );
+
+      } finally {
+        showLoader(false);
+      }
+    }
+  );
 }
 
 
@@ -888,20 +1148,99 @@ if (refreshDashboardButton) {
    VIEW ALL CONTENT
 ========================================================= */
 
-const viewAllContentButton = $("#viewAllContentButton");
+const viewAllContentButton =
+  byId("viewAllContentButton");
+
 
 if (viewAllContentButton) {
-  viewAllContentButton.addEventListener("click", () => {
-    showNotification(
-      "The complete content list will be implemented in the next step.",
-      "info"
-    );
-  });
+  viewAllContentButton.addEventListener(
+    "click",
+    () => {
+      showNotification(
+        "The complete content list is not implemented yet.",
+        "info"
+      );
+    }
+  );
 }
 
 
 /* =========================================================
-   INITIALIZE APPLICATION
+   GLOBAL ERROR HANDLING
 ========================================================= */
 
-initializeUI();
+window.addEventListener(
+  "error",
+  (event) => {
+    console.error(
+      "Application error:",
+      event.error || event.message
+    );
+  }
+);
+
+
+window.addEventListener(
+  "unhandledrejection",
+  (event) => {
+    console.error(
+      "Unhandled promise rejection:",
+      event.reason
+    );
+  }
+);
+
+
+/* =========================================================
+   START APPLICATION
+========================================================= */
+
+async function startApplication() {
+  /*
+    Hide the initial loader if Firebase startup fails.
+    This function runs only if the JavaScript module
+    itself loaded successfully.
+  */
+
+  try {
+    initializeUI();
+
+    const firebaseReady =
+      initializeFirebase();
+
+    if (!firebaseReady) {
+      showLoader(false);
+      return;
+    }
+
+    startAuthListener();
+
+  } catch (error) {
+    console.error(
+      "Application startup failed:",
+      error
+    );
+
+    showLoginScreen();
+
+    showLoginError(
+      "The admin panel could not start. Please refresh and check the browser console."
+    );
+
+  } finally {
+    /*
+      The auth listener manages the loader while
+      checking the current login session.
+    */
+    if (!authListenerStarted) {
+      showLoader(false);
+    }
+  }
+}
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+startApplication();
