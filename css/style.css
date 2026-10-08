@@ -1,6 +1,6 @@
 /* =========================================================
    ANIME MAX ADMIN PANEL
-   Main Stylesheet
+   Main Stylesheet — Fixed Version
    Mobile-first responsive design
 ========================================================= */
 
@@ -63,8 +63,11 @@ html {
 
 body {
     min-height: 100vh;
+    min-height: 100dvh;
+
     background: var(--bg);
     color: var(--text);
+
     font-family:
         Inter,
         -apple-system,
@@ -73,8 +76,10 @@ body {
         Roboto,
         Arial,
         sans-serif;
+
     font-size: 14px;
     line-height: 1.6;
+
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
 }
@@ -103,6 +108,23 @@ select {
 
 button {
     color: inherit;
+    border: 0;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+img {
+    display: block;
+    max-width: 100%;
 }
 
 button,
@@ -122,52 +144,55 @@ textarea:focus-visible {
     outline-offset: 3px;
 }
 
-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-a {
-    color: inherit;
-    text-decoration: none;
-}
-
-button {
-    border: 0;
-    cursor: pointer;
-}
-
-img {
-    display: block;
-    max-width: 100%;
-}
-
 [hidden] {
     display: none !important;
 }
 
 
 /* =========================================================
-   PAGE LOADER
+   PAGE LOADER — FIXED
 ========================================================= */
 
-.page-loader {
+.page-loader,
+#pageLoader {
     position: fixed;
     inset: 0;
     z-index: 99999;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     background: var(--bg);
+
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+
     transition:
         opacity 250ms ease,
         visibility 250ms ease;
 }
 
-.page-loader.is-hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
+/*
+  Supports both class names used by CSS and JavaScript:
+  .is-hidden and .hidden
+*/
+
+.page-loader.is-hidden,
+.page-loader.hidden,
+#pageLoader.is-hidden,
+#pageLoader.hidden {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* Also support the HTML hidden attribute. */
+
+.page-loader[hidden],
+#pageLoader[hidden] {
+    display: none !important;
 }
 
 .loader-content {
@@ -182,6 +207,7 @@ img {
     display: flex;
     align-items: center;
     gap: 5px;
+
     font-size: 22px;
     font-weight: 900;
     letter-spacing: -0.8px;
@@ -200,9 +226,11 @@ img {
 .loader-spinner {
     width: 32px;
     height: 32px;
+
     border: 3px solid rgba(139, 92, 246, 0.18);
     border-top-color: var(--primary);
     border-radius: 50%;
+
     animation: spin 700ms linear infinite;
 }
 
@@ -219,10 +247,11 @@ img {
 
 
 /* =========================================================
-   NOTIFICATION MESSAGE
+   NOTIFICATION MESSAGE — FIXED
 ========================================================= */
 
-.notification-message {
+.notification-message,
+#notificationMessage {
     position: fixed;
     top: 18px;
     right: 18px;
@@ -233,6 +262,7 @@ img {
 
     color: var(--text);
     background: var(--surface-light);
+
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
 
@@ -240,6 +270,8 @@ img {
 
     opacity: 0;
     visibility: hidden;
+    pointer-events: none;
+
     transform: translateY(-8px);
 
     transition:
@@ -248,18 +280,27 @@ img {
         transform var(--transition);
 }
 
-.notification-message.show {
+.notification-message.show,
+#notificationMessage.show {
     opacity: 1;
     visibility: visible;
+    pointer-events: auto;
     transform: translateY(0);
 }
 
-.notification-message.success {
+.notification-message.success,
+#notificationMessage.success {
     border-color: rgba(34, 197, 94, 0.4);
 }
 
-.notification-message.error {
+.notification-message.error,
+#notificationMessage.error {
     border-color: rgba(239, 68, 68, 0.4);
+}
+
+.notification-message.info,
+#notificationMessage.info {
+    border-color: rgba(59, 130, 246, 0.4);
 }
 
 
@@ -267,7 +308,8 @@ img {
    LOGIN SCREEN
 ========================================================= */
 
-.login-screen {
+.login-screen,
+#loginScreen {
     position: relative;
     isolation: isolate;
 
@@ -280,32 +322,44 @@ img {
     justify-content: center;
 
     padding: 32px 18px 20px;
+
     overflow: hidden;
 }
 
 .login-screen::before,
-.login-screen::after {
+.login-screen::after,
+#loginScreen::before,
+#loginScreen::after {
     content: "";
+
     position: absolute;
     z-index: -1;
+
     pointer-events: none;
     border-radius: 50%;
+
     filter: blur(80px);
 }
 
-.login-screen::before {
+.login-screen::before,
+#loginScreen::before {
     width: 260px;
     height: 260px;
+
     top: -100px;
     left: -100px;
+
     background: rgba(124, 58, 237, 0.16);
 }
 
-.login-screen::after {
+.login-screen::after,
+#loginScreen::after {
     width: 260px;
     height: 260px;
+
     right: -120px;
     bottom: 20px;
+
     background: rgba(59, 130, 246, 0.12);
 }
 
@@ -347,7 +401,10 @@ img {
     align-items: center;
     justify-content: center;
 
+    flex-shrink: 0;
+
     color: #ffffff;
+
     background:
         linear-gradient(
             135deg,
@@ -357,6 +414,7 @@ img {
 
     border-radius: 15px;
     box-shadow: var(--shadow-primary);
+
     font-size: 25px;
 }
 
@@ -371,9 +429,11 @@ img {
 
 .section-label {
     display: inline-block;
+
     margin-bottom: 9px;
 
     color: var(--primary-light);
+
     font-size: 10px;
     font-weight: 800;
     letter-spacing: 2px;
@@ -383,6 +443,7 @@ img {
     margin-bottom: 9px;
 
     color: var(--text);
+
     font-size: clamp(25px, 6vw, 31px);
     font-weight: 800;
     letter-spacing: -1px;
@@ -394,6 +455,7 @@ img {
     margin: 0 auto;
 
     color: var(--text-secondary);
+
     font-size: 13px;
     line-height: 1.7;
 }
@@ -414,17 +476,21 @@ img {
 
 .form-group > label {
     display: block;
+
     margin-bottom: 9px;
 
     color: #dedeea;
+
     font-size: 12px;
     font-weight: 700;
 }
 
 .input-wrapper {
     position: relative;
+
     display: flex;
     align-items: center;
+
     min-width: 0;
 }
 
@@ -434,6 +500,7 @@ img {
     z-index: 1;
 
     color: var(--text-muted);
+
     font-size: 15px;
     pointer-events: none;
 }
@@ -471,6 +538,7 @@ img {
 .input-wrapper input:focus {
     background: #131322;
     border-color: var(--primary);
+
     box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
 }
 
@@ -490,6 +558,7 @@ img {
     background: transparent;
 
     border-radius: var(--radius-sm);
+
     transform: translateY(-50%);
 
     transition: color var(--transition);
@@ -504,8 +573,8 @@ img {
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 12px;
 
+    gap: 12px;
     margin: 2px 0 25px;
 }
 
@@ -515,6 +584,7 @@ img {
     gap: 8px;
 
     color: var(--text-secondary);
+
     font-size: 12px;
     cursor: pointer;
 }
@@ -522,6 +592,7 @@ img {
 .remember-option input {
     width: 16px;
     height: 16px;
+
     accent-color: var(--primary);
     cursor: pointer;
 }
@@ -556,6 +627,7 @@ img {
 
     width: 100%;
     min-height: 52px;
+
     padding: 14px 18px;
 
     color: #ffffff;
@@ -584,7 +656,9 @@ img {
 
 .primary-button:hover {
     filter: brightness(1.08);
-    box-shadow: 0 10px 28px rgba(139, 92, 246, 0.28);
+
+    box-shadow:
+        0 10px 28px rgba(139, 92, 246, 0.28);
 }
 
 .primary-button:active {
@@ -632,6 +706,7 @@ img {
     padding-top: 22px;
 
     color: var(--text-muted);
+
     border-top: 1px solid var(--border);
 
     font-size: 11px;
@@ -647,6 +722,7 @@ img {
     max-width: 420px;
 
     margin-top: 22px;
+
     text-align: center;
 }
 
@@ -660,7 +736,8 @@ img {
    ADMIN APP LAYOUT
 ========================================================= */
 
-.admin-app {
+.admin-app,
+#adminApp {
     min-height: 100vh;
     min-height: 100dvh;
 }
@@ -740,6 +817,7 @@ img {
     height: 40px;
 
     color: #ffffff;
+
     background:
         linear-gradient(
             135deg,
@@ -759,7 +837,7 @@ button.profile-avatar {
 
 
 /* =========================================================
-   SIDEBAR
+   SIDEBAR — FIXED CLASS COMPATIBILITY
 ========================================================= */
 
 .admin-sidebar {
@@ -773,6 +851,7 @@ button.profile-avatar {
     flex-direction: column;
 
     width: min(var(--sidebar-width), 88vw);
+
     height: 100vh;
     height: 100dvh;
 
@@ -793,7 +872,10 @@ button.profile-avatar {
         visibility 250ms ease;
 }
 
-.admin-sidebar.open {
+/* Compatible with .open and .active. */
+
+.admin-sidebar.open,
+.admin-sidebar.active {
     transform: translateX(0);
     visibility: visible;
 }
@@ -804,6 +886,7 @@ button.profile-avatar {
     gap: 10px;
 
     min-height: 52px;
+
     margin-bottom: 30px;
     padding: 0 5px 20px;
 
@@ -813,6 +896,7 @@ button.profile-avatar {
 .sidebar-brand .brand-icon {
     width: 39px;
     height: 39px;
+
     flex-shrink: 0;
 
     border-radius: 12px;
@@ -845,6 +929,7 @@ button.profile-avatar {
 
 .sidebar-heading {
     display: block;
+
     margin: 0 10px 11px;
 
     color: #6f6f87;
@@ -890,6 +975,7 @@ button.profile-avatar {
     flex-shrink: 0;
 
     color: #88889e;
+
     font-size: 16px;
     text-align: center;
 }
@@ -901,6 +987,7 @@ button.profile-avatar {
 
 .nav-link.active {
     color: #ffffff;
+
     background:
         linear-gradient(
             100deg,
@@ -945,8 +1032,10 @@ button.profile-avatar {
     overflow: hidden;
 
     color: var(--text);
+
     font-size: 12px;
     font-weight: 700;
+
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -955,7 +1044,9 @@ button.profile-avatar {
     overflow: hidden;
 
     color: var(--text-muted);
+
     font-size: 10px;
+
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -990,7 +1081,7 @@ button.profile-avatar {
 
 
 /* =========================================================
-   SIDEBAR OVERLAY
+   SIDEBAR OVERLAY — FIXED
 ========================================================= */
 
 .sidebar-overlay {
@@ -1009,10 +1100,21 @@ button.profile-avatar {
         visibility 250ms ease;
 }
 
-.sidebar-overlay.visible {
+/* Compatible with .visible and .active. */
+
+.sidebar-overlay.visible,
+.sidebar-overlay.active {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
+}
+
+.sidebar-overlay[hidden] {
+    display: none !important;
+}
+
+body.sidebar-open {
+    overflow: hidden;
 }
 
 
@@ -1023,12 +1125,14 @@ button.profile-avatar {
 .admin-main {
     width: 100%;
     min-width: 0;
+
     padding: 22px 16px 35px;
 }
 
 .admin-page {
     width: 100%;
     max-width: 1500px;
+
     margin: 0 auto;
 }
 
@@ -1045,6 +1149,7 @@ button.profile-avatar {
     margin-bottom: 7px;
 
     color: var(--text);
+
     font-size: clamp(24px, 6vw, 32px);
     font-weight: 850;
     letter-spacing: -1px;
@@ -1055,6 +1160,7 @@ button.profile-avatar {
     max-width: 520px;
 
     color: var(--text-secondary);
+
     font-size: 12px;
     line-height: 1.7;
 }
@@ -1087,6 +1193,7 @@ button.profile-avatar {
 
     min-width: 0;
     min-height: 123px;
+
     padding: 16px 13px;
 
     background:
@@ -1156,6 +1263,7 @@ button.profile-avatar {
 
 .stat-card > div:last-child > span {
     color: var(--text-secondary);
+
     font-size: 10px;
     line-height: 1.5;
 }
@@ -1164,6 +1272,7 @@ button.profile-avatar {
     margin: 5px 0 2px;
 
     color: var(--text);
+
     font-size: clamp(22px, 5vw, 28px);
     font-weight: 850;
     line-height: 1.2;
@@ -1171,6 +1280,7 @@ button.profile-avatar {
 
 .stat-card small {
     color: var(--text-muted);
+
     font-size: 9px;
     line-height: 1.5;
 }
@@ -1182,6 +1292,7 @@ button.profile-avatar {
 
 .content-card {
     min-width: 0;
+
     margin-bottom: 20px;
     padding: 19px 15px;
 
@@ -1211,6 +1322,7 @@ button.profile-avatar {
     margin-bottom: 5px;
 
     color: var(--text);
+
     font-size: 16px;
     font-weight: 800;
     letter-spacing: -0.3px;
@@ -1218,6 +1330,7 @@ button.profile-avatar {
 
 .card-heading p {
     color: var(--text-secondary);
+
     font-size: 11px;
     line-height: 1.6;
 }
@@ -1242,6 +1355,7 @@ button.profile-avatar {
 
     min-width: 0;
     min-height: 112px;
+
     padding: 15px 13px;
 
     color: var(--text);
@@ -1312,6 +1426,7 @@ button.profile-avatar {
     margin-bottom: 7px;
 
     color: var(--text);
+
     font-size: 14px;
     font-weight: 750;
 }
@@ -1320,6 +1435,7 @@ button.profile-avatar {
     max-width: 270px;
 
     color: var(--text-muted);
+
     font-size: 11px;
     line-height: 1.7;
 }
@@ -1359,6 +1475,7 @@ button.profile-avatar {
 
 .system-status-item > span:first-child {
     color: var(--text-secondary);
+
     font-size: 11px;
     font-weight: 600;
 }
@@ -1379,8 +1496,10 @@ button.profile-avatar {
 
 .status-badge::before {
     content: "";
+
     width: 6px;
     height: 6px;
+
     flex-shrink: 0;
 
     border-radius: 50%;
@@ -1455,6 +1574,7 @@ button.profile-avatar {
 
 .divider {
     height: 1px;
+
     background: var(--border);
     border: 0;
 }
@@ -1462,6 +1582,7 @@ button.profile-avatar {
 .form-control {
     width: 100%;
     min-height: 46px;
+
     padding: 12px 14px;
 
     color: var(--text);
@@ -1471,6 +1592,7 @@ button.profile-avatar {
     border-radius: 10px;
 
     outline: none;
+
     transition:
         border-color var(--transition),
         box-shadow var(--transition);
@@ -1496,18 +1618,22 @@ select.form-control {
 
 .form-hint {
     display: block;
+
     margin-top: 7px;
 
     color: var(--text-muted);
+
     font-size: 11px;
     line-height: 1.6;
 }
 
 .form-label {
     display: block;
+
     margin-bottom: 8px;
 
     color: #dedeea;
+
     font-size: 12px;
     font-weight: 700;
 }
@@ -1523,6 +1649,7 @@ select.form-control {
 
 .table-container {
     width: 100%;
+
     overflow-x: auto;
     overscroll-behavior-x: contain;
 
@@ -1532,6 +1659,7 @@ select.form-control {
 
 .admin-table {
     width: 100%;
+
     border-collapse: collapse;
     white-space: nowrap;
 }
@@ -1539,7 +1667,9 @@ select.form-control {
 .admin-table th,
 .admin-table td {
     padding: 13px 15px;
+
     border-bottom: 1px solid var(--border);
+
     text-align: left;
     font-size: 12px;
 }
@@ -1547,6 +1677,7 @@ select.form-control {
 .admin-table th {
     color: var(--text-secondary);
     background: #11111d;
+
     font-weight: 750;
 }
 
@@ -1607,11 +1738,12 @@ select.form-control {
 
 
 /* =========================================================
-   RESPONSIVE — SMALL MOBILE
+   SMALL MOBILE
 ========================================================= */
 
 @media (max-width: 359px) {
-    .login-screen {
+    .login-screen,
+    #loginScreen {
         padding: 20px 12px;
     }
 
@@ -1653,6 +1785,7 @@ select.form-control {
     .stat-card {
         flex-direction: column;
         gap: 9px;
+
         min-height: 135px;
         padding: 12px;
     }
@@ -1677,11 +1810,12 @@ select.form-control {
 
 
 /* =========================================================
-   RESPONSIVE — MOBILE AND TABLET
+   MOBILE AND TABLET
 ========================================================= */
 
 @media (min-width: 600px) {
-    .login-screen {
+    .login-screen,
+    #loginScreen {
         padding: 40px 24px;
     }
 
@@ -1726,7 +1860,7 @@ select.form-control {
 
 
 /* =========================================================
-   RESPONSIVE — DESKTOP
+   DESKTOP
 ========================================================= */
 
 @media (min-width: 1024px) {
@@ -1752,14 +1886,20 @@ select.form-control {
         visibility: visible;
     }
 
-    .sidebar-overlay {
+    .sidebar-overlay,
+    #sidebarOverlay {
         display: none !important;
     }
 
     .admin-main {
         width: calc(100% - var(--sidebar-width));
+
         margin-left: var(--sidebar-width);
-        padding: calc(var(--header-height) + 30px) 30px 45px;
+
+        padding:
+            calc(var(--header-height) + 30px)
+            30px
+            45px;
     }
 
     .stats-grid {
@@ -1770,6 +1910,7 @@ select.form-control {
     .stat-card {
         align-items: center;
         gap: 15px;
+
         min-height: 145px;
         padding: 20px;
     }
@@ -1793,7 +1934,7 @@ select.form-control {
 
 
 /* =========================================================
-   RESPONSIVE — LARGE DESKTOP
+   LARGE DESKTOP
 ========================================================= */
 
 @media (min-width: 1440px) {
@@ -1825,6 +1966,7 @@ select.form-control {
     *::before,
     *::after {
         scroll-behavior: auto !important;
+
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
@@ -1837,12 +1979,17 @@ select.form-control {
 ========================================================= */
 
 @supports (padding: max(0px)) {
-    .login-screen {
-        padding-bottom: max(20px, env(safe-area-inset-bottom));
+    .login-screen,
+    #loginScreen {
+        padding-bottom:
+            max(20px, env(safe-area-inset-bottom));
     }
 
     .admin-header {
-        padding-left: max(18px, env(safe-area-inset-left));
-        padding-right: max(18px, env(safe-area-inset-right));
+        padding-left:
+            max(18px, env(safe-area-inset-left));
+
+        padding-right:
+            max(18px, env(safe-area-inset-right));
     }
 }
