@@ -2,80 +2,149 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <meta name="theme-color" content="#0b0b12">
-    <meta name="description" content="Anime Max Admin Panel - Manage anime, movies, episodes, video servers and notifications.">
+
+    <meta
+        name="description"
+        content="Anime Max Admin Panel — Manage anime series, movies, episodes, video servers and notifications."
+    >
+
+    <meta name="robots" content="noindex, nofollow">
 
     <title>Admin Login | Anime Max</title>
 
-    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <!-- Favicon -->
+    <link
+        rel="icon"
+        type="image/png"
+        href="assets/favicon.png"
+    >
+
+    <!-- Main Stylesheet -->
     <link rel="stylesheet" href="css/style.css">
 
+    <!-- Font Awesome -->
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
     >
+
+    <!-- Prevent accidental form resubmission -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
 </head>
 
 <body class="admin-body">
 
-    <!-- Loading Screen -->
-    <div id="pageLoader" class="page-loader" aria-hidden="true">
+    <!-- =====================================================
+         LOADING SCREEN
+    ====================================================== -->
+
+    <div
+        id="pageLoader"
+        class="page-loader"
+        role="status"
+        aria-live="polite"
+        aria-label="Loading Anime Max Admin Panel"
+    >
         <div class="loader-content">
+
             <div class="loader-logo">
                 <span>ANIME</span>
                 <strong>MAX</strong>
             </div>
 
             <div class="loader-spinner"></div>
+
             <p>Loading Admin Panel...</p>
+
         </div>
     </div>
 
-    <!-- Notification Message -->
+
+    <!-- =====================================================
+         NOTIFICATION MESSAGE
+    ====================================================== -->
+
     <div
         id="notificationMessage"
         class="notification-message"
         role="status"
         aria-live="polite"
+        hidden
     ></div>
 
-    <!-- =========================
-         ADMIN LOGIN
-    ========================== -->
-    <main id="loginScreen" class="login-screen">
+
+    <!-- =====================================================
+         LOGIN SCREEN
+    ====================================================== -->
+
+    <main
+        id="loginScreen"
+        class="login-screen"
+    >
 
         <section class="login-card">
 
+            <!-- Brand -->
             <div class="login-brand">
+
                 <div class="brand-icon">
-                    <i class="fa fa-play-circle" aria-hidden="true"></i>
+                    <i
+                        class="fa fa-play-circle"
+                        aria-hidden="true"
+                    ></i>
                 </div>
 
                 <div class="brand-name">
                     <span>ANIME</span>
                     <strong>MAX</strong>
                 </div>
+
             </div>
 
+
+            <!-- Login Heading -->
             <div class="login-heading">
-                <span class="section-label">ADMINISTRATOR</span>
+
+                <span class="section-label">
+                    ADMINISTRATOR
+                </span>
 
                 <h1>Welcome Back</h1>
 
                 <p>
                     Sign in to manage your Anime Max website.
                 </p>
+
             </div>
 
-            <form id="adminLoginForm" class="login-form">
 
+            <!-- Login Form -->
+            <form
+                id="adminLoginForm"
+                class="login-form"
+                autocomplete="on"
+            >
+
+                <!-- Email -->
                 <div class="form-group">
-                    <label for="adminEmail">Email Address</label>
+
+                    <label for="adminEmail">
+                        Email Address
+                    </label>
 
                     <div class="input-wrapper">
-                        <i class="fa fa-envelope" aria-hidden="true"></i>
+
+                        <i
+                            class="fa fa-envelope"
+                            aria-hidden="true"
+                        ></i>
 
                         <input
                             type="email"
@@ -83,16 +152,30 @@
                             name="email"
                             placeholder="Enter your admin email"
                             autocomplete="username"
+                            inputmode="email"
+                            autocapitalize="none"
+                            spellcheck="false"
                             required
                         >
+
                     </div>
+
                 </div>
 
+
+                <!-- Password -->
                 <div class="form-group">
-                    <label for="adminPassword">Password</label>
+
+                    <label for="adminPassword">
+                        Password
+                    </label>
 
                     <div class="input-wrapper">
-                        <i class="fa fa-lock" aria-hidden="true"></i>
+
+                        <i
+                            class="fa fa-lock"
+                            aria-hidden="true"
+                        ></i>
 
                         <input
                             type="password"
@@ -110,18 +193,29 @@
                             aria-label="Show password"
                             aria-pressed="false"
                         >
-                            <i class="fa fa-eye" aria-hidden="true"></i>
+                            <i
+                                class="fa fa-eye"
+                                aria-hidden="true"
+                            ></i>
                         </button>
+
                     </div>
+
                 </div>
 
+
+                <!-- Login Options -->
                 <div class="login-options">
+
                     <label class="remember-option">
+
                         <input
                             type="checkbox"
                             id="rememberAdmin"
                         >
+
                         <span>Remember me</span>
+
                     </label>
 
                     <button
@@ -131,53 +225,85 @@
                     >
                         Forgot password?
                     </button>
+
                 </div>
 
+
+                <!-- Submit Button -->
                 <button
                     type="submit"
                     id="adminLoginButton"
                     class="primary-button login-button"
                 >
+
                     <span>Sign In</span>
-                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+
+                    <i
+                        class="fa fa-arrow-right"
+                        aria-hidden="true"
+                    ></i>
+
                 </button>
 
+
+                <!-- Login Error -->
                 <p
                     id="loginError"
                     class="form-error"
                     role="alert"
+                    aria-live="assertive"
                     hidden
                 ></p>
 
             </form>
 
+
+            <!-- Security Message -->
             <div class="login-security">
-                <i class="fa fa-shield" aria-hidden="true"></i>
+
+                <i
+                    class="fa fa-shield"
+                    aria-hidden="true"
+                ></i>
 
                 <span>
                     Secure administrator access
                 </span>
+
             </div>
 
         </section>
 
+
+        <!-- Login Footer -->
         <footer class="login-footer">
+
             <p>
-                &copy; <span id="currentYear"></span>
+                &copy;
+                <span id="currentYear"></span>
                 Anime Max. All rights reserved.
             </p>
+
         </footer>
 
     </main>
 
 
-    <!-- =========================
-         ADMIN DASHBOARD
-         Shown after authentication
-    ========================== -->
-    <div id="adminApp" class="admin-app" hidden>
+    <!-- =====================================================
+         ADMIN APPLICATION
+    ====================================================== -->
 
-        <!-- Mobile Header -->
+    <div
+        id="adminApp"
+        class="admin-app"
+        hidden
+    >
+
+
+        <!-- =================================================
+             MOBILE HEADER
+        ================================================== -->
+
         <header class="admin-header">
 
             <button
@@ -188,40 +314,71 @@
                 aria-controls="adminSidebar"
                 aria-expanded="false"
             >
-                <i class="fa fa-bars" aria-hidden="true"></i>
+                <i
+                    class="fa fa-bars"
+                    aria-hidden="true"
+                ></i>
             </button>
 
-            <a href="index.html" class="header-brand">
+
+            <a
+                href="#dashboard"
+                class="header-brand"
+                aria-label="Anime Max Dashboard"
+            >
                 <span>ANIME</span>
                 <strong>MAX</strong>
             </a>
+
 
             <button
                 type="button"
                 id="headerProfileButton"
                 class="profile-avatar"
                 aria-label="Admin profile"
+                data-page="profile"
             >
-                <i class="fa fa-user" aria-hidden="true"></i>
+                <i
+                    class="fa fa-user"
+                    aria-hidden="true"
+                ></i>
             </button>
 
         </header>
 
 
-        <!-- Navigation Overlay -->
+        <!-- =================================================
+             SIDEBAR OVERLAY
+        ================================================== -->
+
         <div
             id="sidebarOverlay"
             class="sidebar-overlay"
             aria-hidden="true"
+            hidden
         ></div>
 
 
-        <!-- Sidebar -->
-        <aside id="adminSidebar" class="admin-sidebar">
+        <!-- =================================================
+             SIDEBAR
+        ================================================== -->
 
+        <aside
+            id="adminSidebar"
+            class="admin-sidebar"
+            aria-label="Admin navigation"
+        >
+
+            <!-- Sidebar Brand -->
             <div class="sidebar-brand">
+
                 <div class="brand-icon">
-                    <i class="fa fa-play-circle" aria-hidden="true"></i>
+
+                    <i
+                        class="fa fa-play-circle"
+                        aria-hidden="true"
+                    ></i>
+
                 </div>
 
                 <div class="brand-name">
@@ -229,11 +386,19 @@
                     <strong>MAX</strong>
                 </div>
 
-                <span class="admin-badge">ADMIN</span>
+                <span class="admin-badge">
+                    ADMIN
+                </span>
+
             </div>
 
+
+            <!-- Main Menu -->
             <div class="sidebar-section">
-                <span class="sidebar-heading">MAIN MENU</span>
+
+                <span class="sidebar-heading">
+                    MAIN MENU
+                </span>
 
                 <nav class="sidebar-navigation">
 
@@ -241,52 +406,83 @@
                         href="#dashboard"
                         class="nav-link active"
                         data-page="dashboard"
+                        aria-current="page"
                     >
-                        <i class="fa fa-th-large" aria-hidden="true"></i>
+                        <i
+                            class="fa fa-th-large"
+                            aria-hidden="true"
+                        ></i>
+
                         <span>Dashboard</span>
                     </a>
+
 
                     <a
                         href="#anime"
                         class="nav-link"
                         data-page="anime"
                     >
-                        <i class="fa fa-television" aria-hidden="true"></i>
+                        <i
+                            class="fa fa-television"
+                            aria-hidden="true"
+                        ></i>
+
                         <span>Anime Series</span>
                     </a>
+
 
                     <a
                         href="#episodes"
                         class="nav-link"
                         data-page="episodes"
                     >
-                        <i class="fa fa-play-circle" aria-hidden="true"></i>
+                        <i
+                            class="fa fa-play-circle"
+                            aria-hidden="true"
+                        ></i>
+
                         <span>Episodes</span>
                     </a>
+
 
                     <a
                         href="#movies"
                         class="nav-link"
                         data-page="movies"
                     >
-                        <i class="fa fa-film" aria-hidden="true"></i>
+                        <i
+                            class="fa fa-film"
+                            aria-hidden="true"
+                        ></i>
+
                         <span>Movies</span>
                     </a>
+
 
                     <a
                         href="#genres"
                         class="nav-link"
                         data-page="genres"
                     >
-                        <i class="fa fa-tags" aria-hidden="true"></i>
+                        <i
+                            class="fa fa-tags"
+                            aria-hidden="true"
+                        ></i>
+
                         <span>Genres</span>
                     </a>
 
                 </nav>
+
             </div>
 
+
+            <!-- Management -->
             <div class="sidebar-section">
-                <span class="sidebar-heading">MANAGEMENT</span>
+
+                <span class="sidebar-heading">
+                    MANAGEMENT
+                </span>
 
                 <nav class="sidebar-navigation">
 
@@ -295,42 +491,67 @@
                         class="nav-link"
                         data-page="servers"
                     >
-                        <i class="fa fa-server" aria-hidden="true"></i>
+                        <i
+                            class="fa fa-server"
+                            aria-hidden="true"
+                        ></i>
+
                         <span>Video Servers</span>
                     </a>
+
 
                     <a
                         href="#subtitles"
                         class="nav-link"
                         data-page="subtitles"
                     >
-                        <i class="fa fa-language" aria-hidden="true"></i>
-                        <span>Subtitles & Audio</span>
+                        <i
+                            class="fa fa-language"
+                            aria-hidden="true"
+                        ></i>
+
+                        <span>Subtitles &amp; Audio</span>
                     </a>
+
 
                     <a
                         href="#users"
                         class="nav-link"
                         data-page="users"
                     >
-                        <i class="fa fa-users" aria-hidden="true"></i>
+                        <i
+                            class="fa fa-users"
+                            aria-hidden="true"
+                        ></i>
+
                         <span>Users</span>
                     </a>
+
 
                     <a
                         href="#notifications"
                         class="nav-link"
                         data-page="notifications"
                     >
-                        <i class="fa fa-bell" aria-hidden="true"></i>
+                        <i
+                            class="fa fa-bell"
+                            aria-hidden="true"
+                        ></i>
+
                         <span>Notifications</span>
                     </a>
 
                 </nav>
+
             </div>
 
+
+            <!-- System -->
             <div class="sidebar-section">
-                <span class="sidebar-heading">SYSTEM</span>
+
+                <span class="sidebar-heading">
+                    SYSTEM
+                </span>
 
                 <nav class="sidebar-navigation">
 
@@ -339,51 +560,89 @@
                         class="nav-link"
                         data-page="analytics"
                     >
-                        <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                        <i
+                            class="fa fa-bar-chart"
+                            aria-hidden="true"
+                        ></i>
+
                         <span>Analytics</span>
                     </a>
+
 
                     <a
                         href="#settings"
                         class="nav-link"
                         data-page="settings"
                     >
-                        <i class="fa fa-cog" aria-hidden="true"></i>
+                        <i
+                            class="fa fa-cog"
+                            aria-hidden="true"
+                        ></i>
+
                         <span>Settings</span>
                     </a>
+
 
                     <a
                         href="#profile"
                         class="nav-link"
                         data-page="profile"
                     >
-                        <i class="fa fa-user-circle" aria-hidden="true"></i>
+                        <i
+                            class="fa fa-user-circle"
+                            aria-hidden="true"
+                        ></i>
+
                         <span>Admin Profile</span>
                     </a>
 
                 </nav>
+
             </div>
 
+
+            <!-- Sidebar Bottom -->
             <div class="sidebar-bottom">
 
                 <div class="sidebar-admin-info">
+
                     <div class="profile-avatar">
-                        <i class="fa fa-user" aria-hidden="true"></i>
+
+                        <i
+                            class="fa fa-user"
+                            aria-hidden="true"
+                        ></i>
+
                     </div>
 
                     <div class="admin-info-text">
-                        <strong id="sidebarAdminName">Administrator</strong>
-                        <span id="sidebarAdminEmail">Admin Account</span>
+
+                        <strong id="sidebarAdminName">
+                            Administrator
+                        </strong>
+
+                        <span id="sidebarAdminEmail">
+                            Admin Account
+                        </span>
+
                     </div>
+
                 </div>
+
 
                 <button
                     type="button"
                     id="logoutButton"
                     class="logout-button"
                 >
-                    <i class="fa fa-sign-out" aria-hidden="true"></i>
+
+                    <i
+                        class="fa fa-sign-out"
+                        aria-hidden="true"
+                    ></i>
+
                     <span>Sign Out</span>
+
                 </button>
 
             </div>
@@ -391,24 +650,39 @@
         </aside>
 
 
-        <!-- Main Dashboard Content -->
-        <main id="adminMainContent" class="admin-main">
+        <!-- =================================================
+             MAIN CONTENT
+        ================================================== -->
 
+        <main
+            id="adminMainContent"
+            class="admin-main"
+        >
+
+            <!-- Dashboard Page -->
             <section
                 id="dashboardPage"
                 class="admin-page"
                 data-page-content="dashboard"
             >
 
+                <!-- Heading -->
                 <div class="page-heading">
+
                     <div>
-                        <span class="section-label">OVERVIEW</span>
+
+                        <span class="section-label">
+                            OVERVIEW
+                        </span>
+
                         <h1>Dashboard</h1>
 
                         <p>
                             Welcome to your Anime Max Admin Panel.
                         </p>
+
                     </div>
+
 
                     <button
                         type="button"
@@ -416,8 +690,12 @@
                         class="icon-button refresh-button"
                         aria-label="Refresh dashboard"
                     >
-                        <i class="fa fa-refresh" aria-hidden="true"></i>
+                        <i
+                            class="fa fa-refresh"
+                            aria-hidden="true"
+                        ></i>
                     </button>
+
                 </div>
 
 
@@ -425,51 +703,98 @@
                 <div class="stats-grid">
 
                     <article class="stat-card">
+
                         <div class="stat-icon purple">
-                            <i class="fa fa-television" aria-hidden="true"></i>
+
+                            <i
+                                class="fa fa-television"
+                                aria-hidden="true"
+                            ></i>
+
                         </div>
 
                         <div>
+
                             <span>Total Anime</span>
+
                             <strong id="totalAnimeCount">—</strong>
+
                             <small>Anime series</small>
+
                         </div>
+
                     </article>
 
+
                     <article class="stat-card">
+
                         <div class="stat-icon blue">
-                            <i class="fa fa-film" aria-hidden="true"></i>
+
+                            <i
+                                class="fa fa-film"
+                                aria-hidden="true"
+                            ></i>
+
                         </div>
 
                         <div>
+
                             <span>Total Movies</span>
+
                             <strong id="totalMoviesCount">—</strong>
+
                             <small>Movies in library</small>
+
                         </div>
+
                     </article>
 
+
                     <article class="stat-card">
+
                         <div class="stat-icon pink">
-                            <i class="fa fa-play-circle" aria-hidden="true"></i>
+
+                            <i
+                                class="fa fa-play-circle"
+                                aria-hidden="true"
+                            ></i>
+
                         </div>
 
                         <div>
+
                             <span>Total Episodes</span>
+
                             <strong id="totalEpisodesCount">—</strong>
+
                             <small>Episodes in library</small>
+
                         </div>
+
                     </article>
 
+
                     <article class="stat-card">
+
                         <div class="stat-icon green">
-                            <i class="fa fa-users" aria-hidden="true"></i>
+
+                            <i
+                                class="fa fa-users"
+                                aria-hidden="true"
+                            ></i>
+
                         </div>
 
                         <div>
+
                             <span>Total Users</span>
+
                             <strong id="totalUsersCount">—</strong>
+
                             <small>Registered users</small>
+
                         </div>
+
                     </article>
 
                 </div>
@@ -479,11 +804,19 @@
                 <section class="content-card">
 
                     <div class="card-heading">
+
                         <div>
+
                             <h2>Quick Actions</h2>
-                            <p>Manage your content quickly.</p>
+
+                            <p>
+                                Manage your content quickly.
+                            </p>
+
                         </div>
+
                     </div>
+
 
                     <div class="quick-actions-grid">
 
@@ -492,47 +825,78 @@
                             class="quick-action"
                             data-action="add-anime"
                         >
+
                             <span class="quick-action-icon purple">
-                                <i class="fa fa-plus" aria-hidden="true"></i>
+
+                                <i
+                                    class="fa fa-plus"
+                                    aria-hidden="true"
+                                ></i>
+
                             </span>
 
                             <span>Add Anime</span>
+
                         </button>
+
 
                         <button
                             type="button"
                             class="quick-action"
                             data-action="add-episode"
                         >
+
                             <span class="quick-action-icon blue">
-                                <i class="fa fa-play" aria-hidden="true"></i>
+
+                                <i
+                                    class="fa fa-play"
+                                    aria-hidden="true"
+                                ></i>
+
                             </span>
 
                             <span>Add Episode</span>
+
                         </button>
+
 
                         <button
                             type="button"
                             class="quick-action"
                             data-action="add-movie"
                         >
+
                             <span class="quick-action-icon pink">
-                                <i class="fa fa-film" aria-hidden="true"></i>
+
+                                <i
+                                    class="fa fa-film"
+                                    aria-hidden="true"
+                                ></i>
+
                             </span>
 
                             <span>Add Movie</span>
+
                         </button>
+
 
                         <button
                             type="button"
                             class="quick-action"
                             data-action="send-notification"
                         >
+
                             <span class="quick-action-icon green">
-                                <i class="fa fa-bell" aria-hidden="true"></i>
+
+                                <i
+                                    class="fa fa-bell"
+                                    aria-hidden="true"
+                                ></i>
+
                             </span>
 
                             <span>Notification</span>
+
                         </button>
 
                     </div>
@@ -544,10 +908,17 @@
                 <section class="content-card">
 
                     <div class="card-heading">
+
                         <div>
+
                             <h2>Recent Content</h2>
-                            <p>Recently added anime and movies.</p>
+
+                            <p>
+                                Recently added anime and movies.
+                            </p>
+
                         </div>
+
 
                         <button
                             type="button"
@@ -556,21 +927,30 @@
                         >
                             View All
                         </button>
+
                     </div>
+
 
                     <div
                         id="recentContentList"
                         class="recent-content-list"
                     >
+
                         <div class="empty-state">
-                            <i class="fa fa-folder-open-o" aria-hidden="true"></i>
+
+                            <i
+                                class="fa fa-folder-open-o"
+                                aria-hidden="true"
+                            ></i>
 
                             <h3>No content available</h3>
 
                             <p>
                                 Your recently added content will appear here.
                             </p>
+
                         </div>
+
                     </div>
 
                 </section>
@@ -580,15 +960,24 @@
                 <section class="content-card">
 
                     <div class="card-heading">
+
                         <div>
+
                             <h2>System Status</h2>
-                            <p>Connection and service information.</p>
+
+                            <p>
+                                Connection and service information.
+                            </p>
+
                         </div>
+
                     </div>
+
 
                     <div class="system-status-list">
 
                         <div class="system-status-item">
+
                             <span>Firebase Connection</span>
 
                             <span
@@ -597,9 +986,12 @@
                             >
                                 Checking...
                             </span>
+
                         </div>
 
+
                         <div class="system-status-item">
+
                             <span>Admin Authentication</span>
 
                             <span
@@ -608,17 +1000,23 @@
                             >
                                 Checking...
                             </span>
+
                         </div>
 
                     </div>
 
                 </section>
 
+
+                <!-- Dashboard Footer -->
                 <footer class="admin-footer">
+
                     <p>
-                        &copy; <span id="dashboardYear"></span>
+                        &copy;
+                        <span id="dashboardYear"></span>
                         Anime Max Admin Panel
                     </p>
+
                 </footer>
 
             </section>
@@ -628,8 +1026,14 @@
     </div>
 
 
-    <!-- Application Scripts -->
-    <script type="module" src="js/script.js"></script>
+    <!-- =====================================================
+         FIREBASE APPLICATION SCRIPT
+    ====================================================== -->
+
+    <script
+        type="module"
+        src="js/script.js"
+    ></script>
 
 </body>
 </html>
