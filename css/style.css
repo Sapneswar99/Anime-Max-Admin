@@ -1,6 +1,6 @@
 /* =========================================================
    ANIME MAX ADMIN PANEL
-   Main Stylesheet — Bottom Navigation Edition
+   Main Stylesheet — Full 4-Page Edition
 ========================================================= */
 
 :root {
@@ -446,7 +446,7 @@ button.profile-avatar { cursor: pointer; }
 
 
 /* =========================================================
-   BOTTOM NAVIGATION (NEW)
+   BOTTOM NAVIGATION
 ========================================================= */
 
 .bottom-navigation {
@@ -476,6 +476,7 @@ button.profile-avatar { cursor: pointer; }
     letter-spacing: 0.2px;
     transition: color var(--transition), transform var(--transition);
     position: relative;
+    text-decoration: none;
 }
 
 .bottom-nav-link i {
@@ -486,13 +487,8 @@ button.profile-avatar { cursor: pointer; }
 .bottom-nav-link:hover { color: #c4b5fd; }
 .bottom-nav-link:active { transform: scale(0.95); }
 
-.bottom-nav-link.active {
-    color: var(--primary-light);
-}
-
-.bottom-nav-link.active i {
-    transform: translateY(-2px);
-}
+.bottom-nav-link.active { color: var(--primary-light); }
+.bottom-nav-link.active i { transform: translateY(-2px); }
 
 .bottom-nav-link.active::before {
     content: "";
@@ -503,85 +499,6 @@ button.profile-avatar { cursor: pointer; }
     background: var(--primary);
     border-radius: 0 0 4px 4px;
     box-shadow: 0 0 12px var(--primary);
-}
-
-
-/* =========================================================
-   MORE MENU (Bottom Sheet)
-========================================================= */
-
-.more-menu {
-    position: fixed;
-    bottom: calc(var(--bottom-nav-height) + 10px);
-    left: 12px;
-    right: 12px;
-    z-index: 10000;
-    max-height: 65vh;
-    overflow-y: auto;
-    padding: 10px;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-    background: #151523;
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
-    animation: moreMenuIn 220ms ease;
-}
-
-@keyframes moreMenuIn {
-    from { opacity: 0; transform: translateY(15px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
-.more-menu button {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    min-height: 48px;
-    padding: 12px 14px;
-    color: var(--text-secondary);
-    background: #10101b;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 700;
-    text-align: left;
-    transition: color var(--transition), background var(--transition), border-color var(--transition);
-}
-
-.more-menu button i {
-    width: 18px;
-    text-align: center;
-    color: #88889e;
-    font-size: 15px;
-    transition: color var(--transition);
-}
-
-.more-menu button:hover {
-    color: var(--text);
-    background: var(--surface-hover);
-    border-color: var(--border-active);
-}
-
-.more-menu button:hover i { color: var(--primary-light); }
-
-/* Logout button full width */
-.more-menu button#logoutButton {
-    grid-column: 1 / -1;
-    justify-content: center;
-    color: #fca5a5;
-    background: rgba(239, 68, 68, 0.07);
-    border-color: rgba(239, 68, 68, 0.18);
-}
-
-.more-menu button#logoutButton i { color: #fca5a5; }
-
-.more-menu button#logoutButton:hover {
-    background: rgba(239, 68, 68, 0.15);
-    color: #fecaca;
-    border-color: rgba(239, 68, 68, 0.3);
 }
 
 
@@ -784,6 +701,337 @@ select.form-control { cursor: pointer; }
 
 
 /* =========================================================
+   MANAGEMENT PAGES (Anime List / Content Cards)
+========================================================= */
+
+.management-toolbar {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    align-items: center; justify-content: space-between;
+    margin: 20px 0;
+}
+
+.management-search {
+    flex: 1; min-width: 180px; max-width: 460px;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.management-search:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
+}
+
+.management-button {
+    display: inline-flex; align-items: center; gap: 7px;
+    border: 0; border-radius: 9px; padding: 11px 15px;
+    background: var(--primary); color: #fff;
+    font-weight: 700; cursor: pointer;
+    font-size: 12px;
+    transition: filter var(--transition), transform var(--transition);
+}
+
+.management-button:hover { filter: brightness(1.1); }
+.management-button:active { transform: scale(0.98); }
+.management-button.secondary { background: #25253a; border: 1px solid #393952; }
+.management-button.danger { background: #b91c1c; }
+.management-button:disabled { opacity: .6; cursor: wait; }
+
+.management-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 14px;
+}
+
+.management-card {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    background: var(--surface);
+    color: var(--text);
+    transition: transform var(--transition), border-color var(--transition);
+}
+
+.management-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--border-active);
+}
+
+.management-card img {
+    display: block; width: 100%; height: 180px;
+    object-fit: cover; background: #202033;
+}
+
+.management-card-body { padding: 13px; }
+.management-card h3 { margin: 0 0 6px; font-size: 13px; font-weight: 750; overflow-wrap: anywhere; }
+.management-card p { color: var(--text-muted); font-size: 11px; margin: 0 0 8px; }
+.management-card-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.management-card-actions button { padding: 7px 11px; font-size: 11px; border-radius: 7px; }
+
+.management-empty {
+    padding: 28px 14px; text-align: center;
+    border: 1px dashed #45455b; border-radius: 12px;
+    color: var(--text-muted);
+    grid-column: 1 / -1;
+    font-size: 12px;
+}
+
+.management-badge {
+    display: inline-block; border-radius: 20px;
+    padding: 4px 9px;
+    background: #30234b; color: #d7c3ff;
+    font-size: 10px; font-weight: 700;
+    margin-top: 4px;
+}
+
+
+/* =========================================================
+   MANAGEMENT MODAL / FORM
+========================================================= */
+
+.management-modal-backdrop {
+    position: fixed; inset: 0; z-index: 10000;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex; align-items: center; justify-content: center;
+    padding: 12px;
+    animation: fadeIn 180ms ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.management-modal {
+    width: min(720px, 100%);
+    max-height: 92dvh;
+    overflow: auto;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid #37374e;
+    border-radius: 15px;
+    padding: 20px;
+    animation: slideUp 220ms ease;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.management-modal h2 {
+    margin: 0 0 18px;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text);
+}
+
+.management-form-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 13px;
+}
+
+.management-field { min-width: 0; }
+.management-field.full { grid-column: 1 / -1; }
+
+.management-field label {
+    display: block; font-size: 12px;
+    font-weight: 700;
+    color: #dedeea;
+    margin-bottom: 6px;
+}
+
+.management-field input,
+.management-field select,
+.management-field textarea {
+    display: block; width: 100%; box-sizing: border-box;
+    padding: 11px; border-radius: 8px;
+    background: #10101b; color: #fff;
+    border: 1px solid #38384f;
+    font: inherit;
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.management-field input:focus,
+.management-field select:focus,
+.management-field textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
+}
+
+.management-field textarea { min-height: 80px; resize: vertical; }
+
+.management-modal-actions {
+    display: flex; flex-wrap: wrap; gap: 9px;
+    justify-content: flex-end; margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+}
+
+.management-help {
+    font-size: 11px; color: var(--text-muted);
+    line-height: 1.5;
+    margin-top: 5px;
+}
+
+
+/* =========================================================
+   ANIME TITLE PAGE (Hero, Episodes)
+========================================================= */
+
+.title-hero {
+    width: 100%; height: 220px;
+    border-radius: 16px;
+    background: #202033 center/cover no-repeat;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.title-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent 70%);
+}
+
+.title-hero-info {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    z-index: 2;
+    color: #fff;
+}
+
+.title-hero-info h1 {
+    font-size: 22px; font-weight: 850;
+    margin-bottom: 4px;
+    letter-spacing: -0.5px;
+    line-height: 1.25;
+}
+
+.title-hero-info p { color: #ccc; font-size: 12px; }
+
+.title-actions {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    margin-bottom: 20px;
+}
+
+.title-actions .management-button {
+    flex: 1;
+    min-width: 120px;
+    justify-content: center;
+}
+
+.episode-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.episode-row:last-child { border-bottom: 0; }
+
+.episode-row-info {
+    display: flex; flex-direction: column; gap: 3px;
+    min-width: 0; flex: 1;
+}
+
+.episode-row-info strong {
+    font-size: 13px; color: var(--text);
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.episode-row-info span {
+    font-size: 11px; color: var(--text-muted);
+}
+
+.episode-row-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+.episode-row-actions button {
+    padding: 7px 11px;
+    font-size: 11px;
+    border-radius: 7px;
+}
+
+
+/* =========================================================
+   PROFILE PAGE
+========================================================= */
+
+.profile-header {
+    display: flex; align-items: center; gap: 16px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+}
+
+.profile-avatar-large {
+    width: 72px; height: 72px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: #fff;
+    background: linear-gradient(135deg, var(--primary), var(--blue));
+    border-radius: 22px;
+    font-size: 30px;
+    box-shadow: var(--shadow-primary);
+}
+
+.profile-header-info { min-width: 0; flex: 1; }
+
+.profile-header-info h2 {
+    font-size: 20px; font-weight: 800;
+    margin-bottom: 4px;
+    color: var(--text);
+}
+
+.profile-header-info p {
+    color: var(--text-secondary);
+    font-size: 13px;
+    margin-bottom: 8px;
+    word-break: break-all;
+}
+
+.profile-details-list {
+    display: flex; flex-direction: column;
+}
+
+.profile-detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.profile-detail-item:last-child { border-bottom: 0; }
+
+.profile-detail-item span {
+    color: var(--text-secondary);
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+.profile-detail-item strong {
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 700;
+    text-align: right;
+    word-break: break-all;
+    max-width: 60%;
+}
+
+
+/* =========================================================
    SMALL MOBILE
 ========================================================= */
 
@@ -804,7 +1052,16 @@ select.form-control { cursor: pointer; }
     .quick-action { min-height: 105px; padding: 12px 10px; }
     .bottom-nav-link { font-size: 9px; }
     .bottom-nav-link i { font-size: 18px; }
-    .more-menu { grid-template-columns: 1fr; }
+    .management-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+    .management-card img { height: 150px; }
+}
+
+@media (max-width: 520px) {
+    .management-form-grid { grid-template-columns: 1fr; }
+    .management-field.full { grid-column: auto; }
+    .management-modal { padding: 14px; }
+    .title-hero { height: 180px; }
+    .title-hero-info h1 { font-size: 18px; }
 }
 
 
@@ -822,6 +1079,11 @@ select.form-control { cursor: pointer; }
     .content-card { padding: 23px; }
     .quick-actions-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 13px; }
     .quick-action { min-height: 125px; padding: 17px; }
+    .management-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+    .management-card img { height: 200px; }
+    .management-card h3 { font-size: 14px; }
+    .title-hero { height: 260px; }
+    .profile-avatar-large { width: 84px; height: 84px; font-size: 36px; }
 }
 
 
@@ -852,12 +1114,11 @@ select.form-control { cursor: pointer; }
     .stat-card small { font-size: 10px; }
     .content-card { padding: 25px; }
 
-    .more-menu {
-        left: auto;
-        right: 20px;
-        width: 320px;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+    .management-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 18px; }
+    .management-card img { height: 240px; }
+
+    .title-hero { height: 320px; }
+    .title-hero-info h1 { font-size: 28px; }
 }
 
 
@@ -869,6 +1130,7 @@ select.form-control { cursor: pointer; }
     .admin-main { padding-right: 42px; padding-left: 42px; }
     .stats-grid { gap: 22px; }
     .stat-card { padding: 23px; }
+    .management-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
 }
 
 
