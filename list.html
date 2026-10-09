@@ -1,160 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Content List - Anime Max Admin</title>
-    <link rel="stylesheet" href="../css/admin.css">
-    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-storage-compat.js"></script>
-    <script src="../js/admin-common.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Video & Movies - Anime Max Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-database-compat.js"></script>
+<style>
+:root{--bg:#07070d;--bg2:#0f0f18;--card:#15151f;--card2:#1b1b28;--bd:#232332;--bd2:#2e2e42;--tx:#fff;--tx2:#b8b8cc;--tx3:#6f6f8a;--pur:#7c4dff;--pur2:#9d70ff;--blu:#4d9fff;--org:#ff9d4d;--red:#ff4d6d;--grd:linear-gradient(135deg,#7c4dff,#4d9fff)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 15% 20%,rgba(124,77,255,.12),transparent 45%),radial-gradient(circle at 85% 70%,rgba(77,159,255,.1),transparent 45%);z-index:-1;pointer-events:none}
+a{color:inherit;text-decoration:none}
+button,input{font-family:inherit;color:inherit}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--grd);border-radius:10px}
+.layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+.sidebar{background:rgba(11,11,18,.85);backdrop-filter:blur(20px);border-right:1px solid var(--bd);padding:24px 16px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.logo{font-size:22px;font-weight:900;letter-spacing:-1px;padding:8px 12px 24px;border-bottom:1px solid var(--bd);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.logo b{background:var(--grd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.badge{font-size:9px;font-weight:800;letter-spacing:1.5px;padding:4px 8px;background:rgba(124,77,255,.15);color:var(--pur2);border-radius:6px;border:1px solid rgba(124,77,255,.3)}
+nav{display:flex;flex-direction:column;gap:4px;flex:1}
+.nav{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;color:var(--tx2);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;background:transparent;border:none;text-align:left;width:100%}
+.nav svg{width:18px;height:18px;flex-shrink:0}
+.nav:hover{color:#fff;background:rgba(124,77,255,.08)}
+.nav.active{color:#fff;background:rgba(124,77,255,.15);box-shadow:inset 3px 0 0 var(--pur)}
+.nav.active svg{color:var(--pur2)}
+.footer-side{padding-top:16px;border-top:1px solid var(--bd)}
+.user{display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg2);border:1px solid var(--bd);border-radius:12px;margin-bottom:8px;overflow:hidden}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--grd);display:grid;place-items:center;font-weight:800;font-size:12px;flex-shrink:0}
+.user span{flex:1;font-size:11px;color:var(--tx2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.logout{width:100%;padding:10px;background:rgba(255,77,109,.08);color:var(--red);border:1px solid rgba(255,77,109,.2);border-radius:12px;font-size:13px;font-weight:600;cursor:pointer}
+.logout:hover{background:rgba(255,77,109,.15)}
+.main{padding:36px 44px 60px;max-width:1400px}
+.hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:28px;flex-wrap:wrap}
+.hdr h1{font-size:36px;font-weight:900;letter-spacing:-1.5px;margin-bottom:6px;background:linear-gradient(135deg,#fff 30%,#b8b8cc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hdr p{color:var(--tx3);font-size:15px;font-weight:500}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .25s;background:var(--grd);color:#fff;box-shadow:0 8px 24px rgba(124,77,255,.35);text-decoration:none}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(124,77,255,.5)}
+.filters{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.fbtn{padding:10px 18px;background:var(--card);border:1px solid var(--bd2);border-radius:10px;color:var(--tx2);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.fbtn:hover{color:#fff;border-color:var(--pur)}
+.fbtn.active{background:var(--grd);color:#fff;border-color:transparent;box-shadow:0 4px 16px rgba(124,77,255,.35)}
+.list{display:flex;flex-direction:column;gap:12px}
+.item{display:flex;align-items:center;gap:16px;padding:16px;background:rgba(21,21,31,.7);backdrop-filter:blur(20px);border:1px solid var(--bd2);border-radius:16px;transition:all .3s}
+.item:hover{border-color:var(--pur);transform:translateX(4px);box-shadow:0 8px 24px rgba(124,77,255,.15)}
+.thumb{width:64px;height:90px;border-radius:10px;background:var(--card2);object-fit:cover;flex-shrink:0}
+.info{flex:1;min-width:0}
+.info h4{font-size:15px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;overflow:hidden;text-overflow:ellipsis}
+.tag{font-size:9px;font-weight:800;letter-spacing:1px;padding:3px 8px;border-radius:5px;flex-shrink:0}
+.tag.series{background:rgba(124,77,255,.2);color:var(--pur2)}
+.tag.movie{background:rgba(255,157,77,.2);color:var(--org)}
+.meta{display:flex;gap:12px;font-size:12px;color:var(--tx3);flex-wrap:wrap;font-weight:500}
+.meta span{display:inline-flex;align-items:center;gap:4px}
+.actions{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap}
+.act{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;background:var(--bg2);border:1px solid var(--bd2);color:var(--tx2);transition:all .2s;text-decoration:none}
+.act svg{width:14px;height:14px}
+.act:hover{color:#fff;border-color:var(--pur);background:rgba(124,77,255,.1)}
+.act.primary{color:var(--pur2);border-color:rgba(124,77,255,.4);background:rgba(124,77,255,.08)}
+.act.danger{color:var(--red);border-color:rgba(255,77,109,.3)}
+.act.danger:hover{background:rgba(255,77,109,.15)}
+.loading,.empty{padding:60px 20px;text-align:center;color:var(--tx3);font-size:15px;font-weight:500}
+.empty svg{width:60px;height:60px;margin:0 auto 16px;color:var(--tx3);opacity:.4}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.sidebar{display:none}.main{padding:24px 20px}.hdr h1{font-size:26px}.item{flex-wrap:wrap}.actions{width:100%;justify-content:flex-end}}
+</style>
 </head>
 <body>
 
-<header class="admin-header">
-    <a href="dashboard.html" class="admin-logo">
-        <span>ANIME</span><strong>MAX</strong>
-        <span class="admin-badge">ADMIN</span>
-    </a>
-    <div class="admin-user">
-        <span id="userEmail"></span>
-        <button id="logoutBtn" class="btn-logout">Logout</button>
-    </div>
-</header>
-
-<nav class="admin-nav">
-    <a href="dashboard.html" class="nav-item">Dashboard</a>
-    <a href="list.html" class="nav-item active">Video &amp; Movies List</a>
-    <a href="anime-title.html" class="nav-item">Anime Title</a>
-    <a href="upload.html" class="nav-item">Upload</a>
-</nav>
-
-<main class="admin-page">
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
-        <div>
-            <h1 style="margin:0;">Video &amp; Movies List</h1>
-            <p class="page-desc" style="margin:4px 0 0;">Total: <span id="totalCount">0</span></p>
+<div class="layout">
+    <aside class="sidebar">
+        <div class="logo">ANIME <b>MAX</b><span class="badge">ADMIN</span></div>
+        <nav>
+            <a href="dashboard.html" class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Dashboard</a>
+            <button class="nav active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Video & Movies</button>
+            <a href="anime-title.html" class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Anime Title</a>
+            <a href="upload.html" class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload</a>
+        </nav>
+        <div class="footer-side">
+            <div class="user"><div class="avatar" id="av">A</div><span id="em">admin</span></div>
+            <button class="logout" id="lo">Sign Out</button>
         </div>
-        <a href="anime-title.html" class="btn-primary" style="width:auto;min-width:140px;">+ Add New</a>
-    </div>
+    </aside>
 
-    <div class="filter-tabs">
-        <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="series">Series</button>
-        <button class="filter-btn" data-filter="movie">Movies</button>
-    </div>
+    <main class="main">
+        <div class="hdr">
+            <div>
+                <h1>Video & Movies</h1>
+                <p>Total: <span id="cnt">0</span> items</p>
+            </div>
+            <a href="anime-title.html" class="btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add New
+            </a>
+        </div>
 
-    <div id="contentList" class="content-list">
-        <p class="loading">Loading...</p>
-    </div>
-</main>
+        <div class="filters">
+            <button class="fbtn active" data-f="all">All</button>
+            <button class="fbtn" data-f="series">📺 Series</button>
+            <button class="fbtn" data-f="movie">🎬 Movies</button>
+        </div>
+
+        <div class="list" id="list"><p class="loading">Loading...</p></div>
+    </main>
+</div>
 
 <script>
-let allAnime = {};
-let currentFilter = 'all';
+const CFG={apiKey:"AIzaSyCpfrluxsBhnz48ve9RykIy1IxzbBfk7dA",authDomain:"sm-studio-7.firebaseapp.com",databaseURL:"https://sm-studio-7-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"sm-studio-7",storageBucket:"sm-studio-7.firebasestorage.app",messagingSenderId:"126291501472",appId:"1:126291501472:web:a55c94b5b87581177204c5"};
+const ADMIN_EMAIL='admin@animemax.com';
+firebase.initializeApp(CFG);
+const auth=firebase.auth(),db=firebase.database();
+const $=id=>document.getElementById(id);
+let data={},filter='all';
 
-document.addEventListener('DOMContentLoaded', async () => {
-    await AnimeMaxAdmin.guard();
-    loadList();
+auth.onAuthStateChanged(u=>{
+    if(!u||u.email!==ADMIN_EMAIL){location.href='index.html';return;}
+    $('em').textContent=u.email;$('av').textContent=u.email[0].toUpperCase();load();
+});
+$('lo').addEventListener('click',()=>auth.signOut());
 
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentFilter = btn.dataset.filter;
-            renderList();
-        });
+document.querySelectorAll('.fbtn').forEach(b=>{
+    b.addEventListener('click',()=>{
+        document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('active'));
+        b.classList.add('active');filter=b.dataset.f;render();
     });
 });
 
-async function loadList() {
-    try {
-        const snap = await AnimeMaxAdmin.db.ref('animes').once('value');
-        allAnime = snap.val() || {};
-        document.getElementById('totalCount').textContent = Object.keys(allAnime).length;
-        renderList();
-    } catch (err) {
-        document.getElementById('contentList').innerHTML = '<p class="empty">Failed to load.</p>';
-    }
+async function load(){
+    try{
+        const s=await db.ref('animes').once('value');
+        data=s.val()||{};$('cnt').textContent=Object.keys(data).length;render();
+    }catch(e){$('list').innerHTML='<p class="empty">Failed to load.</p>';}
 }
 
-function renderList() {
-    const container = document.getElementById('contentList');
-    let items = Object.entries(allAnime).map(([id, a]) => ({ id, ...a }));
-    items.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+function render(){
+    const el=$('list');
+    let items=Object.entries(data).map(([id,a])=>({id,...a}));
+    items.sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+    if(filter!=='all')items=items.filter(a=>(a.type||'series')===filter);
 
-    if (currentFilter !== 'all') {
-        items = items.filter(a => (a.type || 'series') === currentFilter);
-    }
-
-    if (!items.length) {
-        container.innerHTML = '<p class="empty">No content found.</p>';
+    if(!items.length){
+        el.innerHTML='<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="6" width="14" height="12" rx="2"/><polygon points="22 8 16 12 22 16 22 8"/></svg><p>No content yet</p></div>';
         return;
     }
 
-    container.innerHTML = items.map(item => {
-        const type = item.type || 'series';
-        const epCount = item.episodes ? Object.keys(item.episodes).length : 0;
-        const thumb = item.poster
-            ? `<img src="${AnimeMaxAdmin.escapeHTML(item.poster)}" class="content-thumb" onerror="this.style.display='none'">`
-            : `<div class="content-thumb"></div>`;
-
-        return `
-            <div class="content-item">
-                ${thumb}
-                <div class="content-info">
-                    <h4>
-                        <span class="type-tag ${type}">${type.toUpperCase()}</span>
-                        ${AnimeMaxAdmin.escapeHTML(item.title || 'Untitled')}
-                    </h4>
-                    <div class="meta-row">
-                        ${item.year ? `<span>📅 ${AnimeMaxAdmin.escapeHTML(item.year)}</span>` : ''}
-                        ${item.quality ? `<span>🎞️ ${AnimeMaxAdmin.escapeHTML(item.quality)}</span>` : ''}
-                        ${type === 'series' ? `<span>📺 ${epCount} eps</span>` : ''}
-                    </div>
-                    <p style="font-size:11px;opacity:.6;margin-top:2px;">ID: ${AnimeMaxAdmin.escapeHTML(item.id)}</p>
-                </div>
-                <div class="content-actions">
-                    ${type === 'series' ? `<a href="upload.html?id=${encodeURIComponent(item.id)}" class="btn-sm primary">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="12" y1="5" x2="12" y2="19"/>
-                            <line x1="5" y1="12" x2="19" y2="12"/>
-                        </svg>Episodes</a>` : ''}
-                    <a href="edit.html?id=${encodeURIComponent(item.id)}" class="btn-sm" title="Edit">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                        </svg>
-                        Edit
-                    </a>
-                    <button class="btn-sm danger" data-delete="${AnimeMaxAdmin.escapeHTML(item.id)}" title="Delete">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="3 6 5 6 21 6"/>
-                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                        </svg>
-                        Delete
-                    </button>
+    el.innerHTML=items.map(it=>{
+        const type=it.type||'series';
+        const eps=it.episodes?Object.keys(it.episodes).length:0;
+        const thumb=it.poster
+            ?`<img src="${esc(it.poster)}" class="thumb" onerror="this.style.display='none'">`
+            :`<div class="thumb"></div>`;
+        return `<div class="item">
+            ${thumb}
+            <div class="info">
+                <h4><span class="tag ${type}">${type.toUpperCase()}</span>${esc(it.title||'Untitled')}</h4>
+                <div class="meta">
+                    ${it.year?`<span>📅 ${esc(it.year)}</span>`:''}
+                    ${it.quality?`<span>🎞️ ${esc(it.quality)}</span>`:''}
+                    ${type==='series'?`<span>📺 ${eps} eps</span>`:''}
+                    ${it.rating?`<span>⭐ ${esc(it.rating)}</span>`:''}
                 </div>
             </div>
-        `;
+            <div class="actions">
+                ${type==='series'?`<a href="upload.html?id=${esc(it.id)}" class="act primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Episodes</a>`:''}
+                <a href="anime-title.html?id=${esc(it.id)}" class="act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</a>
+                <button class="act danger" onclick="del('${esc(it.id)}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+            </div>
+        </div>`;
     }).join('');
-
-    container.querySelectorAll('[data-delete]').forEach(btn => {
-        btn.addEventListener('click', () => deleteItem(btn.dataset.delete));
-    });
 }
 
-async function deleteItem(id) {
-    if (!confirm(`Delete "${id}"? Cannot be undone.`)) return;
-    try {
-        await AnimeMaxAdmin.db.ref('animes/' + id).remove();
-        await loadList();
-    } catch (err) {
-        alert('Delete failed: ' + err.message);
-    }
-}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+window.del=async id=>{
+    if(!confirm(`Delete "${id}"?`))return;
+    try{await db.ref('animes/'+id).remove();delete data[id];$('cnt').textContent=Object.keys(data).length;render();}
+    catch(e){alert('Delete failed');}
+};
 </script>
 </body>
 </html>
