@@ -3,188 +3,555 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0b0b12">
-    <meta name="description" content="Upload Content — Anime Max Admin Panel">
-    <meta name="robots" content="noindex, nofollow">
-
-    <title>Upload | Anime Max</title>
-
-    <link rel="icon" type="image/png" href="assets/favicon.png">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Upload Episodes - Anime Max Admin</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-storage-compat.js"></script>
+    <script src="../js/admin-common.js" defer></script>
 </head>
+<body>
 
-<body class="admin-body" data-page="upload">
+<header class="admin-header">
+    <a href="dashboard.html" class="admin-logo">
+        <span>ANIME</span><strong>MAX</strong>
+        <span class="admin-badge">ADMIN</span>
+    </a>
+    <div class="admin-user">
+        <span id="userEmail"></span>
+        <button id="logoutBtn" class="btn-logout">Logout</button>
+    </div>
+</header>
 
-    <!-- LOADING SCREEN -->
-    <div id="pageLoader" class="page-loader" role="status" aria-live="polite">
-        <div class="loader-content">
-            <div class="loader-logo">
-                <span>ANIME</span>
-                <strong>MAX</strong>
-            </div>
-            <div class="loader-spinner"></div>
-            <p>Loading Upload Page...</p>
+<nav class="admin-nav">
+    <a href="dashboard.html" class="nav-item">Dashboard</a>
+    <a href="list.html" class="nav-item">Video &amp; Movies List</a>
+    <a href="anime-title.html" class="nav-item">Anime Title</a>
+    <a href="upload.html" class="nav-item active">Upload</a>
+</nav>
+
+<main class="admin-page">
+    <h1>Upload Episodes</h1>
+    <p class="page-desc">Add episodes with multiple video qualities, subtitles, and audio tracks</p>
+
+    <div class="form-group full" style="margin-bottom:20px;">
+        <label>Select Anime</label>
+        <select id="animeSelect" style="padding:12px 14px;background:var(--bg-soft);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:inherit;">
+            <option value="">-- Choose Anime --</option>
+        </select>
+    </div>
+
+    <div id="uploadManager" hidden>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+            <h3 id="animeTitle" style="margin:0;font-size:18px;"></h3>
+            <span id="epCount" style="padding:4px 12px;background:var(--bg-soft);border-radius:20px;font-size:12px;color:var(--text-muted);">0 episodes</span>
         </div>
-    </div>
 
-    <!-- NOTIFICATION -->
-    <div id="notificationMessage" class="notification-message" role="status" aria-live="polite" hidden></div>
-
-    <!-- ADMIN APPLICATION -->
-    <div id="adminApp" class="admin-app" hidden>
-
-        <!-- HEADER -->
-        <header class="admin-header">
-            <a href="index.html" class="header-brand" aria-label="Anime Max Dashboard">
-                <span>ANIME</span>
-                <strong>MAX</strong>
-            </a>
-
-            <div class="header-actions">
-                <button type="button" class="icon-button" id="headerNotificationButton"
-                        data-page="notifications" aria-label="Notifications">
-                    <i class="fa fa-bell" aria-hidden="true"></i>
-                </button>
-
-                <a href="profile.html" class="profile-avatar" aria-label="Admin profile">
-                    <i class="fa fa-user" aria-hidden="true"></i>
-                </a>
-            </div>
-        </header>
-
-        <!-- MAIN CONTENT -->
-        <main id="adminMainContent" class="admin-main">
-
-            <div class="page-heading">
-                <div>
-                    <span class="section-label">CONTENT</span>
-                    <h1>Upload Content</h1>
-                    <p>Apna naya content upload karein. Neeche se option choose karein.</p>
+        <form id="episodeForm" class="admin-form">
+            <h4 class="section-h">📄 Episode Details</h4>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Episode Number *</label>
+                    <input type="number" id="epNumber" required min="1" placeholder="1">
+                </div>
+                <div class="form-group">
+                    <label>Episode Title</label>
+                    <input type="text" id="epTitle" placeholder="Romance Dawn">
+                </div>
+                <div class="form-group">
+                    <label>Duration</label>
+                    <input type="text" id="epDuration" placeholder="24 min">
+                </div>
+                <div class="form-group">
+                    <label>Thumbnail URL</label>
+                    <input type="url" id="epThumbnail" placeholder="https://...">
                 </div>
             </div>
 
-            <!-- UPLOAD OPTIONS -->
-            <section class="content-card">
-                <div class="card-heading">
-                    <div>
-                        <h2>Kya Upload Karna Hai?</h2>
-                        <p>Ek option choose karein.</p>
-                    </div>
-                </div>
+            <!-- VIDEO -->
+            <h4 class="section-h">🎬 Video Sources <span class="hint">Multiple qualities</span></h4>
+            <div class="track-adder">
+                <select id="videoQuality" class="track-select">
+                    <option value="360p">360p</option>
+                    <option value="480p">480p</option>
+                    <option value="720p" selected>720p</option>
+                    <option value="1080p">1080p</option>
+                    <option value="1440p">1440p</option>
+                    <option value="4K">4K</option>
+                    <option value="__custom__">+ Custom...</option>
+                </select>
+                <input type="text" id="videoCustomQuality" class="custom-input" placeholder="Quality" hidden>
+                <input type="url" id="videoUrl" class="track-input" placeholder="Video URL">
+                <label class="upload-btn">
+                    <input type="file" id="videoFile" accept="video/*" hidden>
+                    <span>📁 Upload</span>
+                </label>
+                <button type="button" class="btn-sm primary" id="addVideoBtn">+ Add</button>
+            </div>
+            <div id="videoList" class="track-list"></div>
 
-                <div class="upload-options-grid">
+            <!-- SUBTITLES -->
+            <h4 class="section-h">💬 Subtitles <span class="hint">.vtt or .srt</span></h4>
+            <div class="track-adder">
+                <select id="subtitleLang" class="track-select">
+                    <option value="english" selected>English</option>
+                    <option value="hindi">Hindi</option>
+                    <option value="spanish">Spanish</option>
+                    <option value="japanese">Japanese</option>
+                    <option value="korean">Korean</option>
+                    <option value="__custom__">+ Custom...</option>
+                </select>
+                <input type="text" id="subtitleCustom" class="custom-input" placeholder="Language" hidden>
+                <input type="url" id="subtitleUrl" class="track-input" placeholder="Subtitle URL">
+                <label class="upload-btn">
+                    <input type="file" id="subtitleFile" accept=".vtt,.srt" hidden>
+                    <span>📁 Upload</span>
+                </label>
+                <label class="checkbox-label" style="font-size:12px;">
+                    <input type="checkbox" id="subtitleDefault">
+                    <span>Default</span>
+                </label>
+                <button type="button" class="btn-sm primary" id="addSubtitleBtn">+ Add</button>
+            </div>
+            <div id="subtitleList" class="track-list"></div>
 
-                    <button type="button" class="upload-option" data-upload="anime">
-                        <span class="upload-option-icon"
-                              style="background: rgba(139,92,246,0.15); color: #c4b5fd;">
-                            <i class="fa fa-television" aria-hidden="true"></i>
-                        </span>
-                        <span class="upload-option-text">
-                            <strong>Anime Series</strong>
-                            <span>Nayi anime series add karein</span>
-                        </span>
-                    </button>
+            <!-- AUDIO -->
+            <h4 class="section-h">🔊 Audio Tracks</h4>
+            <div class="track-adder">
+                <select id="audioLang" class="track-select">
+                    <option value="hindi" selected>Hindi</option>
+                    <option value="english">English</option>
+                    <option value="japanese">Japanese</option>
+                    <option value="__custom__">+ Custom...</option>
+                </select>
+                <input type="text" id="audioCustom" class="custom-input" placeholder="Language" hidden>
+                <input type="url" id="audioUrl" class="track-input" placeholder="Audio URL">
+                <label class="upload-btn">
+                    <input type="file" id="audioFile" accept="audio/*" hidden>
+                    <span>📁 Upload</span>
+                </label>
+                <label class="checkbox-label" style="font-size:12px;">
+                    <input type="checkbox" id="audioDefault">
+                    <span>Default</span>
+                </label>
+                <button type="button" class="btn-sm primary" id="addAudioBtn">+ Add</button>
+            </div>
+            <div id="audioList" class="track-list"></div>
 
-                    <button type="button" class="upload-option" data-upload="episodes">
-                        <span class="upload-option-icon"
-                              style="background: rgba(59,130,246,0.15); color: #93c5fd;">
-                            <i class="fa fa-play-circle" aria-hidden="true"></i>
-                        </span>
-                        <span class="upload-option-text">
-                            <strong>Episode</strong>
-                            <span>Anime ke episodes upload karein</span>
-                        </span>
-                    </button>
+            <!-- Upload progress -->
+            <div id="progress" class="upload-progress" hidden>
+                <div class="progress-bar"><div class="progress-fill"></div></div>
+                <span class="progress-text">Uploading... 0%</span>
+            </div>
 
-                    <button type="button" class="upload-option" data-upload="movies">
-                        <span class="upload-option-icon"
-                              style="background: rgba(236,72,153,0.15); color: #f9a8d4;">
-                            <i class="fa fa-film" aria-hidden="true"></i>
-                        </span>
-                        <span class="upload-option-text">
-                            <strong>Anime Movie</strong>
-                            <span>Nayi anime movie add karein</span>
-                        </span>
-                    </button>
+            <div class="form-actions">
+                <button type="submit" class="btn-primary" id="saveBtn">Save Episode</button>
+                <button type="button" class="btn-secondary" id="resetBtn">Reset Form</button>
+                <p id="message" class="form-message"></p>
+            </div>
+        </form>
 
-                </div>
-            </section>
-
-            <!-- INFO CARD -->
-            <section class="content-card">
-                <div class="card-heading">
-                    <div>
-                        <h2>Upload Tips</h2>
-                        <p>Content upload karte waqt dhyan rakhein.</p>
-                    </div>
-                </div>
-
-                <div class="system-status-list">
-                    <div class="system-status-item">
-                        <span><i class="fa fa-video-camera" style="color:#a78bfa;margin-right:8px;"></i> Video Quality</span>
-                        <strong style="color:var(--text);font-size:12px;">360p / 720p / 1080p</strong>
-                    </div>
-                    <div class="system-status-item">
-                        <span><i class="fa fa-headphones" style="color:#93c5fd;margin-right:8px;"></i> Audio Tracks</span>
-                        <strong style="color:var(--text);font-size:12px;">Multi-language support</strong>
-                    </div>
-                    <div class="system-status-item">
-                        <span><i class="fa fa-language" style="color:#f9a8d4;margin-right:8px;"></i> Subtitles</span>
-                        <strong style="color:var(--text);font-size:12px;">.vtt files recommended</strong>
-                    </div>
-                    <div class="system-status-item">
-                        <span><i class="fa fa-image" style="color:#86efac;margin-right:8px;"></i> Poster / Banner</span>
-                        <strong style="color:var(--text);font-size:12px;">HTTPS URL only</strong>
-                    </div>
-                </div>
-            </section>
-
-            <footer class="admin-footer">
-                <p>&copy; <span id="currentYear"></span> Anime Max Admin Panel</p>
-            </footer>
-
-        </main>
-
-        <!-- =================================================
-             FIXED BOTTOM NAVIGATION (5 ITEMS)
-        ================================================== -->
-        <nav class="bottom-navigation" id="bottomNavigation" aria-label="Main navigation">
-
-            <a href="index.html" class="bottom-nav-link">
-                <i class="fa fa-th-large" aria-hidden="true"></i>
-                <span>Dashboard</span>
-            </a>
-
-            <a href="anime-list.html" class="bottom-nav-link">
-                <i class="fa fa-list" aria-hidden="true"></i>
-                <span>Anime List</span>
-            </a>
-
-            <a href="upload.html" class="bottom-nav-link active" aria-current="page">
-                <i class="fa fa-cloud-upload" aria-hidden="true"></i>
-                <span>Upload</span>
-            </a>
-
-            <a href="anime-title.html" class="bottom-nav-link">
-                <i class="fa fa-television" aria-hidden="true"></i>
-                <span>Anime Title</span>
-            </a>
-
-            <a href="profile.html" class="bottom-nav-link">
-                <i class="fa fa-user" aria-hidden="true"></i>
-                <span>Profile</span>
-            </a>
-
-        </nav>
-
-        <!-- Admin details for JavaScript compatibility -->
-        <span id="sidebarAdminName" hidden>Administrator</span>
-        <span id="sidebarAdminEmail" hidden>Admin Account</span>
+        <h3 style="margin:32px 0 12px;font-size:18px;">Existing Episodes</h3>
+        <div id="episodeList" class="content-list"></div>
     </div>
 
-    <!-- MAIN JAVASCRIPT -->
-    <script type="module" src="js/script.js"></script>
+    <p id="empty" class="empty">Select an anime to start uploading</p>
+</main>
 
+<script>
+const { db, storage, slugify, capitalize, showMsg, getQueryParam, uploadFile, escapeHTML } = AnimeMaxAdmin;
+
+let allAnime = {};
+let selectedAnimeId = '';
+let epSources = {};
+let epSubtitles = {};
+let epAudio = {};
+let editingEpNum = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await AnimeMaxAdmin.guard();
+
+    document.getElementById('animeSelect').addEventListener('change', (e) => {
+        const id = e.target.value;
+        if (!id) {
+            document.getElementById('uploadManager').hidden = true;
+            document.getElementById('empty').hidden = false;
+            return;
+        }
+        loadAnime(id);
+    });
+
+    // Custom toggles
+    setupCustom('videoQuality', 'videoCustomQuality');
+    setupCustom('subtitleLang', 'subtitleCustom');
+    setupCustom('audioLang', 'audioCustom');
+
+    // Add buttons
+    document.getElementById('addVideoBtn').addEventListener('click', addVideoUrl);
+    document.getElementById('addSubtitleBtn').addEventListener('click', addSubtitleUrl);
+    document.getElementById('addAudioBtn').addEventListener('click', addAudioUrl);
+
+    // File uploads
+    document.getElementById('videoFile').addEventListener('change', uploadVideoFile);
+    document.getElementById('subtitleFile').addEventListener('change', uploadSubtitleFile);
+    document.getElementById('audioFile').addEventListener('change', uploadAudioFile);
+
+    // Form submit
+    document.getElementById('episodeForm').addEventListener('submit', saveEpisode);
+    document.getElementById('resetBtn').addEventListener('click', resetForm);
+
+    await loadAnimeList();
+
+    // If URL has ?id=, auto-select
+    const preselect = getQueryParam('id');
+    if (preselect && allAnime[preselect]) {
+        document.getElementById('animeSelect').value = preselect;
+        loadAnime(preselect);
+    }
+});
+
+/* Load dropdown */
+async function loadAnimeList() {
+    const snap = await db.ref('animes').once('value');
+    allAnime = snap.val() || {};
+    const series = Object.entries(allAnime)
+        .filter(([_, a]) => (a.type || 'series') === 'series');
+
+    document.getElementById('animeSelect').innerHTML =
+        '<option value="">-- Choose Anime --</option>' +
+        series.map(([id, a]) => `<option value="${escapeHTML(id)}">${escapeHTML(a.title)}</option>`).join('');
+}
+
+/* Load selected anime */
+function loadAnime(id) {
+    selectedAnimeId = id;
+    const anime = allAnime[id];
+    if (!anime) return;
+
+    document.getElementById('empty').hidden = true;
+    document.getElementById('uploadManager').hidden = false;
+    document.getElementById('animeTitle').textContent = anime.title;
+
+    renderEpisodeList();
+}
+
+/* Custom toggle setup */
+function setupCustom(selectId, customId) {
+    const sel = document.getElementById(selectId);
+    const inp = document.getElementById(customId);
+    sel.addEventListener('change', () => {
+        inp.hidden = sel.value !== '__custom__';
+        if (!inp.hidden) inp.focus();
+    });
+}
+
+/* ---------- VIDEO ---------- */
+async function addVideoUrl() {
+    let quality = document.getElementById('videoQuality').value;
+    if (quality === '__custom__') {
+        quality = document.getElementById('videoCustomQuality').value.trim();
+        if (!quality) return;
+    }
+    const url = document.getElementById('videoUrl').value.trim();
+    if (!url) { showMsg(document.getElementById('message'), 'Video URL required', true); return; }
+
+    epSources[quality] = { url };
+    renderTracks('video');
+    document.getElementById('videoUrl').value = '';
+    document.getElementById('videoCustomQuality').value = '';
+    document.getElementById('videoCustomQuality').hidden = true;
+    document.getElementById('videoQuality').value = '720p';
+}
+
+async function uploadVideoFile(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const num = document.getElementById('epNumber').value;
+    if (!selectedAnimeId || !num) {
+        alert('Enter episode number first');
+        e.target.value = '';
+        return;
+    }
+    let quality = document.getElementById('videoQuality').value;
+    if (quality === '__custom__') quality = document.getElementById('videoCustomQuality').value.trim() || 'custom';
+
+    const path = `anime-max/episodes/${selectedAnimeId}/${num}/video-${quality}-${Date.now()}.${file.name.split('.').pop()}`;
+    try {
+        const url = await uploadFile(file, path, updateProgress);
+        epSources[quality] = { url };
+        renderTracks('video');
+        showMsg(document.getElementById('message'), `✅ Uploaded ${quality}`);
+    } catch (err) {
+        alert('Upload failed: ' + err.message);
+    }
+    e.target.value = '';
+}
+
+/* ---------- SUBTITLE ---------- */
+async function addSubtitleUrl() {
+    let lang = document.getElementById('subtitleLang').value;
+    if (lang === '__custom__') {
+        lang = document.getElementById('subtitleCustom').value.trim();
+        if (!lang) return;
+    }
+    const url = document.getElementById('subtitleUrl').value.trim();
+    if (!url) { showMsg(document.getElementById('message'), 'Subtitle URL required', true); return; }
+
+    const isDefault = document.getElementById('subtitleDefault').checked;
+    if (isDefault) Object.keys(epSubtitles).forEach(k => epSubtitles[k].default = false);
+
+    epSubtitles[lang] = { label: capitalize(lang), url, default: isDefault };
+    renderTracks('subtitle');
+    document.getElementById('subtitleUrl').value = '';
+    document.getElementById('subtitleCustom').value = '';
+    document.getElementById('subtitleCustom').hidden = true;
+    document.getElementById('subtitleDefault').checked = false;
+    document.getElementById('subtitleLang').value = 'english';
+}
+
+async function uploadSubtitleFile(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const num = document.getElementById('epNumber').value;
+    if (!selectedAnimeId || !num) { alert('Enter episode number first'); e.target.value = ''; return; }
+
+    let lang = document.getElementById('subtitleLang').value;
+    if (lang === '__custom__') lang = document.getElementById('subtitleCustom').value.trim() || 'custom';
+
+    const path = `anime-max/episodes/${selectedAnimeId}/${num}/subtitle-${lang}-${Date.now()}.${file.name.split('.').pop()}`;
+    try {
+        const url = await uploadFile(file, path, updateProgress);
+        const isDefault = document.getElementById('subtitleDefault').checked;
+        if (isDefault) Object.keys(epSubtitles).forEach(k => epSubtitles[k].default = false);
+        epSubtitles[lang] = { label: capitalize(lang), url, default: isDefault };
+        renderTracks('subtitle');
+    } catch (err) { alert('Upload failed: ' + err.message); }
+    e.target.value = '';
+}
+
+/* ---------- AUDIO ---------- */
+async function addAudioUrl() {
+    let lang = document.getElementById('audioLang').value;
+    if (lang === '__custom__') {
+        lang = document.getElementById('audioCustom').value.trim();
+        if (!lang) return;
+    }
+    const url = document.getElementById('audioUrl').value.trim();
+    if (!url) { showMsg(document.getElementById('message'), 'Audio URL required', true); return; }
+
+    const isDefault = document.getElementById('audioDefault').checked;
+    if (isDefault) Object.keys(epAudio).forEach(k => epAudio[k].default = false);
+
+    epAudio[lang] = { label: capitalize(lang), url, default: isDefault };
+    renderTracks('audio');
+    document.getElementById('audioUrl').value = '';
+    document.getElementById('audioCustom').value = '';
+    document.getElementById('audioCustom').hidden = true;
+    document.getElementById('audioDefault').checked = false;
+    document.getElementById('audioLang').value = 'hindi';
+}
+
+async function uploadAudioFile(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const num = document.getElementById('epNumber').value;
+    if (!selectedAnimeId || !num) { alert('Enter episode number first'); e.target.value = ''; return; }
+
+    let lang = document.getElementById('audioLang').value;
+    if (lang === '__custom__') lang = document.getElementById('audioCustom').value.trim() || 'custom';
+
+    const path = `anime-max/episodes/${selectedAnimeId}/${num}/audio-${lang}-${Date.now()}.${file.name.split('.').pop()}`;
+    try {
+        const url = await uploadFile(file, path, updateProgress);
+        const isDefault = document.getElementById('audioDefault').checked;
+        if (isDefault) Object.keys(epAudio).forEach(k => epAudio[k].default = false);
+        epAudio[lang] = { label: capitalize(lang), url, default: isDefault };
+        renderTracks('audio');
+    } catch (err) { alert('Upload failed: ' + err.message); }
+    e.target.value = '';
+}
+
+/* ---------- RENDER TRACKS ---------- */
+function renderTracks(kind) {
+    const map = kind === 'video' ? epSources : kind === 'subtitle' ? epSubtitles : epAudio;
+    const container = document.getElementById(kind + 'List');
+
+    const keys = Object.keys(map);
+    if (!keys.length) { container.innerHTML = ''; return; }
+
+    container.innerHTML = keys.map(key => {
+        const item = map[key];
+        const url = typeof item === 'string' ? item : item.url;
+        const isDefault = typeof item === 'object' && item.default;
+        const badge = kind === 'video' ? key : (item.label || capitalize(key));
+
+        return `
+            <div class="track-item">
+                <span class="track-badge">${escapeHTML(badge)}</span>
+                <span class="track-url">${escapeHTML(url)}</span>
+                ${isDefault ? '<span class="track-default-tag">DEFAULT</span>' : ''}
+                <button type="button" class="track-remove" data-kind="${kind}" data-key="${escapeHTML(key)}">×</button>
+            </div>
+        `;
+    }).join('');
+
+    container.querySelectorAll('.track-remove').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const k = btn.dataset.kind;
+            const key = btn.dataset.key;
+            if (k === 'video') delete epSources[key];
+            if (k === 'subtitle') delete epSubtitles[key];
+            if (k === 'audio') delete epAudio[key];
+            renderTracks(k);
+        });
+    });
+}
+
+/* ---------- SAVE EPISODE ---------- */
+async function saveEpisode(e) {
+    e.preventDefault();
+    const msg = document.getElementById('message');
+
+    if (!selectedAnimeId) { showMsg(msg, 'Select anime first', true); return; }
+    const num = parseInt(document.getElementById('epNumber').value);
+    if (!num) { showMsg(msg, 'Episode number required', true); return; }
+    if (!Object.keys(epSources).length) { showMsg(msg, 'Add at least one video source', true); return; }
+
+    const data = {
+        number: num,
+        title: document.getElementById('epTitle').value.trim() || ('Episode ' + num),
+        thumbnail: document.getElementById('epThumbnail').value.trim(),
+        duration: document.getElementById('epDuration').value.trim(),
+        sources: epSources,
+        subtitles: epSubtitles,
+        audio: epAudio,
+        addedAt: Date.now(),
+        updatedAt: Date.now()
+    };
+
+    try {
+        const btn = document.getElementById('saveBtn');
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
+
+        await db.ref(`animes/${selectedAnimeId}/episodes/${num}`).set(data);
+
+        if (!allAnime[selectedAnimeId].episodes) allAnime[selectedAnimeId].episodes = {};
+        allAnime[selectedAnimeId].episodes[num] = data;
+
+        showMsg(msg, '✅ Episode saved!');
+        resetForm();
+        renderEpisodeList();
+    } catch (err) {
+        showMsg(msg, '❌ ' + err.message, true);
+    } finally {
+        const btn = document.getElementById('saveBtn');
+        btn.disabled = false;
+        btn.textContent = 'Save Episode';
+    }
+}
+
+function resetForm() {
+    document.getElementById('episodeForm').reset();
+    epSources = {};
+    epSubtitles = {};
+    epAudio = {};
+    editingEpNum = null;
+    renderTracks('video');
+    renderTracks('subtitle');
+    renderTracks('audio');
+    document.getElementById('videoCustomQuality').hidden = true;
+    document.getElementById('subtitleCustom').hidden = true;
+    document.getElementById('audioCustom').hidden = true;
+}
+
+/* ---------- EPISODE LIST ---------- */
+function renderEpisodeList() {
+    const anime = allAnime[selectedAnimeId];
+    const eps = anime.episodes || {};
+    const list = Object.entries(eps).map(([n, ep]) => ({ num: parseInt(n), ...ep })).sort((a, b) => a.num - b.num);
+
+    document.getElementById('epCount').textContent = list.length + ' episodes';
+
+    const container = document.getElementById('episodeList');
+    if (!list.length) {
+        container.innerHTML = '<p class="empty">No episodes yet. Add first one above.</p>';
+        return;
+    }
+
+    container.innerHTML = list.map(ep => {
+        const srcCount = ep.sources ? Object.keys(ep.sources).length : 0;
+        const subCount = ep.subtitles ? Object.keys(ep.subtitles).length : 0;
+        const audCount = ep.audio ? Object.keys(ep.audio).length : 0;
+
+        return `
+            <div class="content-item">
+                <div class="content-thumb" style="display:grid;place-items:center;font-weight:700;color:var(--accent-hi);background:var(--bg-soft);">${ep.num}</div>
+                <div class="content-info">
+                    <h4>${escapeHTML(ep.title || 'Episode ' + ep.num)}</h4>
+                    <div class="meta-row">
+                        ${ep.duration ? `<span>⏱ ${escapeHTML(ep.duration)}</span>` : ''}
+                        <span>🎬 ${srcCount}</span>
+                        <span>💬 ${subCount}</span>
+                        <span>🔊 ${audCount}</span>
+                    </div>
+                </div>
+                <div class="content-actions">
+                    <button class="btn-sm" data-edit-ep="${ep.num}">Edit</button>
+                    <button class="btn-sm danger" data-del-ep="${ep.num}">Delete</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    container.querySelectorAll('[data-del-ep]').forEach(btn => {
+        btn.addEventListener('click', () => deleteEpisode(parseInt(btn.dataset.delEp)));
+    });
+    container.querySelectorAll('[data-edit-ep]').forEach(btn => {
+        btn.addEventListener('click', () => editEpisode(parseInt(btn.dataset.editEp)));
+    });
+}
+
+function editEpisode(num) {
+    const ep = allAnime[selectedAnimeId]?.episodes?.[num];
+    if (!ep) return;
+
+    document.getElementById('epNumber').value = ep.number || num;
+    document.getElementById('epTitle').value = ep.title || '';
+    document.getElementById('epDuration').value = ep.duration || '';
+    document.getElementById('epThumbnail').value = ep.thumbnail || '';
+
+    epSources = ep.sources ? JSON.parse(JSON.stringify(ep.sources)) : {};
+    epSubtitles = ep.subtitles ? JSON.parse(JSON.stringify(ep.subtitles)) : {};
+    epAudio = ep.audio ? JSON.parse(JSON.stringify(ep.audio)) : {};
+
+    renderTracks('video');
+    renderTracks('subtitle');
+    renderTracks('audio');
+
+    editingEpNum = num;
+    document.getElementById('saveBtn').textContent = 'Update Episode';
+    document.getElementById('episodeForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+async function deleteEpisode(num) {
+    if (!confirm(`Delete episode ${num}?`)) return;
+    try {
+        await db.ref(`animes/${selectedAnimeId}/episodes/${num}`).remove();
+        if (allAnime[selectedAnimeId].episodes) delete allAnime[selectedAnimeId].episodes[num];
+        renderEpisodeList();
+    } catch (err) { alert('Delete failed: ' + err.message); }
+}
+
+/* ---------- UPLOAD PROGRESS ---------- */
+function updateProgress(pct) {
+    const wrap = document.getElementById('progress');
+    wrap.hidden = false;
+    wrap.querySelector('.progress-fill').style.width = pct + '%';
+    wrap.querySelector('.progress-text').textContent = `Uploading... ${pct.toFixed(0)}%`;
+    if (pct >= 100) setTimeout(() => { wrap.hidden = true; }, 800);
+}
+</script>
 </body>
 </html>
