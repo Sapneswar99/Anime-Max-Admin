@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Anime Max Admin</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-storage-compat.js"></script>
+    <script src="../js/admin-common.js" defer></script>
+</head>
+<body>
+
+<header class="admin-header">
+    <a href="dashboard.html" class="admin-logo">
+        <span>ANIME</span><strong>MAX</strong>
+        <span class="admin-badge">ADMIN</span>
+    </a>
+    <div class="admin-user">
+        <span id="userEmail"></span>
+        <button id="logoutBtn" class="btn-logout">Logout</button>
+    </div>
+</header>
+
+<nav class="admin-nav">
+    <a href="dashboard.html" class="nav-item active">Dashboard</a>
+    <a href="list.html" class="nav-item">Video &amp; Movies List</a>
+    <a href="anime-title.html" class="nav-item">Anime Title</a>
+    <a href="upload.html" class="nav-item">Upload</a>
+</nav>
+
+<main class="admin-page">
+    <h1>Dashboard</h1>
+    <p class="page-desc">Overview of your Anime Max content</p>
+
+    <!-- Stats -->
+    <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="6" width="14" height="12" rx="2"/>
+                    <polygon points="22 8 16 12 22 16 22 8"/>
+                </svg>
+            </div>
+            <div class="stat-value" id="statTotal">0</div>
+            <div class="stat-label">Total Content</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="16" rx="2"/>
+                    <path d="M3 10h18"/>
+                </svg>
+            </div>
+            <div class="stat-value" id="statSeries">0</div>
+            <div class="stat-label">Series</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 4h16v16H4z"/>
+                    <path d="M4 8h16"/>
+                    <path d="M8 12h2"/>
+                    <path d="M8 16h6"/>
+                </svg>
+            </div>
+            <div class="stat-value" id="statMovies">0</div>
+            <div class="stat-label">Movies</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polygon points="10 8 16 12 10 16 10 8"/>
+                </svg>
+            </div>
+            <div class="stat-value" id="statEpisodes">0</div>
+            <div class="stat-label">Episodes</div>
+        </div>
+    </div>
+
+    <!-- Quick actions -->
+    <h2 style="font-size:16px;margin:0 0 12px;">Quick Actions</h2>
+    <div class="quick-actions">
+        <a href="anime-title.html" class="quick-action">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Add New Anime
+        </a>
+        <a href="upload.html" class="quick-action">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            Upload Episode
+        </a>
+        <a href="list.html" class="quick-action">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="8" y1="6" x2="21" y2="6"/>
+                <line x1="8" y1="12" x2="21" y2="12"/>
+                <line x1="8" y1="18" x2="21" y2="18"/>
+                <line x1="3" y1="6" x2="3.01" y2="6"/>
+                <line x1="3" y1="12" x2="3.01" y2="12"/>
+                <line x1="3" y1="18" x2="3.01" y2="18"/>
+            </svg>
+            View All Content
+        </a>
+    </div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    await AnimeMaxAdmin.guard();
+    loadStats();
+});
+
+async function loadStats() {
+    try {
+        const snap = await AnimeMaxAdmin.db.ref('animes').once('value');
+        const data = snap.val() || {};
+        const items = Object.entries(data).map(([id, a]) => ({ id, ...a }));
+
+        const total = items.length;
+        const series = items.filter(a => (a.type || 'series') === 'series').length;
+        const movies = items.filter(a => a.type === 'movie').length;
+
+        let totalEps = 0;
+        items.forEach(a => {
+            if (a.episodes) totalEps += Object.keys(a.episodes).length;
+        });
+
+        document.getElementById('statTotal').textContent = total;
+        document.getElementById('statSeries').textContent = series;
+        document.getElementById('statMovies').textContent = movies;
+        document.getElementById('statEpisodes').textContent = totalEps;
+    } catch (err) {
+        console.error(err);
+    }
+}
+</script>
+</body>
+</html>
