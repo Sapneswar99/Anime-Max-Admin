@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content List - Anime Max Admin</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-storage-compat.js"></script>
+    <script src="../js/admin-common.js" defer></script>
+</head>
+<body>
+
+<header class="admin-header">
+    <a href="dashboard.html" class="admin-logo">
+        <span>ANIME</span><strong>MAX</strong>
+        <span class="admin-badge">ADMIN</span>
+    </a>
+    <div class="admin-user">
+        <span id="userEmail"></span>
+        <button id="logoutBtn" class="btn-logout">Logout</button>
+    </div>
+</header>
+
+<nav class="admin-nav">
+    <a href="dashboard.html" class="nav-item">Dashboard</a>
+    <a href="list.html" class="nav-item active">Video &amp; Movies List</a>
+    <a href="anime-title.html" class="nav-item">Anime Title</a>
+    <a href="upload.html" class="nav-item">Upload</a>
+</nav>
+
+<main class="admin-page">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+        <div>
+            <h1 style="margin:0;">Video &amp; Movies List</h1>
+            <p class="page-desc" style="margin:4px 0 0;">Total: <span id="totalCount">0</span></p>
+        </div>
+        <a href="anime-title.html" class="btn-primary" style="width:auto;min-width:140px;">+ Add New</a>
+    </div>
+
+    <div class="filter-tabs">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="series">Series</button>
+        <button class="filter-btn" data-filter="movie">Movies</button>
+    </div>
+
+    <div id="contentList" class="content-list">
+        <p class="loading">Loading...</p>
+    </div>
+</main>
+
+<script>
+let allAnime = {};
+let currentFilter = 'all';
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await AnimeMaxAdmin.guard();
+    loadList();
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = btn.dataset.filter;
+            renderList();
+        });
+    });
+});
+
+async function loadList() {
+    try {
+        const snap = await AnimeMaxAdmin.db.ref('animes').once('value');
+        allAnime = snap.val() || {};
+        document.getElementById('totalCount').textContent = Object.keys(allAnime).length;
+        renderList();
+    } catch (err) {
+        document.getElementById('contentList').innerHTML = '<p class="empty">Failed to load.</p>';
+    }
+}
+
+function renderList() {
+    const container = document.getElementById('contentList');
+    let items = Object.entries(allAnime).map(([id, a]) => ({ id, ...a }));
+    items.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+
+    if (currentFilter !== 'all') {
+        items = items.filter(a => (a.type || 'series') === currentFilter);
+    }
+
+    if (!items.length) {
+        container.innerHTML = '<p class="empty">No content found.</p>';
+        return;
+    }
+
+    container.innerHTML = items.map(item => {
+        const type = item.type || 'series';
+        const epCount = item.episodes ? Object.keys(item.episodes).length : 0;
+        const thumb = item.poster
+            ? `<img src="${AnimeMaxAdmin.escapeHTML(item.poster)}" class="content-thumb" onerror="this.style.display='none'">`
+            : `<div class="content-thumb"></div>`;
+
+        return `
+            <div class="content-item">
+                ${thumb}
+                <div class="content-info">
+                    <h4>
+                        <span class="type-tag ${type}">${type.toUpperCase()}</span>
+                        ${AnimeMaxAdmin.escapeHTML(item.title || 'Untitled')}
+                    </h4>
+                    <div class="meta-row">
+                        ${item.year ? `<span>📅 ${AnimeMaxAdmin.escapeHTML(item.year)}</span>` : ''}
+                        ${item.quality ? `<span>🎞️ ${AnimeMaxAdmin.escapeHTML(item.quality)}</span>` : ''}
+                        ${type === 'series' ? `<span>📺 ${epCount} eps</span>` : ''}
+                    </div>
+                    <p style="font-size:11px;opacity:.6;margin-top:2px;">ID: ${AnimeMaxAdmin.escapeHTML(item.id)}</p>
+                </div>
+                <div class="content-actions">
+                    ${type === 'series' ? `<a href="upload.html?id=${encodeURIComponent(item.id)}" class="btn-sm primary">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>Episodes</a>` : ''}
+                    <a href="edit.html?id=${encodeURIComponent(item.id)}" class="btn-sm" title="Edit">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                        Edit
+                    </a>
+                    <button class="btn-sm danger" data-delete="${AnimeMaxAdmin.escapeHTML(item.id)}" title="Delete">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                        </svg>
+                        Delete
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    container.querySelectorAll('[data-delete]').forEach(btn => {
+        btn.addEventListener('click', () => deleteItem(btn.dataset.delete));
+    });
+}
+
+async function deleteItem(id) {
+    if (!confirm(`Delete "${id}"? Cannot be undone.`)) return;
+    try {
+        await AnimeMaxAdmin.db.ref('animes/' + id).remove();
+        await loadList();
+    } catch (err) {
+        alert('Delete failed: ' + err.message);
+    }
+}
+</script>
+</body>
+</html>
