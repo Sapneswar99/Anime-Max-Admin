@@ -1,291 +1,296 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anime Title - Anime Max Admin</title>
-    <link rel="stylesheet" href="/css/admin.css">
-    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-storage-compat.js"></script>
-    <script src="/js/admin-common.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anime Title - Anime Max Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-storage-compat.js"></script>
+<style>
+:root{--bg:#07070d;--bg2:#0f0f18;--card:#15151f;--card2:#1b1b28;--bd:#232332;--bd2:#2e2e42;--tx:#fff;--tx2:#b8b8cc;--tx3:#6f6f8a;--pur:#7c4dff;--pur2:#9d70ff;--blu:#4d9fff;--grn:#4dff9d;--red:#ff4d6d;--grd:linear-gradient(135deg,#7c4dff,#4d9fff)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 15% 20%,rgba(124,77,255,.12),transparent 45%),radial-gradient(circle at 85% 70%,rgba(77,159,255,.1),transparent 45%);z-index:-1;pointer-events:none}
+a{color:inherit;text-decoration:none}
+button,input,textarea,select{font-family:inherit;color:inherit}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--grd);border-radius:10px}
+.layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+.sidebar{background:rgba(11,11,18,.85);backdrop-filter:blur(20px);border-right:1px solid var(--bd);padding:24px 16px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.logo{font-size:22px;font-weight:900;letter-spacing:-1px;padding:8px 12px 24px;border-bottom:1px solid var(--bd);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.logo b{background:var(--grd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.badge{font-size:9px;font-weight:800;letter-spacing:1.5px;padding:4px 8px;background:rgba(124,77,255,.15);color:var(--pur2);border-radius:6px;border:1px solid rgba(124,77,255,.3)}
+nav{display:flex;flex-direction:column;gap:4px;flex:1}
+.nav{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;color:var(--tx2);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;background:transparent;border:none;text-align:left;width:100%}
+.nav svg{width:18px;height:18px;flex-shrink:0}
+.nav:hover{color:#fff;background:rgba(124,77,255,.08)}
+.nav.active{color:#fff;background:rgba(124,77,255,.15);box-shadow:inset 3px 0 0 var(--pur)}
+.nav.active svg{color:var(--pur2)}
+.footer-side{padding-top:16px;border-top:1px solid var(--bd)}
+.user{display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg2);border:1px solid var(--bd);border-radius:12px;margin-bottom:8px;overflow:hidden}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--grd);display:grid;place-items:center;font-weight:800;font-size:12px;flex-shrink:0}
+.user span{flex:1;font-size:11px;color:var(--tx2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.logout{width:100%;padding:10px;background:rgba(255,77,109,.08);color:var(--red);border:1px solid rgba(255,77,109,.2);border-radius:12px;font-size:13px;font-weight:600;cursor:pointer}
+.logout:hover{background:rgba(255,77,109,.15)}
+.main{padding:36px 44px 60px;max-width:1000px}
+.hdr{margin-bottom:32px}
+.hdr h1{font-size:36px;font-weight:900;letter-spacing:-1.5px;margin-bottom:6px;background:linear-gradient(135deg,#fff 30%,#b8b8cc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hdr p{color:var(--tx3);font-size:15px;font-weight:500}
+.card{background:rgba(21,21,31,.7);backdrop-filter:blur(20px);border:1px solid var(--bd2);border-radius:20px;padding:32px}
+.type-toggle{display:flex;gap:12px;margin-bottom:24px}
+.type{flex:1;padding:20px;background:var(--card2);border:2px solid var(--bd2);border-radius:14px;text-align:center;cursor:pointer;transition:all .25s;font-weight:700;font-size:15px}
+.type:has(input:checked){border-color:var(--pur);background:rgba(124,77,255,.1);color:var(--pur2);box-shadow:0 0 30px rgba(124,77,255,.2)}
+.type input{display:none}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.fg{display:flex;flex-direction:column;gap:8px}
+.fg.full{grid-column:1/-1}
+.fg label{font-size:11px;font-weight:700;color:var(--tx3);letter-spacing:1.2px;text-transform:uppercase}
+.fg input,.fg textarea,.fg select{padding:14px 16px;background:var(--bg2);border:1.5px solid var(--bd2);border-radius:12px;font-size:14px;font-weight:500;outline:none;transition:all .25s;resize:vertical}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--pur);box-shadow:0 0 0 4px rgba(124,77,255,.12)}
+.fg input::placeholder,.fg textarea::placeholder{color:var(--tx3)}
+.fg small{font-size:11px;color:var(--tx3);font-weight:500}
+.preview{margin-top:10px;background:var(--bg2);border:1px solid var(--bd2);border-radius:14px;overflow:hidden;display:grid;place-items:center;aspect-ratio:2/3}
+.preview.wide{aspect-ratio:16/9}
+.preview img{width:100%;height:100%;object-fit:cover}
+.preview .ph{color:var(--tx3);font-size:12px;font-weight:500}
+.upload-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 14px;background:var(--bg2);border:1px solid var(--bd2);border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;color:var(--tx2);margin-top:6px}
+.upload-btn:hover{border-color:var(--pur);color:var(--pur2);background:rgba(124,77,255,.08)}
+.checks{display:flex;flex-wrap:wrap;gap:14px;padding-top:4px}
+.chk{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg2);border:1px solid var(--bd2);border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;transition:all .2s}
+.chk:has(input:checked){background:rgba(124,77,255,.15);border-color:var(--pur);color:var(--pur2)}
+.chk input{width:16px;height:16px;accent-color:var(--pur);cursor:pointer}
+.actions{display:flex;gap:12px;margin-top:32px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 26px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .25s}
+.btn.primary{background:var(--grd);color:#fff;box-shadow:0 8px 24px rgba(124,77,255,.35);min-width:200px}
+.btn.primary:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 12px 32px rgba(124,77,255,.5)}
+.btn.primary:disabled{opacity:.6;cursor:not-allowed}
+.btn.ghost{background:var(--card2);color:var(--tx);border:1px solid var(--bd2)}
+.btn.ghost:hover{background:#2a2a36}
+.msg{margin-top:16px;font-size:13px;font-weight:600;color:var(--grn);min-height:18px}
+.msg.err{color:var(--red)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);padding:14px 24px;background:var(--card);border:1px solid var(--pur);border-radius:14px;font-size:13px;font-weight:700;color:#fff;box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 40px rgba(124,77,255,.3);opacity:0;transition:all .3s;z-index:9999;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.sidebar{display:none}.main{padding:24px 20px}.hdr h1{font-size:26px}.grid{grid-template-columns:1fr}.card{padding:20px}}
+</style>
 </head>
 <body>
 
-<header class="admin-header">
-    <a href="dashboard.html" class="admin-logo">
-        <span>ANIME</span><strong>MAX</strong>
-        <span class="admin-badge">ADMIN</span>
-    </a>
-    <div class="admin-user">
-        <span id="userEmail"></span>
-        <button id="logoutBtn" class="btn-logout">Logout</button>
-    </div>
-</header>
+<div class="layout">
+    <aside class="sidebar">
+        <div class="logo">ANIME <b>MAX</b><span class="badge">ADMIN</span></div>
+        <nav>
+            <a href="dashboard.html" class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Dashboard</a>
+            <a href="list.html" class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/></svg>Video & Movies</a>
+            <button class="nav active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Anime Title</button>
+            <a href="upload.html" class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload</a>
+        </nav>
+        <div class="footer-side">
+            <div class="user"><div class="avatar" id="av">A</div><span id="em">admin</span></div>
+            <button class="logout" id="lo">Sign Out</button>
+        </div>
+    </aside>
 
-<nav class="admin-nav">
-    <a href="dashboard.html" class="nav-item">Dashboard</a>
-    <a href="list.html" class="nav-item">Video &amp; Movies List</a>
-    <a href="anime-title.html" class="nav-item active">Anime Title</a>
-    <a href="upload.html" class="nav-item">Upload</a>
-</nav>
+    <main class="main">
+        <div class="hdr">
+            <h1 id="pgTitle">Add Anime Title</h1>
+            <p id="pgDesc">Add basic info, poster and banner for new anime or movie</p>
+        </div>
 
-<main class="admin-page">
-    <h1>Add Anime Title</h1>
-    <p class="page-desc">Add basic info, poster and banner for new anime or movie</p>
-
-    <form id="animeForm" class="admin-form">
-        <div class="form-group full">
-            <label>Type *</label>
+        <form class="card" id="form">
             <div class="type-toggle">
-                <label class="type-option">
-                    <input type="radio" name="animeType" value="series" checked>
-                    <span>📺 Anime Series</span>
-                </label>
-                <label class="type-option">
-                    <input type="radio" name="animeType" value="movie">
-                    <span>🎬 Movie</span>
-                </label>
-            </div>
-        </div>
-
-        <div class="form-grid">
-            <div class="form-group full">
-                <label>Anime Title *</label>
-                <input type="text" id="animeTitle" required placeholder="e.g. One Piece">
+                <label class="type"><input type="radio" name="tp" value="series" checked><span>📺 Anime Series</span></label>
+                <label class="type"><input type="radio" name="tp" value="movie"><span>🎬 Movie</span></label>
             </div>
 
-            <div class="form-group full">
-                <label>Description / Synopsis</label>
-                <textarea id="animeDescription" rows="3" placeholder="Short description..."></textarea>
-            </div>
+            <div class="grid">
+                <div class="fg full"><label>Title *</label><input id="title" required placeholder="e.g. One Piece"></div>
+                <div class="fg full"><label>Description</label><textarea id="desc" rows="3" placeholder="Short synopsis..."></textarea></div>
 
-            <!-- Poster -->
-            <div class="form-group">
-                <label>Poster URL</label>
-                <input type="url" id="animePoster" placeholder="https://...">
-                <label class="upload-btn" style="margin-top:6px;">
-                    <input type="file" id="posterFile" accept="image/*" hidden>
-                    <span>📁 Upload Poster</span>
-                </label>
-                <div class="image-preview" id="posterPreview">
-                    <span class="placeholder">Poster preview</span>
+                <div class="fg">
+                    <label>Poster URL</label>
+                    <input id="poster" placeholder="https://...">
+                    <label class="upload-btn"><input type="file" id="pf" accept="image/*" hidden>📁 Upload Poster</label>
+                    <div class="preview" id="pp"><span class="ph">Preview</span></div>
+                </div>
+
+                <div class="fg">
+                    <label>Banner URL</label>
+                    <input id="banner" placeholder="https://...">
+                    <label class="upload-btn"><input type="file" id="bf" accept="image/*" hidden>📁 Upload Banner</label>
+                    <div class="preview wide" id="bp"><span class="ph">Preview</span></div>
+                </div>
+
+                <div class="fg"><label>Year</label><input id="year" type="number" placeholder="2024"></div>
+                <div class="fg"><label>Quality</label>
+                    <select id="quality"><option>HD</option><option>SD</option><option>FHD</option><option>4K</option></select>
+                </div>
+                <div class="fg"><label>Language</label><input id="lang" value="Sub & Dub"></div>
+                <div class="fg"><label>Rating (0-10)</label><input id="rating" type="number" step="0.1" min="0" max="10" placeholder="8.5"></div>
+                <div class="fg"><label>Status</label>
+                    <select id="status"><option value="ongoing">Ongoing</option><option value="completed">Completed</option><option value="upcoming">Upcoming</option></select>
+                </div>
+                <div class="fg"><label>Duration</label><input id="dur" placeholder="24 min"></div>
+                <div class="fg full"><label>Genres (comma separated)</label><input id="gen" placeholder="Action, Adventure, Fantasy"></div>
+                <div class="fg full">
+                    <label>Anime ID / Slug</label>
+                    <input id="aid" placeholder="one-piece (auto if empty)">
+                    <small>Used in URL: watch.html?id=<b>one-piece</b></small>
+                </div>
+
+                <div class="fg full">
+                    <label>Flags</label>
+                    <div class="checks">
+                        <label class="chk"><input type="checkbox" id="feat"> Featured</label>
+                        <label class="chk"><input type="checkbox" id="trend"> Trending</label>
+                        <label class="chk"><input type="checkbox" id="pop"> Popular</label>
+                        <label class="chk"><input type="checkbox" id="rec"> Recent</label>
+                    </div>
                 </div>
             </div>
 
-            <!-- Banner -->
-            <div class="form-group">
-                <label>Banner URL</label>
-                <input type="url" id="animeBanner" placeholder="https://...">
-                <label class="upload-btn" style="margin-top:6px;">
-                    <input type="file" id="bannerFile" accept="image/*" hidden>
-                    <span>📁 Upload Banner</span>
-                </label>
-                <div class="image-preview wide" id="bannerPreview">
-                    <span class="placeholder">Banner preview</span>
-                </div>
+            <div class="actions">
+                <button type="submit" class="btn primary" id="sv">Save Anime</button>
+                <button type="button" class="btn ghost" id="cl">Clear</button>
             </div>
+            <p class="msg" id="msg"></p>
+        </form>
+    </main>
+</div>
 
-            <div class="form-group">
-                <label>Year</label>
-                <input type="number" id="animeYear" placeholder="2024">
-            </div>
-
-            <div class="form-group">
-                <label>Quality</label>
-                <select id="animeQuality">
-                    <option value="HD">HD</option>
-                    <option value="SD">SD</option>
-                    <option value="FHD">FHD</option>
-                    <option value="4K">4K</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Language</label>
-                <input type="text" id="animeLanguage" value="Sub &amp; Dub">
-            </div>
-
-            <div class="form-group">
-                <label>Rating (0-10)</label>
-                <input type="number" id="animeRating" step="0.1" min="0" max="10" placeholder="8.5">
-            </div>
-
-            <div class="form-group">
-                <label>Status</label>
-                <select id="animeStatus">
-                    <option value="ongoing">Ongoing</option>
-                    <option value="completed">Completed</option>
-                    <option value="upcoming">Upcoming</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Duration</label>
-                <input type="text" id="animeDuration" placeholder="24 min">
-            </div>
-
-            <div class="form-group full">
-                <label>Genres (comma separated)</label>
-                <input type="text" id="animeGenres" placeholder="Action, Adventure, Fantasy">
-            </div>
-
-            <div class="form-group full">
-                <label>Anime ID / Slug (auto if empty)</label>
-                <input type="text" id="animeId" placeholder="one-piece">
-                <span class="form-help">Used in URL: watch.html?id=<b>one-piece</b></span>
-            </div>
-
-            <div class="form-group checkboxes full">
-                <label class="checkbox-label"><input type="checkbox" id="animeFeatured"> Featured</label>
-                <label class="checkbox-label"><input type="checkbox" id="animeTrending"> Trending</label>
-                <label class="checkbox-label"><input type="checkbox" id="animePopular"> Popular</label>
-                <label class="checkbox-label"><input type="checkbox" id="animeRecent"> Recent</label>
-            </div>
-        </div>
-
-        <div class="form-actions">
-            <button type="submit" class="btn-primary" id="saveBtn">Save Anime</button>
-            <button type="button" class="btn-secondary" id="clearBtn">Clear</button>
-            <p id="formMessage" class="form-message"></p>
-        </div>
-    </form>
-</main>
+<div class="toast" id="toast"></div>
 
 <script>
-document.addEventListener('DOMContentLoaded', async () => {
-    await AnimeMaxAdmin.guard();
-    setupPreview();
+const CFG={apiKey:"AIzaSyCpfrluxsBhnz48ve9RykIy1IxzbBfk7dA",authDomain:"sm-studio-7.firebaseapp.com",databaseURL:"https://sm-studio-7-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"sm-studio-7",storageBucket:"sm-studio-7.firebasestorage.app",messagingSenderId:"126291501472",appId:"1:126291501472:web:a55c94b5b87581177204c5"};
+const ADMIN_EMAIL='admin@animemax.com';
+firebase.initializeApp(CFG);
+const auth=firebase.auth(),db=firebase.database(),st=firebase.storage();
+const $=id=>document.getElementById(id);
+let editId=null;
+
+auth.onAuthStateChanged(u=>{
+    if(!u||u.email!==ADMIN_EMAIL){location.href='index.html';return;}
+    $('em').textContent=u.email;$('av').textContent=u.email[0].toUpperCase();
+    const p=new URLSearchParams(location.search).get('id');
+    if(p)loadEdit(p);
 });
 
-const { db, storage, slugify, showMsg, uploadFile } = AnimeMaxAdmin;
+$('lo').addEventListener('click',()=>auth.signOut());
 
-/* Posture / Banner preview */
-function setupPreview() {
-    const poster = document.getElementById('animePoster');
-    const banner = document.getElementById('animeBanner');
+$('poster').addEventListener('input',e=>prev('pp',e.target.value));
+$('banner').addEventListener('input',e=>prev('bp',e.target.value));
 
-    poster.addEventListener('input', () => updatePreview('posterPreview', poster.value));
-    banner.addEventListener('input', () => updatePreview('bannerPreview', banner.value));
+$('pf').addEventListener('change',async e=>{
+    const f=e.target.files[0];if(!f)return;
+    try{const url=await up(f,`anime-max/posters/${Date.now()}-${f.name}`);$('poster').value=url;prev('pp',url);}catch(x){alert('Upload failed');}
+    e.target.value='';
+});
+$('bf').addEventListener('change',async e=>{
+    const f=e.target.files[0];if(!f)return;
+    try{const url=await up(f,`anime-max/banners/${Date.now()}-${f.name}`);$('banner').value=url;prev('bp',url);}catch(x){alert('Upload failed');}
+    e.target.value='';
+});
 
-    document.getElementById('posterFile').addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        try {
-            const path = `anime-max/posters/${Date.now()}-${file.name}`;
-            const url = await uploadFile(file, path);
-            poster.value = url;
-            updatePreview('posterPreview', url);
-        } catch (err) { alert('Upload failed: ' + err.message); }
-        e.target.value = '';
-    });
+function up(file,path){return new Promise((res,rej)=>{const r=st.ref(path),t=r.put(file);t.on('state_changed',null,rej,async()=>res(await t.snapshot.ref.getDownloadURL()));});}
 
-    document.getElementById('bannerFile').addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        try {
-            const path = `anime-max/banners/${Date.now()}-${file.name}`;
-            const url = await uploadFile(file, path);
-            banner.value = url;
-            updatePreview('bannerPreview', url);
-        } catch (err) { alert('Upload failed: ' + err.message); }
-        e.target.value = '';
-    });
+function prev(id,url){
+    const e=$(id);
+    if(!url){e.innerHTML='<span class="ph">Preview</span>';return;}
+    e.innerHTML=`<img src="${url}" onerror="this.parentElement.innerHTML='<span class=ph>Invalid URL</span>'">`;
 }
 
-function updatePreview(id, url) {
-    const container = document.getElementById(id);
-    if (!url) {
-        container.innerHTML = '<span class="placeholder">Preview</span>';
-        return;
-    }
-    container.innerHTML = `<img src="${url}" onerror="this.parentElement.innerHTML='<span class=placeholder>Invalid URL</span>'">`;
+async function loadEdit(id){
+    try{
+        const s=await db.ref('animes/'+id).once('value');
+        const d=s.val();if(!d)return;
+        editId=id;
+        $('pgTitle').textContent='Edit: '+d.title;
+        $('pgDesc').textContent='Update anime details';
+        $('sv').textContent='Update Anime';
+        document.querySelector(`input[name="tp"][value="${d.type||'series'}"]`).checked=true;
+        $('aid').value=id;$('aid').disabled=true;
+        $('title').value=d.title||'';$('desc').value=d.description||'';
+        $('poster').value=d.poster||'';$('banner').value=d.banner||'';
+        $('year').value=d.year||'';$('quality').value=d.quality||'HD';
+        $('lang').value=d.language||'Sub & Dub';$('rating').value=d.rating||'';
+        $('status').value=d.status||'ongoing';$('dur').value=d.duration||'';
+        $('gen').value=d.genres||'';
+        $('feat').checked=!!d.featured;$('trend').checked=!!d.trending;
+        $('pop').checked=!!d.popular;$('rec').checked=!!d.recent;
+        prev('pp',d.poster);prev('bp',d.banner);
+    }catch(e){}
 }
 
-/* Save */
-document.getElementById('animeForm').addEventListener('submit', async (e) => {
+$('form').addEventListener('submit',async e=>{
     e.preventDefault();
-
-    const typeEl = document.querySelector('input[name="animeType"]:checked');
-    const msg = document.getElementById('formMessage');
-    const saveBtn = document.getElementById('saveBtn');
-
-    const data = {
-        type: typeEl ? typeEl.value : 'series',
-        title: document.getElementById('animeTitle').value.trim(),
-        description: document.getElementById('animeDescription').value.trim(),
-        poster: document.getElementById('animePoster').value.trim(),
-        banner: document.getElementById('animeBanner').value.trim(),
-        year: document.getElementById('animeYear').value.trim(),
-        quality: document.getElementById('animeQuality').value,
-        language: document.getElementById('animeLanguage').value.trim(),
-        rating: document.getElementById('animeRating').value.trim(),
-        status: document.getElementById('animeStatus').value,
-        duration: document.getElementById('animeDuration').value.trim(),
-        genres: document.getElementById('animeGenres').value.trim(),
-        featured: document.getElementById('animeFeatured').checked,
-        trending: document.getElementById('animeTrending').checked,
-        popular: document.getElementById('animePopular').checked,
-        recent: document.getElementById('animeRecent').checked,
-        createdAt: Date.now(),
-        updatedAt: Date.now()
+    const msg=$('msg'),btn=$('sv');
+    const tp=document.querySelector('input[name="tp"]:checked').value;
+    const data={
+        type:tp,
+        title:$('title').value.trim(),
+        description:$('desc').value.trim(),
+        poster:$('poster').value.trim(),
+        banner:$('banner').value.trim(),
+        year:$('year').value.trim(),
+        quality:$('quality').value,
+        language:$('lang').value.trim(),
+        rating:$('rating').value.trim(),
+        status:$('status').value,
+        duration:$('dur').value.trim(),
+        genres:$('gen').value.trim(),
+        featured:$('feat').checked,
+        trending:$('trend').checked,
+        popular:$('pop').checked,
+        recent:$('rec').checked,
+        updatedAt:Date.now()
     };
 
-    if (!data.title) {
-        showMsg(msg, 'Title is required.', true);
-        return;
-    }
+    if(!data.title){showMsg(msg,'Title is required',true);return;}
 
-    const id = (document.getElementById('animeId').value.trim() || slugify(data.title)).toLowerCase();
+    const id=($('aid').value.trim()||slug(data.title)).toLowerCase();
 
-    try {
-        saveBtn.disabled = true;
-        saveBtn.textContent = 'Saving...';
+    btn.disabled=true;btn.textContent='Saving...';
 
-        // Check if ID already exists
-        const existing = await db.ref('animes/' + id).once('value');
-        if (existing.exists()) {
-            if (!confirm(`Anime ID "${id}" already exists. Overwrite?`)) {
-                saveBtn.disabled = false;
-                saveBtn.textContent = 'Save Anime';
+    try{
+        const existing=await db.ref('animes/'+id).once('value');
+        if(existing.exists()){
+            const old=existing.val();
+            if(!editId&&!confirm(`ID "${id}" exists. Overwrite?`)){
+                btn.disabled=false;btn.textContent=editId?'Update Anime':'Save Anime';
                 return;
             }
-            // Preserve episodes
-            const old = existing.val();
-            if (old.episodes) data.episodes = old.episodes;
-            if (old.createdAt) data.createdAt = old.createdAt;
+            if(old.episodes)data.episodes=old.episodes;
+            if(old.createdAt)data.createdAt=old.createdAt;
         }
+        if(!data.createdAt)data.createdAt=Date.now();
 
-        await db.ref('animes/' + id).set(data);
+        await db.ref('animes/'+id).set(data);
+        showMsg(msg,'✅ Saved!');
+        toast('Anime saved: '+id);
 
-        showMsg(msg, '✅ Saved! Redirecting to upload episodes...');
-
-        // Ask if they want to add episodes now
-        setTimeout(() => {
-            if (data.type === 'series') {
-                window.location.href = `upload.html?id=${id}`;
-            } else {
-                window.location.href = 'list.html';
-            }
-        }, 1500);
-    } catch (err) {
-        showMsg(msg, '❌ ' + err.message, true);
-        saveBtn.disabled = false;
-        saveBtn.textContent = 'Save Anime';
+        setTimeout(()=>{
+            if(data.type==='series')location.href='upload.html?id='+id;
+            else location.href='list.html';
+        },1200);
+    }catch(ex){
+        showMsg(msg,'❌ '+ex.message,true);
+        btn.disabled=false;btn.textContent=editId?'Update Anime':'Save Anime';
     }
 });
 
-/* Clear */
-document.getElementById('clearBtn').addEventListener('click', () => {
-    document.getElementById('animeForm').reset();
-    document.getElementById('animeLanguage').value = 'Sub & Dub';
-    document.getElementById('animeQuality').value = 'HD';
-    document.getElementById('animeStatus').value = 'ongoing';
-    document.querySelector('input[name="animeType"][value="series"]').checked = true;
-    updatePreview('posterPreview', '');
-    updatePreview('bannerPreview', '');
+$('cl').addEventListener('click',()=>{
+    $('form').reset();
+    $('lang').value='Sub & Dub';$('quality').value='HD';$('status').value='ongoing';
+    prev('pp','');prev('bp','');
 });
+
+function slug(t){return String(t).toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');}
+function showMsg(el,t,err){el.textContent=t;el.classList.toggle('err',!!err);if(t)setTimeout(()=>{el.textContent='';el.classList.remove('err');},4000);}
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2500);}
 </script>
 </body>
 </html>
