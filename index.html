@@ -1,75 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - Anime Max</title>
-    <link rel="stylesheet" href="/css/admin.css">
-    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-database-compat.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login - Anime Max</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
+<style>
+:root{--bg:#07070d;--card:rgba(21,21,31,.75);--bd:rgba(255,255,255,.08);--tx:#fff;--tx2:#b8b8cc;--tx3:#6f6f8a;--pur:#7c4dff;--pur2:#9d70ff;--blu:#4d9fff;--red:#ff4d6d;--grd:linear-gradient(135deg,#7c4dff,#4d9fff);--grd2:linear-gradient(135deg,#ff4d9d,#7c4dff)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;display:grid;place-items:center;padding:24px;overflow:hidden;position:relative}
+body::before{content:'';position:fixed;inset:-50%;background:radial-gradient(circle at 20% 30%,rgba(124,77,255,.25),transparent 40%),radial-gradient(circle at 80% 70%,rgba(77,159,255,.2),transparent 40%),radial-gradient(circle at 50% 50%,rgba(255,77,157,.15),transparent 50%);animation:meshFloat 20s ease-in-out infinite alternate;z-index:-1}
+@keyframes meshFloat{0%{transform:translate(0,0) rotate(0)}100%{transform:translate(-5%,-5%) rotate(10deg)}}
+.login-card{width:100%;max-width:440px;background:var(--card);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border:1px solid var(--bd);border-radius:28px;padding:52px 40px 44px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06);position:relative;overflow:hidden;animation:cardIn .7s cubic-bezier(.16,1,.3,1)}
+@keyframes cardIn{from{opacity:0;transform:translateY(30px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
+.login-card::before{content:'';position:absolute;inset:-2px;background:conic-gradient(from 0deg,transparent 0deg,rgba(124,77,255,.6) 90deg,transparent 180deg,rgba(77,159,255,.4) 270deg,transparent 360deg);border-radius:28px;z-index:-1;animation:rotate 6s linear infinite;opacity:.6}
+@keyframes rotate{to{transform:rotate(360deg)}}
+.login-card::after{content:'';position:absolute;inset:1px;background:var(--card);border-radius:27px;z-index:-1;backdrop-filter:blur(30px)}
+.brand{font-size:34px;font-weight:900;letter-spacing:-1.5px;margin-bottom:10px;background:linear-gradient(135deg,#fff 30%,#b8b8cc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;position:relative;z-index:1}
+.brand b{background:var(--grd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+h1{font-size:26px;font-weight:700;letter-spacing:-.6px;margin-bottom:8px;position:relative;z-index:1}
+.sub{color:var(--tx3);font-size:14px;font-weight:500;margin-bottom:36px;position:relative;z-index:1}
+.field{position:relative;z-index:1;margin-bottom:14px;text-align:left}
+.field label{display:block;font-size:11px;font-weight:700;color:var(--tx3);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:8px}
+.field input{width:100%;padding:16px 18px;background:rgba(10,10,18,.7);border:1.5px solid var(--bd);border-radius:14px;color:var(--tx);font-size:15px;font-weight:500;outline:none;transition:all .25s}
+.field input:focus{border-color:var(--pur);background:rgba(124,77,255,.08);box-shadow:0 0 0 5px rgba(124,77,255,.15)}
+.field input::placeholder{color:var(--tx3)}
+.btn{width:100%;padding:16px;border:none;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;transition:all .25s;position:relative;z-index:1;margin-top:8px;background:var(--grd);color:#fff;box-shadow:0 8px 24px rgba(124,77,255,.4);letter-spacing:.3px}
+.btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 12px 32px rgba(124,77,255,.55)}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.err{color:var(--red);font-size:13px;font-weight:500;margin-top:18px;min-height:18px;position:relative;z-index:1}
+.footer{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);color:var(--tx3);font-size:12px;font-weight:500;letter-spacing:.5px}
+</style>
 </head>
 <body>
 
-<div class="login-screen">
-    <div class="login-card">
-        <div class="login-logo"><span>ANIME</span><strong>MAX</strong></div>
-        <h1>Admin Login</h1>
-        <p>Enter your admin credentials</p>
-        <form id="loginForm">
-            <input type="email" id="loginEmail" placeholder="Email" required autocomplete="email">
-            <input type="password" id="loginPassword" placeholder="Password" required autocomplete="current-password">
-            <button type="submit" class="btn-primary">Login</button>
-        </form>
-        <p id="loginError" class="login-error"></p>
-    </div>
+<div class="login-card">
+    <div class="brand">ANIME <b>MAX</b></div>
+    <h1>Admin Access</h1>
+    <p class="sub">Sign in to manage your content</p>
+
+    <form id="form">
+        <div class="field">
+            <label>Email</label>
+            <input type="email" id="email" placeholder="admin@animemax.com" required autocomplete="email">
+        </div>
+        <div class="field">
+            <label>Password</label>
+            <input type="password" id="pass" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn" id="btn">Sign In</button>
+        <p class="err" id="err"></p>
+    </form>
 </div>
 
+<div class="footer">ANIME MAX © ADMIN PANEL</div>
+
 <script>
-    const ADMIN_EMAIL = 'admin@animemax.com';
-    const FIREBASE_CONFIG = {
-        apiKey: "AIzaSyCpfrluxsBhnz48ve9RykIy1IxzbBfk7dA",
-        authDomain: "sm-studio-7.firebaseapp.com",
-        databaseURL: "https://sm-studio-7-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "sm-studio-7",
-        storageBucket: "sm-studio-7.firebasestorage.app",
-        messagingSenderId: "126291501472",
-        appId: "1:126291501472:web:a55c94b5b87581177204c5"
-    };
+const CFG = {
+    apiKey:"AIzaSyCpfrluxsBhnz48ve9RykIy1IxzbBfk7dA",
+    authDomain:"sm-studio-7.firebaseapp.com",
+    databaseURL:"https://sm-studio-7-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId:"sm-studio-7",
+    storageBucket:"sm-studio-7.firebasestorage.app",
+    messagingSenderId:"126291501472",
+    appId:"1:126291501472:web:a55c94b5b87581177204c5"
+};
+const ADMIN_EMAIL = 'admin@animemax.com';
+firebase.initializeApp(CFG);
+const auth = firebase.auth();
 
-    firebase.initializeApp(FIREBASE_CONFIG);
-    const auth = firebase.auth();
+auth.onAuthStateChanged(u => {
+    if (u && u.email === ADMIN_EMAIL) location.href = 'dashboard.html';
+});
 
-    const loginForm = document.getElementById('loginForm');
-    const loginError = document.getElementById('loginError');
+const $ = id => document.getElementById(id);
 
-    // If already logged in, redirect
-    auth.onAuthStateChanged((user) => {
-        if (user && user.email === ADMIN_EMAIL) {
-            window.location.href = 'dashboard.html';
-        }
-    });
+$('form').addEventListener('submit', async e => {
+    e.preventDefault();
+    $('err').textContent = '';
+    const email = $('email').value.trim();
+    const pass = $('pass').value;
 
-    loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        loginError.textContent = '';
-        const email = document.getElementById('loginEmail').value.trim();
-        const password = document.getElementById('loginPassword').value;
+    if (email !== ADMIN_EMAIL) { $('err').textContent = 'Access denied.'; return; }
 
-        if (email !== ADMIN_EMAIL) {
-            loginError.textContent = 'Not an admin account.';
-            return;
-        }
+    const btn = $('btn');
+    btn.disabled = true; btn.textContent = 'Signing in...';
 
-        try {
-            await auth.signInWithEmailAndPassword(email, password);
-        } catch (err) {
-            const c = err.code || '';
-            if (c.includes('user-not-found')) loginError.textContent = 'No admin account.';
-            else if (c.includes('wrong-password')) loginError.textContent = 'Wrong password.';
-            else loginError.textContent = 'Login failed.';
-        }
-    });
+    try {
+        await auth.signInWithEmailAndPassword(email, pass);
+    } catch (ex) {
+        const c = ex.code || '';
+        if (c.includes('user-not-found')) $('err').textContent = 'Account not found.';
+        else if (c.includes('wrong-password')) $('err').textContent = 'Wrong password.';
+        else if (c.includes('too-many-requests')) $('err').textContent = 'Too many attempts. Try later.';
+        else $('err').textContent = 'Login failed. Try again.';
+        btn.disabled = false; btn.textContent = 'Sign In';
+    }
+});
 </script>
 </body>
 </html>
