@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Title - Anime Max Admin</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-storage-compat.js"></script>
+    <script src="../js/admin-common.js" defer></script>
+</head>
+<body>
+
+<header class="admin-header">
+    <a href="dashboard.html" class="admin-logo">
+        <span>ANIME</span><strong>MAX</strong>
+        <span class="admin-badge">ADMIN</span>
+    </a>
+    <div class="admin-user">
+        <span id="userEmail"></span>
+        <button id="logoutBtn" class="btn-logout">Logout</button>
+    </div>
+</header>
+
+<nav class="admin-nav">
+    <a href="dashboard.html" class="nav-item">Dashboard</a>
+    <a href="list.html" class="nav-item">Video &amp; Movies List</a>
+    <a href="anime-title.html" class="nav-item active">Anime Title</a>
+    <a href="upload.html" class="nav-item">Upload</a>
+</nav>
+
+<main class="admin-page">
+    <h1>Add Anime Title</h1>
+    <p class="page-desc">Add basic info, poster and banner for new anime or movie</p>
+
+    <form id="animeForm" class="admin-form">
+        <div class="form-group full">
+            <label>Type *</label>
+            <div class="type-toggle">
+                <label class="type-option">
+                    <input type="radio" name="animeType" value="series" checked>
+                    <span>📺 Anime Series</span>
+                </label>
+                <label class="type-option">
+                    <input type="radio" name="animeType" value="movie">
+                    <span>🎬 Movie</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group full">
+                <label>Anime Title *</label>
+                <input type="text" id="animeTitle" required placeholder="e.g. One Piece">
+            </div>
+
+            <div class="form-group full">
+                <label>Description / Synopsis</label>
+                <textarea id="animeDescription" rows="3" placeholder="Short description..."></textarea>
+            </div>
+
+            <!-- Poster -->
+            <div class="form-group">
+                <label>Poster URL</label>
+                <input type="url" id="animePoster" placeholder="https://...">
+                <label class="upload-btn" style="margin-top:6px;">
+                    <input type="file" id="posterFile" accept="image/*" hidden>
+                    <span>📁 Upload Poster</span>
+                </label>
+                <div class="image-preview" id="posterPreview">
+                    <span class="placeholder">Poster preview</span>
+                </div>
+            </div>
+
+            <!-- Banner -->
+            <div class="form-group">
+                <label>Banner URL</label>
+                <input type="url" id="animeBanner" placeholder="https://...">
+                <label class="upload-btn" style="margin-top:6px;">
+                    <input type="file" id="bannerFile" accept="image/*" hidden>
+                    <span>📁 Upload Banner</span>
+                </label>
+                <div class="image-preview wide" id="bannerPreview">
+                    <span class="placeholder">Banner preview</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Year</label>
+                <input type="number" id="animeYear" placeholder="2024">
+            </div>
+
+            <div class="form-group">
+                <label>Quality</label>
+                <select id="animeQuality">
+                    <option value="HD">HD</option>
+                    <option value="SD">SD</option>
+                    <option value="FHD">FHD</option>
+                    <option value="4K">4K</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Language</label>
+                <input type="text" id="animeLanguage" value="Sub &amp; Dub">
+            </div>
+
+            <div class="form-group">
+                <label>Rating (0-10)</label>
+                <input type="number" id="animeRating" step="0.1" min="0" max="10" placeholder="8.5">
+            </div>
+
+            <div class="form-group">
+                <label>Status</label>
+                <select id="animeStatus">
+                    <option value="ongoing">Ongoing</option>
+                    <option value="completed">Completed</option>
+                    <option value="upcoming">Upcoming</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Duration</label>
+                <input type="text" id="animeDuration" placeholder="24 min">
+            </div>
+
+            <div class="form-group full">
+                <label>Genres (comma separated)</label>
+                <input type="text" id="animeGenres" placeholder="Action, Adventure, Fantasy">
+            </div>
+
+            <div class="form-group full">
+                <label>Anime ID / Slug (auto if empty)</label>
+                <input type="text" id="animeId" placeholder="one-piece">
+                <span class="form-help">Used in URL: watch.html?id=<b>one-piece</b></span>
+            </div>
+
+            <div class="form-group checkboxes full">
+                <label class="checkbox-label"><input type="checkbox" id="animeFeatured"> Featured</label>
+                <label class="checkbox-label"><input type="checkbox" id="animeTrending"> Trending</label>
+                <label class="checkbox-label"><input type="checkbox" id="animePopular"> Popular</label>
+                <label class="checkbox-label"><input type="checkbox" id="animeRecent"> Recent</label>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary" id="saveBtn">Save Anime</button>
+            <button type="button" class="btn-secondary" id="clearBtn">Clear</button>
+            <p id="formMessage" class="form-message"></p>
+        </div>
+    </form>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    await AnimeMaxAdmin.guard();
+    setupPreview();
+});
+
+const { db, storage, slugify, showMsg, uploadFile } = AnimeMaxAdmin;
+
+/* Posture / Banner preview */
+function setupPreview() {
+    const poster = document.getElementById('animePoster');
+    const banner = document.getElementById('animeBanner');
+
+    poster.addEventListener('input', () => updatePreview('posterPreview', poster.value));
+    banner.addEventListener('input', () => updatePreview('bannerPreview', banner.value));
+
+    document.getElementById('posterFile').addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        try {
+            const path = `anime-max/posters/${Date.now()}-${file.name}`;
+            const url = await uploadFile(file, path);
+            poster.value = url;
+            updatePreview('posterPreview', url);
+        } catch (err) { alert('Upload failed: ' + err.message); }
+        e.target.value = '';
+    });
+
+    document.getElementById('bannerFile').addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        try {
+            const path = `anime-max/banners/${Date.now()}-${file.name}`;
+            const url = await uploadFile(file, path);
+            banner.value = url;
+            updatePreview('bannerPreview', url);
+        } catch (err) { alert('Upload failed: ' + err.message); }
+        e.target.value = '';
+    });
+}
+
+function updatePreview(id, url) {
+    const container = document.getElementById(id);
+    if (!url) {
+        container.innerHTML = '<span class="placeholder">Preview</span>';
+        return;
+    }
+    container.innerHTML = `<img src="${url}" onerror="this.parentElement.innerHTML='<span class=placeholder>Invalid URL</span>'">`;
+}
+
+/* Save */
+document.getElementById('animeForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const typeEl = document.querySelector('input[name="animeType"]:checked');
+    const msg = document.getElementById('formMessage');
+    const saveBtn = document.getElementById('saveBtn');
+
+    const data = {
+        type: typeEl ? typeEl.value : 'series',
+        title: document.getElementById('animeTitle').value.trim(),
+        description: document.getElementById('animeDescription').value.trim(),
+        poster: document.getElementById('animePoster').value.trim(),
+        banner: document.getElementById('animeBanner').value.trim(),
+        year: document.getElementById('animeYear').value.trim(),
+        quality: document.getElementById('animeQuality').value,
+        language: document.getElementById('animeLanguage').value.trim(),
+        rating: document.getElementById('animeRating').value.trim(),
+        status: document.getElementById('animeStatus').value,
+        duration: document.getElementById('animeDuration').value.trim(),
+        genres: document.getElementById('animeGenres').value.trim(),
+        featured: document.getElementById('animeFeatured').checked,
+        trending: document.getElementById('animeTrending').checked,
+        popular: document.getElementById('animePopular').checked,
+        recent: document.getElementById('animeRecent').checked,
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+    };
+
+    if (!data.title) {
+        showMsg(msg, 'Title is required.', true);
+        return;
+    }
+
+    const id = (document.getElementById('animeId').value.trim() || slugify(data.title)).toLowerCase();
+
+    try {
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving...';
+
+        // Check if ID already exists
+        const existing = await db.ref('animes/' + id).once('value');
+        if (existing.exists()) {
+            if (!confirm(`Anime ID "${id}" already exists. Overwrite?`)) {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Anime';
+                return;
+            }
+            // Preserve episodes
+            const old = existing.val();
+            if (old.episodes) data.episodes = old.episodes;
+            if (old.createdAt) data.createdAt = old.createdAt;
+        }
+
+        await db.ref('animes/' + id).set(data);
+
+        showMsg(msg, '✅ Saved! Redirecting to upload episodes...');
+
+        // Ask if they want to add episodes now
+        setTimeout(() => {
+            if (data.type === 'series') {
+                window.location.href = `upload.html?id=${id}`;
+            } else {
+                window.location.href = 'list.html';
+            }
+        }, 1500);
+    } catch (err) {
+        showMsg(msg, '❌ ' + err.message, true);
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Anime';
+    }
+});
+
+/* Clear */
+document.getElementById('clearBtn').addEventListener('click', () => {
+    document.getElementById('animeForm').reset();
+    document.getElementById('animeLanguage').value = 'Sub & Dub';
+    document.getElementById('animeQuality').value = 'HD';
+    document.getElementById('animeStatus').value = 'ongoing';
+    document.querySelector('input[name="animeType"][value="series"]').checked = true;
+    updatePreview('posterPreview', '');
+    updatePreview('bannerPreview', '');
+});
+</script>
+</body>
+</html>
