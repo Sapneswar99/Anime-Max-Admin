@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b0b12">
+    <meta name="description" content="Upload Content — Anime Max Admin Panel">
+    <meta name="robots" content="noindex, nofollow">
+
+    <title>Upload | Anime Max</title>
+
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body class="admin-body" data-page="upload">
+
+    <!-- LOADING SCREEN -->
+    <div id="pageLoader" class="page-loader" role="status" aria-live="polite">
+        <div class="loader-content">
+            <div class="loader-logo">
+                <span>ANIME</span>
+                <strong>MAX</strong>
+            </div>
+            <div class="loader-spinner"></div>
+            <p>Loading Upload Page...</p>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION -->
+    <div id="notificationMessage" class="notification-message" role="status" aria-live="polite" hidden></div>
+
+    <!-- ADMIN APPLICATION -->
+    <div id="adminApp" class="admin-app" hidden>
+
+        <!-- HEADER -->
+        <header class="admin-header">
+            <a href="index.html" class="header-brand" aria-label="Anime Max Dashboard">
+                <span>ANIME</span>
+                <strong>MAX</strong>
+            </a>
+
+            <div class="header-actions">
+                <button type="button" class="icon-button" id="headerNotificationButton"
+                        data-page="notifications" aria-label="Notifications">
+                    <i class="fa fa-bell" aria-hidden="true"></i>
+                </button>
+
+                <a href="profile.html" class="profile-avatar" aria-label="Admin profile">
+                    <i class="fa fa-user" aria-hidden="true"></i>
+                </a>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main id="adminMainContent" class="admin-main">
+
+            <div class="page-heading">
+                <div>
+                    <span class="section-label">CONTENT</span>
+                    <h1>Upload Content</h1>
+                    <p>Apna naya content upload karein. Neeche se option choose karein.</p>
+                </div>
+            </div>
+
+            <!-- UPLOAD OPTIONS -->
+            <section class="content-card">
+                <div class="card-heading">
+                    <div>
+                        <h2>Kya Upload Karna Hai?</h2>
+                        <p>Ek option choose karein.</p>
+                    </div>
+                </div>
+
+                <div class="upload-options-grid">
+
+                    <button type="button" class="upload-option" data-upload="anime">
+                        <span class="upload-option-icon"
+                              style="background: rgba(139,92,246,0.15); color: #c4b5fd;">
+                            <i class="fa fa-television" aria-hidden="true"></i>
+                        </span>
+                        <span class="upload-option-text">
+                            <strong>Anime Series</strong>
+                            <span>Nayi anime series add karein</span>
+                        </span>
+                    </button>
+
+                    <button type="button" class="upload-option" data-upload="episodes">
+                        <span class="upload-option-icon"
+                              style="background: rgba(59,130,246,0.15); color: #93c5fd;">
+                            <i class="fa fa-play-circle" aria-hidden="true"></i>
+                        </span>
+                        <span class="upload-option-text">
+                            <strong>Episode</strong>
+                            <span>Anime ke episodes upload karein</span>
+                        </span>
+                    </button>
+
+                    <button type="button" class="upload-option" data-upload="movies">
+                        <span class="upload-option-icon"
+                              style="background: rgba(236,72,153,0.15); color: #f9a8d4;">
+                            <i class="fa fa-film" aria-hidden="true"></i>
+                        </span>
+                        <span class="upload-option-text">
+                            <strong>Anime Movie</strong>
+                            <span>Nayi anime movie add karein</span>
+                        </span>
+                    </button>
+
+                </div>
+            </section>
+
+            <!-- INFO CARD -->
+            <section class="content-card">
+                <div class="card-heading">
+                    <div>
+                        <h2>Upload Tips</h2>
+                        <p>Content upload karte waqt dhyan rakhein.</p>
+                    </div>
+                </div>
+
+                <div class="system-status-list">
+                    <div class="system-status-item">
+                        <span><i class="fa fa-video-camera" style="color:#a78bfa;margin-right:8px;"></i> Video Quality</span>
+                        <strong style="color:var(--text);font-size:12px;">360p / 720p / 1080p</strong>
+                    </div>
+                    <div class="system-status-item">
+                        <span><i class="fa fa-headphones" style="color:#93c5fd;margin-right:8px;"></i> Audio Tracks</span>
+                        <strong style="color:var(--text);font-size:12px;">Multi-language support</strong>
+                    </div>
+                    <div class="system-status-item">
+                        <span><i class="fa fa-language" style="color:#f9a8d4;margin-right:8px;"></i> Subtitles</span>
+                        <strong style="color:var(--text);font-size:12px;">.vtt files recommended</strong>
+                    </div>
+                    <div class="system-status-item">
+                        <span><i class="fa fa-image" style="color:#86efac;margin-right:8px;"></i> Poster / Banner</span>
+                        <strong style="color:var(--text);font-size:12px;">HTTPS URL only</strong>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="admin-footer">
+                <p>&copy; <span id="currentYear"></span> Anime Max Admin Panel</p>
+            </footer>
+
+        </main>
+
+        <!-- =================================================
+             FIXED BOTTOM NAVIGATION (5 ITEMS)
+        ================================================== -->
+        <nav class="bottom-navigation" id="bottomNavigation" aria-label="Main navigation">
+
+            <a href="index.html" class="bottom-nav-link">
+                <i class="fa fa-th-large" aria-hidden="true"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="anime-list.html" class="bottom-nav-link">
+                <i class="fa fa-list" aria-hidden="true"></i>
+                <span>Anime List</span>
+            </a>
+
+            <a href="upload.html" class="bottom-nav-link active" aria-current="page">
+                <i class="fa fa-cloud-upload" aria-hidden="true"></i>
+                <span>Upload</span>
+            </a>
+
+            <a href="anime-title.html" class="bottom-nav-link">
+                <i class="fa fa-television" aria-hidden="true"></i>
+                <span>Anime Title</span>
+            </a>
+
+            <a href="profile.html" class="bottom-nav-link">
+                <i class="fa fa-user" aria-hidden="true"></i>
+                <span>Profile</span>
+            </a>
+
+        </nav>
+
+        <!-- Admin details for JavaScript compatibility -->
+        <span id="sidebarAdminName" hidden>Administrator</span>
+        <span id="sidebarAdminEmail" hidden>Admin Account</span>
+    </div>
+
+    <!-- MAIN JAVASCRIPT -->
+    <script type="module" src="js/script.js"></script>
+
+</body>
+</html>
