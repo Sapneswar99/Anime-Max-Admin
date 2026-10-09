@@ -7,19 +7,17 @@
     <meta name="description" content="Anime Max Admin Panel — Manage anime, movies, episodes, video servers and notifications.">
     <meta name="robots" content="noindex, nofollow">
 
-    <title>Anime Max | Admin Panel</title>
+    <title>Admin Dashboard | Anime Max</title>
 
     <link rel="icon" type="image/png" href="assets/favicon.png">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
-<body class="admin-body">
+<body class="admin-body" data-page="dashboard">
 
     <!-- LOADING SCREEN -->
-    <div id="pageLoader" class="page-loader"
-         role="status" aria-live="polite">
+    <div id="pageLoader" class="page-loader" role="status" aria-live="polite">
         <div class="loader-content">
             <div class="loader-logo">
                 <span>ANIME</span>
@@ -31,11 +29,7 @@
     </div>
 
     <!-- NOTIFICATION -->
-    <div id="notificationMessage"
-         class="notification-message"
-         role="status"
-         aria-live="polite"
-         hidden></div>
+    <div id="notificationMessage" class="notification-message" role="status" aria-live="polite" hidden></div>
 
     <!-- LOGIN SCREEN -->
     <main id="loginScreen" class="login-screen">
@@ -45,7 +39,6 @@
                 <div class="brand-icon">
                     <i class="fa fa-play-circle" aria-hidden="true"></i>
                 </div>
-
                 <div class="brand-name">
                     <span>ANIME</span>
                     <strong>MAX</strong>
@@ -62,42 +55,24 @@
 
                 <div class="form-group">
                     <label for="adminEmail">Email Address</label>
-
                     <div class="input-wrapper">
                         <i class="fa fa-envelope" aria-hidden="true"></i>
-                        <input
-                            type="email"
-                            id="adminEmail"
-                            name="email"
-                            placeholder="Enter your admin email"
-                            autocomplete="username"
-                            inputmode="email"
-                            autocapitalize="none"
-                            spellcheck="false"
-                            required>
+                        <input type="email" id="adminEmail" name="email"
+                               placeholder="Enter your admin email"
+                               autocomplete="username" inputmode="email"
+                               autocapitalize="none" spellcheck="false" required>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="adminPassword">Password</label>
-
                     <div class="input-wrapper">
                         <i class="fa fa-lock" aria-hidden="true"></i>
-
-                        <input
-                            type="password"
-                            id="adminPassword"
-                            name="password"
-                            placeholder="Enter your password"
-                            autocomplete="current-password"
-                            required>
-
-                        <button
-                            type="button"
-                            id="togglePassword"
-                            class="password-toggle"
-                            aria-label="Show password"
-                            aria-pressed="false">
+                        <input type="password" id="adminPassword" name="password"
+                               placeholder="Enter your password"
+                               autocomplete="current-password" required>
+                        <button type="button" id="togglePassword" class="password-toggle"
+                                aria-label="Show password" aria-pressed="false">
                             <i class="fa fa-eye" aria-hidden="true"></i>
                         </button>
                     </div>
@@ -108,28 +83,18 @@
                         <input type="checkbox" id="rememberAdmin">
                         <span>Remember me</span>
                     </label>
-
-                    <button
-                        type="button"
-                        id="forgotPasswordButton"
-                        class="text-button">
+                    <button type="button" id="forgotPasswordButton" class="text-button">
                         Forgot password?
                     </button>
                 </div>
 
-                <button
-                    type="submit"
-                    id="adminLoginButton"
-                    class="primary-button login-button">
+                <button type="submit" id="adminLoginButton" class="primary-button login-button">
                     <span>Sign In</span>
                     <i class="fa fa-arrow-right" aria-hidden="true"></i>
                 </button>
 
-                <p id="loginError"
-                   class="form-error"
-                   role="alert"
-                   aria-live="assertive"
-                   hidden></p>
+                <p id="loginError" class="form-error" role="alert"
+                   aria-live="assertive" hidden></p>
             </form>
 
             <div class="login-security">
@@ -140,56 +105,36 @@
         </section>
 
         <footer class="login-footer">
-            <p>
-                &copy; <span id="currentYear"></span>
-                Anime Max. All rights reserved.
-            </p>
+            <p>&copy; <span id="currentYear"></span> Anime Max. All rights reserved.</p>
         </footer>
     </main>
 
     <!-- ADMIN APPLICATION -->
     <div id="adminApp" class="admin-app" hidden>
 
-        <!-- HEADER: NO HAMBURGER MENU -->
+        <!-- HEADER -->
         <header class="admin-header">
-
-            <a href="#dashboard"
-               class="header-brand"
-               aria-label="Anime Max Dashboard"
-               data-page="dashboard">
+            <a href="index.html" class="header-brand" aria-label="Anime Max Dashboard">
                 <span>ANIME</span>
                 <strong>MAX</strong>
             </a>
 
             <div class="header-actions">
-                <button
-                    type="button"
-                    class="icon-button"
-                    id="headerNotificationButton"
-                    data-page="notifications"
-                    aria-label="Notifications">
+                <button type="button" class="icon-button" id="headerNotificationButton"
+                        data-page="notifications" aria-label="Notifications">
                     <i class="fa fa-bell" aria-hidden="true"></i>
                 </button>
 
-                <button
-                    type="button"
-                    id="headerProfileButton"
-                    class="profile-avatar"
-                    data-page="profile"
-                    aria-label="Admin profile">
+                <a href="profile.html" class="profile-avatar" id="headerProfileButton" aria-label="Admin profile">
                     <i class="fa fa-user" aria-hidden="true"></i>
-                </button>
+                </a>
             </div>
         </header>
 
         <!-- MAIN CONTENT -->
         <main id="adminMainContent" class="admin-main">
 
-            <!-- DASHBOARD -->
-            <section
-                id="dashboardPage"
-                class="admin-page"
-                data-page-content="dashboard">
+            <section class="admin-page" data-page-content="dashboard">
 
                 <div class="page-heading">
                     <div>
@@ -197,23 +142,16 @@
                         <h1>Dashboard</h1>
                         <p>Welcome to your Anime Max Admin Panel.</p>
                     </div>
-
-                    <button
-                        type="button"
-                        id="refreshDashboardButton"
-                        class="icon-button refresh-button"
-                        aria-label="Refresh dashboard">
+                    <button type="button" id="refreshDashboardButton" class="icon-button refresh-button"
+                            aria-label="Refresh dashboard">
                         <i class="fa fa-refresh" aria-hidden="true"></i>
                     </button>
                 </div>
 
                 <!-- STATISTICS -->
                 <div class="stats-grid">
-
                     <article class="stat-card">
-                        <div class="stat-icon purple">
-                            <i class="fa fa-television" aria-hidden="true"></i>
-                        </div>
+                        <div class="stat-icon purple"><i class="fa fa-television" aria-hidden="true"></i></div>
                         <div>
                             <span>Total Anime</span>
                             <strong id="totalAnimeCount">—</strong>
@@ -222,9 +160,7 @@
                     </article>
 
                     <article class="stat-card">
-                        <div class="stat-icon blue">
-                            <i class="fa fa-film" aria-hidden="true"></i>
-                        </div>
+                        <div class="stat-icon blue"><i class="fa fa-film" aria-hidden="true"></i></div>
                         <div>
                             <span>Total Movies</span>
                             <strong id="totalMoviesCount">—</strong>
@@ -233,9 +169,7 @@
                     </article>
 
                     <article class="stat-card">
-                        <div class="stat-icon pink">
-                            <i class="fa fa-play-circle" aria-hidden="true"></i>
-                        </div>
+                        <div class="stat-icon pink"><i class="fa fa-play-circle" aria-hidden="true"></i></div>
                         <div>
                             <span>Total Episodes</span>
                             <strong id="totalEpisodesCount">—</strong>
@@ -244,16 +178,13 @@
                     </article>
 
                     <article class="stat-card">
-                        <div class="stat-icon green">
-                            <i class="fa fa-users" aria-hidden="true"></i>
-                        </div>
+                        <div class="stat-icon green"><i class="fa fa-users" aria-hidden="true"></i></div>
                         <div>
                             <span>Total Users</span>
                             <strong id="totalUsersCount">—</strong>
                             <small>Registered users</small>
                         </div>
                     </article>
-
                 </div>
 
                 <!-- QUICK ACTIONS -->
@@ -266,43 +197,25 @@
                     </div>
 
                     <div class="quick-actions-grid">
-
-                        <button type="button"
-                                class="quick-action"
-                                data-action="add-anime">
-                            <span class="quick-action-icon purple">
-                                <i class="fa fa-plus" aria-hidden="true"></i>
-                            </span>
+                        <a href="anime-list.html?add=1" class="quick-action" style="text-decoration:none;">
+                            <span class="quick-action-icon purple"><i class="fa fa-plus" aria-hidden="true"></i></span>
                             <span>Add Anime</span>
-                        </button>
+                        </a>
 
-                        <button type="button"
-                                class="quick-action"
-                                data-action="add-episode">
-                            <span class="quick-action-icon blue">
-                                <i class="fa fa-play" aria-hidden="true"></i>
-                            </span>
+                        <a href="anime-title.html" class="quick-action" style="text-decoration:none;">
+                            <span class="quick-action-icon blue"><i class="fa fa-play" aria-hidden="true"></i></span>
                             <span>Add Episode</span>
-                        </button>
+                        </a>
 
-                        <button type="button"
-                                class="quick-action"
-                                data-action="add-movie">
-                            <span class="quick-action-icon pink">
-                                <i class="fa fa-film" aria-hidden="true"></i>
-                            </span>
+                        <button type="button" class="quick-action" data-action="add-movie">
+                            <span class="quick-action-icon pink"><i class="fa fa-film" aria-hidden="true"></i></span>
                             <span>Add Movie</span>
                         </button>
 
-                        <button type="button"
-                                class="quick-action"
-                                data-action="send-notification">
-                            <span class="quick-action-icon green">
-                                <i class="fa fa-bell" aria-hidden="true"></i>
-                            </span>
+                        <button type="button" class="quick-action" data-action="send-notification">
+                            <span class="quick-action-icon green"><i class="fa fa-bell" aria-hidden="true"></i></span>
                             <span>Notification</span>
                         </button>
-
                     </div>
                 </section>
 
@@ -313,14 +226,7 @@
                             <h2>Recent Content</h2>
                             <p>Recently added anime and movies.</p>
                         </div>
-
-                        <button
-                            type="button"
-                            id="viewAllContentButton"
-                            class="text-button"
-                            data-page="anime">
-                            View All
-                        </button>
+                        <a href="anime-list.html" class="text-button" style="text-decoration:none;">View All</a>
                     </div>
 
                     <div id="recentContentList" class="recent-content-list">
@@ -344,143 +250,48 @@
                     <div class="system-status-list">
                         <div class="system-status-item">
                             <span>Firebase Connection</span>
-                            <span id="firebaseStatus"
-                                  class="status-badge status-pending">
-                                Checking...
-                            </span>
+                            <span id="firebaseStatus" class="status-badge status-pending">Checking...</span>
                         </div>
-
                         <div class="system-status-item">
                             <span>Admin Authentication</span>
-                            <span id="authStatus"
-                                  class="status-badge status-pending">
-                                Checking...
-                            </span>
+                            <span id="authStatus" class="status-badge status-pending">Checking...</span>
                         </div>
                     </div>
                 </section>
 
                 <footer class="admin-footer">
-                    <p>
-                        &copy; <span id="dashboardYear"></span>
-                        Anime Max Admin Panel
-                    </p>
+                    <p>&copy; <span id="dashboardYear"></span> Anime Max Admin Panel</p>
                 </footer>
             </section>
-
-            <!-- OTHER PAGES ARE RENDERED BY script.js -->
-            <section id="animePage" class="admin-page"
-                     data-page-content="anime" hidden></section>
-
-            <section id="episodesPage" class="admin-page"
-                     data-page-content="episodes" hidden></section>
-
-            <section id="moviesPage" class="admin-page"
-                     data-page-content="movies" hidden></section>
-
-            <section id="genresPage" class="admin-page"
-                     data-page-content="genres" hidden></section>
-
-            <section id="serversPage" class="admin-page"
-                     data-page-content="servers" hidden></section>
-
-            <section id="subtitlesPage" class="admin-page"
-                     data-page-content="subtitles" hidden></section>
-
-            <section id="usersPage" class="admin-page"
-                     data-page-content="users" hidden></section>
-
-            <section id="notificationsPage" class="admin-page"
-                     data-page-content="notifications" hidden></section>
-
-            <section id="analyticsPage" class="admin-page"
-                     data-page-content="analytics" hidden></section>
-
-            <section id="settingsPage" class="admin-page"
-                     data-page-content="settings" hidden></section>
-
-            <section id="profilePage" class="admin-page"
-                     data-page-content="profile" hidden></section>
 
         </main>
 
         <!-- FIXED BOTTOM NAVIGATION -->
-        <nav class="bottom-navigation"
-             id="bottomNavigation"
-             aria-label="Main navigation">
-
-            <button type="button"
-                    class="bottom-nav-link active"
-                    data-page="dashboard"
-                    aria-current="page">
+        <nav class="bottom-navigation" id="bottomNavigation" aria-label="Main navigation">
+            <a href="index.html" class="bottom-nav-link active" aria-current="page">
                 <i class="fa fa-th-large" aria-hidden="true"></i>
-                <span>Home</span>
-            </button>
+                <span>Dashboard</span>
+            </a>
 
-            <button type="button"
-                    class="bottom-nav-link"
-                    data-page="anime">
+            <a href="anime-list.html" class="bottom-nav-link">
+                <i class="fa fa-list" aria-hidden="true"></i>
+                <span>Anime List</span>
+            </a>
+
+            <a href="anime-title.html" class="bottom-nav-link">
                 <i class="fa fa-television" aria-hidden="true"></i>
-                <span>Anime</span>
-            </button>
+                <span>Anime Title</span>
+            </a>
 
-            <button type="button"
-                    class="bottom-nav-link"
-                    data-page="episodes">
-                <i class="fa fa-play-circle" aria-hidden="true"></i>
-                <span>Episodes</span>
-            </button>
-
-            <button type="button"
-                    class="bottom-nav-link"
-                    data-page="movies">
-                <i class="fa fa-film" aria-hidden="true"></i>
-                <span>Movies</span>
-            </button>
-
-            <button type="button"
-                    class="bottom-nav-link"
-                    data-page="more">
-                <i class="fa fa-th" aria-hidden="true"></i>
-                <span>More</span>
-            </button>
+            <a href="profile.html" class="bottom-nav-link">
+                <i class="fa fa-user" aria-hidden="true"></i>
+                <span>Profile</span>
+            </a>
         </nav>
 
-        <!-- MORE MENU -->
-        <div id="moreMenu" class="more-menu" hidden>
-            <button type="button" data-page="genres">
-                <i class="fa fa-tags" aria-hidden="true"></i> Genres
-            </button>
-            <button type="button" data-page="servers">
-                <i class="fa fa-server" aria-hidden="true"></i> Video Servers
-            </button>
-            <button type="button" data-page="subtitles">
-                <i class="fa fa-language" aria-hidden="true"></i> Subtitles &amp; Audio
-            </button>
-            <button type="button" data-page="users">
-                <i class="fa fa-users" aria-hidden="true"></i> Users
-            </button>
-            <button type="button" data-page="notifications">
-                <i class="fa fa-bell" aria-hidden="true"></i> Notifications
-            </button>
-            <button type="button" data-page="analytics">
-                <i class="fa fa-bar-chart" aria-hidden="true"></i> Analytics
-            </button>
-            <button type="button" data-page="settings">
-                <i class="fa fa-cog" aria-hidden="true"></i> Settings
-            </button>
-            <button type="button" data-page="profile">
-                <i class="fa fa-user-circle" aria-hidden="true"></i> Admin Profile
-            </button>
-            <button type="button" id="logoutButton">
-                <i class="fa fa-sign-out" aria-hidden="true"></i> Sign Out
-            </button>
-        </div>
-
-        <!-- Admin details kept for JavaScript compatibility -->
+        <!-- Admin details for JavaScript compatibility -->
         <span id="sidebarAdminName" hidden>Administrator</span>
         <span id="sidebarAdminEmail" hidden>Admin Account</span>
-
     </div>
 
     <!-- MAIN JAVASCRIPT -->
