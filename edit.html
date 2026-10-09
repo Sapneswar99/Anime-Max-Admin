@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit - Anime Max Admin</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-storage-compat.js"></script>
+    <script src="../js/admin-common.js" defer></script>
+</head>
+<body>
+
+<header class="admin-header">
+    <a href="dashboard.html" class="admin-logo">
+        <span>ANIME</span><strong>MAX</strong>
+        <span class="admin-badge">ADMIN</span>
+    </a>
+    <div class="admin-user">
+        <span id="userEmail"></span>
+        <button id="logoutBtn" class="btn-logout">Logout</button>
+    </div>
+</header>
+
+<nav class="admin-nav">
+    <a href="dashboard.html" class="nav-item">Dashboard</a>
+    <a href="list.html" class="nav-item">Video &amp; Movies List</a>
+    <a href="anime-title.html" class="nav-item">Anime Title</a>
+    <a href="upload.html" class="nav-item">Upload</a>
+</nav>
+
+<main class="admin-page">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+        <a href="list.html" class="btn-sm">← Back to List</a>
+    </div>
+
+    <h1 id="pageTitle">Edit Anime</h1>
+    <p class="page-desc">Update anime details, poster, banner and manage episodes</p>
+
+    <div id="loading" class="loading">Loading...</div>
+    <div id="notFound" class="empty" hidden>Anime not found. <a href="list.html">Go to list</a></div>
+
+    <div id="editContent" hidden>
+        <!-- Edit Form -->
+        <form id="editForm" class="admin-form">
+            <div class="form-group full">
+                <label>Type</label>
+                <div class="type-toggle">
+                    <label class="type-option"><input type="radio" name="editType" value="series"><span>📺 Anime Series</span></label>
+                    <label class="type-option"><input type="radio" name="editType" value="movie"><span>🎬 Movie</span></label>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group full">
+                    <label>Anime Title *</label>
+                    <input type="text" id="editTitle" required>
+                </div>
+                <div class="form-group full">
+                    <label>Description</label>
+                    <textarea id="editDescription" rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Poster URL</label>
+                    <input type="url" id="editPoster">
+                    <label class="upload-btn" style="margin-top:6px;">
+                        <input type="file" id="editPosterFile" accept="image/*" hidden>
+                        <span>📁 Upload Poster</span>
+                    </label>
+                    <div class="image-preview" id="editPosterPreview"><span class="placeholder">Preview</span></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Banner URL</label>
+                    <input type="url" id="editBanner">
+                    <label class="upload-btn" style="margin-top:6px;">
+                        <input type="file" id="editBannerFile" accept="image/*" hidden>
+                        <span>📁 Upload Banner</span>
+                    </label>
+                    <div class="image-preview wide" id="editBannerPreview"><span class="placeholder">Preview</span></div>
+                </div>
+
+                <div class="form-group"><label>Year</label><input type="number" id="editYear"></div>
+                <div class="form-group">
+                    <label>Quality</label>
+                    <select id="editQuality">
+                        <option value="HD">HD</option>
+                        <option value="SD">SD</option>
+                        <option value="FHD">FHD</option>
+                        <option value="4K">4K</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Language</label><input type="text" id="editLanguage"></div>
+                <div class="form-group"><label>Rating</label><input type="number" id="editRating" step="0.1" min="0" max="10"></div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="editStatus">
+                        <option value="ongoing">Ongoing</option>
+                        <option value="completed">Completed</option>
+                        <option value="upcoming">Upcoming</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Duration</label><input type="text" id="editDuration"></div>
+                <div class="form-group full"><label>Genres</label><input type="text" id="editGenres"></div>
+
+                <div class="form-group checkboxes full">
+                    <label class="checkbox-label"><input type="checkbox" id="editFeatured"> Featured</label>
+                    <label class="checkbox-label"><input type="checkbox" id="editTrending"> Trending</label>
+                    <label class="checkbox-label"><input type="checkbox" id="editPopular"> Popular</label>
+                    <label class="checkbox-label"><input type="checkbox" id="editRecent"> Recent</label>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary" id="saveBtn">Save Changes</button>
+                <a href="upload.html" id="uploadLink" class="btn-secondary">Manage Episodes</a>
+                <p id="message" class="form-message"></p>
+            </div>
+        </form>
+
+        <!-- Episodes Preview -->
+        <h3 style="margin:32px 0 12px;font-size:18px;">Episodes (<span id="epCount">0</span>)</h3>
+        <div id="episodeList" class="content-list"></div>
+    </div>
+</main>
+
+<script>
+const { db, slugify, escapeHTML, showMsg, getQueryParam, uploadFile } = AnimeMaxAdmin;
+
+let currentId = '';
+let currentData = {};
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await AnimeMaxAdmin.guard();
+    currentId = getQueryParam('id');
+
+    if (!currentId) {
+        document.getElementById('loading').hidden = true;
+        document.getElementById('notFound').hidden = false;
+        return;
+    }
+
+    await loadAnime();
+    setupForm();
+});
+
+async function loadAnime() {
+    try {
+        const snap = await db.ref('animes/' + currentId).once('value');
+        currentData = snap.val();
+
+        if (!currentData) {
+            document.getElementById('loading').hidden = true;
+            document.getElementById('notFound').hidden = false;
+            return;
+        }
+
+        populateForm();
+        document.getElementById('loading').hidden = true;
+        document.getElementById('editContent').hidden = false;
+        document.getElementById('pageTitle').textContent = 'Edit: ' + currentData.title;
+        document.getElementById('uploadLink').href = `upload.html?id=${encodeURIComponent(currentId)}`;
+        renderEpisodes();
+    } catch (err) {
+        document.getElementById('loading').hidden = true;
+        document.getElementById('notFound').hidden = false;
+    }
+}
+
+function populateForm() {
+    const d = currentData;
+
+    const typeEl = document.querySelector(`input[name="editType"][value="${d.type || 'series'}"]`);
+    if (typeEl) typeEl.checked = true;
+
+    document.getElementById('editTitle').value = d.title || '';
+    document.getElementById('editDescription').value = d.description || '';
+    document.getElementById('editPoster').value = d.poster || '';
+    document.getElementById('editBanner').value = d.banner || '';
+    document.getElementById('editYear').value = d.year || '';
+    document.getElementById('editQuality').value = d.quality || 'HD';
+    document.getElementById('editLanguage').value = d.language || 'Sub & Dub';
+    document.getElementById('editRating').value = d.rating || '';
+    document.getElementById('editStatus').value = d.status || 'ongoing';
+    document.getElementById('editDuration').value = d.duration || '';
+    document.getElementById('editGenres').value = d.genres || '';
+
+    document.getElementById('editFeatured').checked = !!d.featured;
+    document.getElementById('editTrending').checked = !!d.trending;
+    document.getElementById('editPopular').checked = !!d.popular;
+    document.getElementById('editRecent').checked = !!d.recent;
+
+    updatePreview('editPosterPreview', d.poster);
+    updatePreview('editBannerPreview', d.banner);
+}
+
+function setupForm() {
+    document.getElementById('editForm').addEventListener('submit', saveChanges);
+
+    document.getElementById('editPoster').addEventListener('input', (e) => updatePreview('editPosterPreview', e.target.value));
+    document.getElementById('editBanner').addEventListener('input', (e) => updatePreview('editBannerPreview', e.target.value));
+
+    document.getElementById('editPosterFile').addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        try {
+            const url = await uploadFile(file, `anime-max/posters/${currentId}-${Date.now()}.${file.name.split('.').pop()}`);
+            document.getElementById('editPoster').value = url;
+            updatePreview('editPosterPreview', url);
+        } catch (err) { alert('Upload failed'); }
+        e.target.value = '';
+    });
+
+    document.getElementById('editBannerFile').addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        try {
+            const url = await uploadFile(file, `anime-max/banners/${currentId}-${Date.now()}.${file.name.split('.').pop()}`);
+            document.getElementById('editBanner').value = url;
+            updatePreview('editBannerPreview', url);
+        } catch (err) { alert('Upload failed'); }
+        e.target.value = '';
+    });
+}
+
+function updatePreview(id, url) {
+    const container = document.getElementById(id);
+    if (!url) { container.innerHTML = '<span class="placeholder">Preview</span>'; return; }
+    container.innerHTML = `<img src="${url}" onerror="this.parentElement.innerHTML='<span class=placeholder>Invalid URL</span>'">`;
+}
+
+async function saveChanges(e) {
+    e.preventDefault();
+    const msg = document.getElementById('message');
+    const btn = document.getElementById('saveBtn');
+    const typeEl = document.querySelector('input[name="editType"]:checked');
+
+    const updated = {
+        type: typeEl ? typeEl.value : 'series',
+        title: document.getElementById('editTitle').value.trim(),
+        description: document.getElementById('editDescription').value.trim(),
+        poster: document.getElementById('editPoster').value.trim(),
+        banner: document.getElementById('editBanner').value.trim(),
+        year: document.getElementById('editYear').value.trim(),
+        quality: document.getElementById('editQuality').value,
+        language: document.getElementById('editLanguage').value.trim(),
+        rating: document.getElementById('editRating').value.trim(),
+        status: document.getElementById('editStatus').value,
+        duration: document.getElementById('editDuration').value.trim(),
+        genres: document.getElementById('editGenres').value.trim(),
+        featured: document.getElementById('editFeatured').checked,
+        trending: document.getElementById('editTrending').checked,
+        popular: document.getElementById('editPopular').checked,
+        recent: document.getElementById('editRecent').checked,
+        updatedAt: Date.now(),
+        createdAt: currentData.createdAt || Date.now()
+    };
+
+    // Preserve episodes
+    if (currentData.episodes) updated.episodes = currentData.episodes;
+
+    if (!updated.title) { showMsg(msg, 'Title required', true); return; }
+
+    try {
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
+        await db.ref('animes/' + currentId).set(updated);
+        currentData = updated;
+        showMsg(msg, '✅ Saved!');
+    } catch (err) {
+        showMsg(msg, '❌ ' + err.message, true);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save Changes';
+    }
+}
+
+function renderEpisodes() {
+    const eps = currentData.episodes || {};
+    const list = Object.entries(eps).map(([n, ep]) => ({ num: parseInt(n), ...ep })).sort((a, b) => a.num - b.num);
+
+    document.getElementById('epCount').textContent = list.length;
+
+    const container = document.getElementById('episodeList');
+    if (!list.length) {
+        container.innerHTML = '<p class="empty">No episodes yet. <a href="upload.html?id=' + encodeURIComponent(currentId) + '">Add episodes</a></p>';
+        return;
+    }
+
+    container.innerHTML = list.map(ep => {
+        const srcCount = ep.sources ? Object.keys(ep.sources).length : 0;
+        return `
+            <div class="content-item">
+                <div class="content-thumb" style="display:grid;place-items:center;font-weight:700;color:var(--accent-hi);background:var(--bg-soft);">${ep.num}</div>
+                <div class="content-info">
+                    <h4>${escapeHTML(ep.title || 'Episode ' + ep.num)}</h4>
+                    <div class="meta-row">
+                        ${ep.duration ? `<span>⏱ ${escapeHTML(ep.duration)}</span>` : ''}
+                        <span>🎬 ${srcCount} sources</span>
+                    </div>
+                </div>
+                <div class="content-actions">
+                    <a href="upload.html?id=${encodeURIComponent(currentId)}" class="btn-sm">Edit</a>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+</script>
+</body>
+</html>
