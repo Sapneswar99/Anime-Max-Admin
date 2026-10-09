@@ -1,557 +1,372 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Episodes - Anime Max Admin</title>
-    <link rel="stylesheet" href="../css/admin.css">
-    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-storage-compat.js"></script>
-    <script src="../js/admin-common.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upload Episodes - Anime Max Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-storage-compat.js"></script>
+<style>
+:root{--bg:#07070d;--bg2:#0f0f18;--card:#15151f;--card2:#1b1b28;--bd:#232332;--bd2:#2e2e42;--tx:#fff;--tx2:#b8b8cc;--tx3:#6f6f8a;--pur:#7c4dff;--pur2:#9d70ff;--grn:#4dff9d;--red:#ff4d6d;--grd:linear-gradient(135deg,#7c4dff,#4d9fff)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 15% 20%,rgba(124,77,255,.12),transparent 45%),radial-gradient(circle at 85% 70%,rgba(77,159,255,.1),transparent 45%);z-index:-1;pointer-events:none}
+a{color:inherit;text-decoration:none}
+button,input,textarea,select{font-family:inherit;color:inherit}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--grd);border-radius:10px}
+.layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+.sidebar{background:rgba(11,11,18,.85);backdrop-filter:blur(20px);border-right:1px solid var(--bd);padding:24px 16px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.logo{font-size:22px;font-weight:900;letter-spacing:-1px;padding:8px 12px 24px;border-bottom:1px solid var(--bd);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.logo b{background:var(--grd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.badge{font-size:9px;font-weight:800;letter-spacing:1.5px;padding:4px 8px;background:rgba(124,77,255,.15);color:var(--pur2);border-radius:6px;border:1px solid rgba(124,77,255,.3)}
+nav{display:flex;flex-direction:column;gap:4px;flex:1}
+.nav{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;color:var(--tx2);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;background:transparent;border:none;text-align:left;width:100%}
+.nav svg{width:18px;height:18px;flex-shrink:0}
+.nav:hover{color:#fff;background:rgba(124,77,255,.08)}
+.nav.active{color:#fff;background:rgba(124,77,255,.15);box-shadow:inset 3px 0 0 var(--pur)}
+.nav.active svg{color:var(--pur2)}
+.footer-side{padding-top:16px;border-top:1px solid var(--bd)}
+.user{display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg2);border:1px solid var(--bd);border-radius:12px;margin-bottom:8px;overflow:hidden}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--grd);display:grid;place-items:center;font-weight:800;font-size:12px;flex-shrink:0}
+.user span{flex:1;font-size:11px;color:var(--tx2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.logout{width:100%;padding:10px;background:rgba(255,77,109,.08);color:var(--red);border:1px solid rgba(255,77,109,.2);border-radius:12px;font-size:13px;font-weight:600;cursor:pointer}
+.logout:hover{background:rgba(255,77,109,.15)}
+.main{padding:36px 44px 60px;max-width:1100px}
+.hdr{margin-bottom:28px}
+.hdr h1{font-size:36px;font-weight:900;letter-spacing:-1.5px;margin-bottom:6px;background:linear-gradient(135deg,#fff 30%,#b8b8cc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hdr p{color:var(--tx3);font-size:15px;font-weight:500}
+.sel{width:100%;padding:16px;background:var(--card);border:1.5px solid var(--bd2);border-radius:14px;font-size:15px;font-weight:600;margin-bottom:24px;outline:none;cursor:pointer}
+.sel:focus{border-color:var(--pur)}
+.info-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+.info-bar h3{font-size:20px;font-weight:800;letter-spacing:-.5px}
+.chip{padding:8px 16px;background:var(--card2);border:1px solid var(--bd2);border-radius:20px;font-size:12px;color:var(--tx2);font-weight:600}
+.card{background:rgba(21,21,31,.7);backdrop-filter:blur(20px);border:1px solid var(--bd2);border-radius:20px;padding:28px;margin-bottom:24px}
+.sec{font-size:13px;font-weight:800;color:var(--pur2);text-transform:uppercase;letter-spacing:1.5px;margin:24px 0 14px;padding-bottom:10px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.sec:first-child{margin-top:0}
+.sec .hint{font-size:11px;color:var(--tx3);text-transform:none;letter-spacing:0;font-weight:500}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.fg{display:flex;flex-direction:column;gap:8px}
+.fg.full{grid-column:1/-1}
+.fg label{font-size:11px;font-weight:700;color:var(--tx3);letter-spacing:1.2px;text-transform:uppercase}
+.fg input,.fg select{padding:13px 15px;background:var(--bg2);border:1.5px solid var(--bd2);border-radius:12px;font-size:14px;font-weight:500;outline:none;transition:all .25s}
+.fg input:focus,.fg select:focus{border-color:var(--pur);box-shadow:0 0 0 4px rgba(124,77,255,.12)}
+.fg input::placeholder{color:var(--tx3)}
+.adder{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:14px;background:var(--bg2);border:1px solid var(--bd2);border-radius:14px;margin-bottom:12px}
+.adder select,.adder input{padding:10px 13px;background:var(--card);border:1px solid var(--bd2);border-radius:9px;font-size:13px;font-weight:500;outline:none}
+.adder select{min-width:130px;cursor:pointer}
+.adder input{flex:1;min-width:180px}
+.up{display:inline-flex;align-items:center;gap:6px;padding:10px 14px;background:var(--card);border:1px solid var(--bd2);border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;color:var(--tx2);transition:all .2s;white-space:nowrap}
+.up:hover{border-color:var(--pur);color:var(--pur2);background:rgba(124,77,255,.08)}
+.chk-inline{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--tx2);cursor:pointer;padding:8px}
+.chk-inline input{width:15px;height:15px;accent-color:var(--pur)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .2s}
+.btn.add{background:rgba(124,77,255,.15);color:var(--pur2);border:1px solid rgba(124,77,255,.4)}
+.btn.add:hover{background:rgba(124,77,255,.25)}
+.tracks{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+.track{display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--bg2);border:1px solid var(--bd2);border-radius:10px;font-size:13px}
+.bdg{padding:3px 10px;background:rgba(124,77,255,.15);color:var(--pur2);border-radius:6px;font-size:11px;font-weight:800;min-width:64px;text-align:center}
+.turl{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--tx3);font-family:monospace;font-size:11px}
+.dtag{padding:2px 8px;background:rgba(77,255,157,.15);color:var(--grn);border-radius:5px;font-size:10px;font-weight:800}
+.rm{background:transparent;color:var(--red);border:none;font-size:22px;cursor:pointer;padding:0 8px;line-height:1}
+.prog{margin-top:16px;padding:14px;background:var(--bg2);border:1px solid var(--bd2);border-radius:12px}
+.pbar{height:6px;background:var(--card);border-radius:3px;overflow:hidden;margin-bottom:8px}
+.pfill{height:100%;width:0;background:var(--grd);transition:width .2s}
+.ptxt{font-size:12px;color:var(--tx3);font-weight:600}
+.acts{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+.btn-primary{padding:14px 26px;background:var(--grd);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(124,77,255,.35);transition:all .25s;min-width:200px}
+.btn-primary:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 12px 32px rgba(124,77,255,.5)}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed}
+.btn-ghost{padding:14px 26px;background:var(--card2);color:var(--tx);border:1px solid var(--bd2);border-radius:12px;font-size:14px;font-weight:700;cursor:pointer}
+.btn-ghost:hover{background:#2a2a36}
+.msg{margin-top:16px;font-size:13px;font-weight:600;color:var(--grn);min-height:18px}
+.msg.err{color:var(--red)}
+.elist{display:flex;flex-direction:column;gap:10px}
+.ep{display:flex;align-items:center;gap:14px;padding:14px;background:var(--bg2);border:1px solid var(--bd2);border-radius:14px}
+.epn{width:48px;height:48px;display:grid;place-items:center;background:rgba(124,77,255,.15);color:var(--pur2);border-radius:12px;font-weight:800;font-size:16px;flex-shrink:0}
+.epinfo{flex:1;min-width:0}
+.epinfo h4{font-size:14px;font-weight:700;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.epmeta{display:flex;gap:12px;font-size:11px;color:var(--tx3);font-weight:600;flex-wrap:wrap}
+.epact{display:flex;gap:6px}
+.act-s{padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;background:var(--card);border:1px solid var(--bd2);color:var(--tx2);transition:all .2s}
+.act-s:hover{border-color:var(--pur);color:var(--pur2)}
+.act-s.danger{color:var(--red);border-color:rgba(255,77,109,.3)}
+.empty{padding:60px 20px;text-align:center;color:var(--tx3);font-size:15px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);padding:14px 24px;background:var(--card);border:1px solid var(--pur);border-radius:14px;font-size:13px;font-weight:700;color:#fff;box-shadow:0 20px 60px rgba(0,0,0,.6);opacity:0;transition:all .3s;z-index:9999;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.sidebar{display:none}.main{padding:24px 20px}.hdr h1{font-size:26px}.grid{grid-template-columns:1fr}.adder{flex-direction:column;align-items:stretch}.adder select,.adder input{width:100%;min-width:0}}
+</style>
 </head>
 <body>
 
-<header class="admin-header">
-    <a href="dashboard.html" class="admin-logo">
-        <span>ANIME</span><strong>MAX</strong>
-        <span class="admin-badge">ADMIN</span>
-    </a>
-    <div class="admin-user">
-        <span id="userEmail"></span>
-        <button id="logoutBtn" class="btn-logout">Logout</button>
-    </div>
-</header>
+<div class="layout">
+    <aside class="sidebar">
+        <div class="logo">ANIME <b>MAX</b><span class="badge">ADMIN</span></div>
+        <nav>
+            <a href="dashboard.html" class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Dashboard</a>
+            <a href="list.html" class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/></svg>Video & Movies</a>
+            <a href="anime-title.html" class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Anime Title</a>
+            <button class="nav active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload</button>
+        </nav>
+        <div class="footer-side">
+            <div class="user"><div class="avatar" id="av">A</div><span id="em">admin</span></div>
+            <button class="logout" id="lo">Sign Out</button>
+        </div>
+    </aside>
 
-<nav class="admin-nav">
-    <a href="dashboard.html" class="nav-item">Dashboard</a>
-    <a href="list.html" class="nav-item">Video &amp; Movies List</a>
-    <a href="anime-title.html" class="nav-item">Anime Title</a>
-    <a href="upload.html" class="nav-item active">Upload</a>
-</nav>
-
-<main class="admin-page">
-    <h1>Upload Episodes</h1>
-    <p class="page-desc">Add episodes with multiple video qualities, subtitles, and audio tracks</p>
-
-    <div class="form-group full" style="margin-bottom:20px;">
-        <label>Select Anime</label>
-        <select id="animeSelect" style="padding:12px 14px;background:var(--bg-soft);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:inherit;">
-            <option value="">-- Choose Anime --</option>
-        </select>
-    </div>
-
-    <div id="uploadManager" hidden>
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
-            <h3 id="animeTitle" style="margin:0;font-size:18px;"></h3>
-            <span id="epCount" style="padding:4px 12px;background:var(--bg-soft);border-radius:20px;font-size:12px;color:var(--text-muted);">0 episodes</span>
+    <main class="main">
+        <div class="hdr">
+            <h1>Upload Episodes</h1>
+            <p>Add episodes with multiple video qualities, subtitles & audio tracks</p>
         </div>
 
-        <form id="episodeForm" class="admin-form">
-            <h4 class="section-h">📄 Episode Details</h4>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Episode Number *</label>
-                    <input type="number" id="epNumber" required min="1" placeholder="1">
+        <select class="sel" id="sel"><option value="">-- Choose Anime --</option></select>
+
+        <div id="mgr" hidden>
+            <div class="info-bar">
+                <h3 id="atitle"></h3>
+                <span class="chip" id="ecount">0 episodes</span>
+            </div>
+
+            <form class="card" id="epf">
+                <div class="sec">📄 Episode Details</div>
+                <div class="grid">
+                    <div class="fg"><label>Episode Number *</label><input id="num" type="number" min="1" required placeholder="1"></div>
+                    <div class="fg"><label>Title</label><input id="eptitle" placeholder="Romance Dawn"></div>
+                    <div class="fg"><label>Duration</label><input id="dur" placeholder="24 min"></div>
+                    <div class="fg"><label>Thumbnail URL</label><input id="thumb" placeholder="https://..."></div>
                 </div>
-                <div class="form-group">
-                    <label>Episode Title</label>
-                    <input type="text" id="epTitle" placeholder="Romance Dawn">
+
+                <div class="sec">🎬 Video Sources <span class="hint">Multiple qualities supported</span></div>
+                <div class="adder">
+                    <select id="vq"><option>360p</option><option>480p</option><option selected>720p</option><option>1080p</option><option>1440p</option><option>4K</option><option value="__c">+ Custom...</option></select>
+                    <input id="vqc" placeholder="Quality" hidden style="max-width:130px">
+                    <input id="vurl" placeholder="Video URL">
+                    <label class="up"><input type="file" id="vf" accept="video/*" hidden>📁 Upload</label>
+                    <button type="button" class="btn add" id="vadd">+ Add</button>
                 </div>
-                <div class="form-group">
-                    <label>Duration</label>
-                    <input type="text" id="epDuration" placeholder="24 min">
+                <div class="tracks" id="vlist"></div>
+
+                <div class="sec">💬 Subtitles <span class="hint">.vtt or .srt</span></div>
+                <div class="adder">
+                    <select id="sl"><option value="english" selected>English</option><option value="hindi">Hindi</option><option value="spanish">Spanish</option><option value="japanese">Japanese</option><option value="korean">Korean</option><option value="__c">+ Custom...</option></select>
+                    <input id="slc" placeholder="Lang" hidden style="max-width:130px">
+                    <input id="surl" placeholder="Subtitle URL">
+                    <label class="up"><input type="file" id="sf" accept=".vtt,.srt" hidden>📁 Upload</label>
+                    <label class="chk-inline"><input type="checkbox" id="sdef"> Default</label>
+                    <button type="button" class="btn add" id="sadd">+ Add</button>
                 </div>
-                <div class="form-group">
-                    <label>Thumbnail URL</label>
-                    <input type="url" id="epThumbnail" placeholder="https://...">
+                <div class="tracks" id="slist"></div>
+
+                <div class="sec">🔊 Audio Tracks <span class="hint">Alternative audio</span></div>
+                <div class="adder">
+                    <select id="al"><option value="hindi" selected>Hindi</option><option value="english">English</option><option value="japanese">Japanese</option><option value="__c">+ Custom...</option></select>
+                    <input id="alc" placeholder="Lang" hidden style="max-width:130px">
+                    <input id="aurl" placeholder="Audio URL">
+                    <label class="up"><input type="file" id="af" accept="audio/*" hidden>📁 Upload</label>
+                    <label class="chk-inline"><input type="checkbox" id="adef"> Default</label>
+                    <button type="button" class="btn add" id="aadd">+ Add</button>
                 </div>
-            </div>
+                <div class="tracks" id="alist"></div>
 
-            <!-- VIDEO -->
-            <h4 class="section-h">🎬 Video Sources <span class="hint">Multiple qualities</span></h4>
-            <div class="track-adder">
-                <select id="videoQuality" class="track-select">
-                    <option value="360p">360p</option>
-                    <option value="480p">480p</option>
-                    <option value="720p" selected>720p</option>
-                    <option value="1080p">1080p</option>
-                    <option value="1440p">1440p</option>
-                    <option value="4K">4K</option>
-                    <option value="__custom__">+ Custom...</option>
-                </select>
-                <input type="text" id="videoCustomQuality" class="custom-input" placeholder="Quality" hidden>
-                <input type="url" id="videoUrl" class="track-input" placeholder="Video URL">
-                <label class="upload-btn">
-                    <input type="file" id="videoFile" accept="video/*" hidden>
-                    <span>📁 Upload</span>
-                </label>
-                <button type="button" class="btn-sm primary" id="addVideoBtn">+ Add</button>
-            </div>
-            <div id="videoList" class="track-list"></div>
+                <div class="prog" id="prog" hidden>
+                    <div class="pbar"><div class="pfill"></div></div>
+                    <span class="ptxt">Uploading... 0%</span>
+                </div>
 
-            <!-- SUBTITLES -->
-            <h4 class="section-h">💬 Subtitles <span class="hint">.vtt or .srt</span></h4>
-            <div class="track-adder">
-                <select id="subtitleLang" class="track-select">
-                    <option value="english" selected>English</option>
-                    <option value="hindi">Hindi</option>
-                    <option value="spanish">Spanish</option>
-                    <option value="japanese">Japanese</option>
-                    <option value="korean">Korean</option>
-                    <option value="__custom__">+ Custom...</option>
-                </select>
-                <input type="text" id="subtitleCustom" class="custom-input" placeholder="Language" hidden>
-                <input type="url" id="subtitleUrl" class="track-input" placeholder="Subtitle URL">
-                <label class="upload-btn">
-                    <input type="file" id="subtitleFile" accept=".vtt,.srt" hidden>
-                    <span>📁 Upload</span>
-                </label>
-                <label class="checkbox-label" style="font-size:12px;">
-                    <input type="checkbox" id="subtitleDefault">
-                    <span>Default</span>
-                </label>
-                <button type="button" class="btn-sm primary" id="addSubtitleBtn">+ Add</button>
-            </div>
-            <div id="subtitleList" class="track-list"></div>
+                <div class="acts">
+                    <button type="submit" class="btn-primary" id="sv">Save Episode</button>
+                    <button type="button" class="btn-ghost" id="rs">Reset Form</button>
+                </div>
+                <p class="msg" id="msg"></p>
+            </form>
 
-            <!-- AUDIO -->
-            <h4 class="section-h">🔊 Audio Tracks</h4>
-            <div class="track-adder">
-                <select id="audioLang" class="track-select">
-                    <option value="hindi" selected>Hindi</option>
-                    <option value="english">English</option>
-                    <option value="japanese">Japanese</option>
-                    <option value="__custom__">+ Custom...</option>
-                </select>
-                <input type="text" id="audioCustom" class="custom-input" placeholder="Language" hidden>
-                <input type="url" id="audioUrl" class="track-input" placeholder="Audio URL">
-                <label class="upload-btn">
-                    <input type="file" id="audioFile" accept="audio/*" hidden>
-                    <span>📁 Upload</span>
-                </label>
-                <label class="checkbox-label" style="font-size:12px;">
-                    <input type="checkbox" id="audioDefault">
-                    <span>Default</span>
-                </label>
-                <button type="button" class="btn-sm primary" id="addAudioBtn">+ Add</button>
-            </div>
-            <div id="audioList" class="track-list"></div>
+            <div class="sec">Existing Episodes</div>
+            <div class="elist" id="eplist"></div>
+        </div>
 
-            <!-- Upload progress -->
-            <div id="progress" class="upload-progress" hidden>
-                <div class="progress-bar"><div class="progress-fill"></div></div>
-                <span class="progress-text">Uploading... 0%</span>
-            </div>
+        <p class="empty" id="emp">Select an anime to start uploading</p>
+    </main>
+</div>
 
-            <div class="form-actions">
-                <button type="submit" class="btn-primary" id="saveBtn">Save Episode</button>
-                <button type="button" class="btn-secondary" id="resetBtn">Reset Form</button>
-                <p id="message" class="form-message"></p>
-            </div>
-        </form>
-
-        <h3 style="margin:32px 0 12px;font-size:18px;">Existing Episodes</h3>
-        <div id="episodeList" class="content-list"></div>
-    </div>
-
-    <p id="empty" class="empty">Select an anime to start uploading</p>
-</main>
+<div class="toast" id="toast"></div>
 
 <script>
-const { db, storage, slugify, capitalize, showMsg, getQueryParam, uploadFile, escapeHTML } = AnimeMaxAdmin;
+const CFG={apiKey:"AIzaSyCpfrluxsBhnz48ve9RykIy1IxzbBfk7dA",authDomain:"sm-studio-7.firebaseapp.com",databaseURL:"https://sm-studio-7-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"sm-studio-7",storageBucket:"sm-studio-7.firebasestorage.app",messagingSenderId:"126291501472",appId:"1:126291501472:web:a55c94b5b87581177204c5"};
+const ADMIN_EMAIL='admin@animemax.com';
+firebase.initializeApp(CFG);
+const auth=firebase.auth(),db=firebase.database(),st=firebase.storage();
+const $=id=>document.getElementById(id);
+let anime={},aid='',src={},sub={},aud={},editN=null;
 
-let allAnime = {};
-let selectedAnimeId = '';
-let epSources = {};
-let epSubtitles = {};
-let epAudio = {};
-let editingEpNum = null;
+auth.onAuthStateChanged(u=>{
+    if(!u||u.email!==ADMIN_EMAIL){location.href='index.html';return;}
+    $('em').textContent=u.email;$('av').textContent=u.email[0].toUpperCase();
+    init();
+});
+$('lo').addEventListener('click',()=>auth.signOut());
 
-document.addEventListener('DOMContentLoaded', async () => {
-    await AnimeMaxAdmin.guard();
+async function init(){
+    const s=await db.ref('animes').once('value');
+    anime=s.val()||{};
+    const series=Object.entries(anime).filter(([_,a])=>(a.type||'series')==='series');
+    $('sel').innerHTML='<option value="">-- Choose Anime --</option>'+series.map(([id,a])=>`<option value="${esc(id)}">${esc(a.title)}</option>`).join('');
+    const p=new URLSearchParams(location.search).get('id');
+    if(p&&anime[p]){$('sel').value=p;load(p);}
+}
 
-    document.getElementById('animeSelect').addEventListener('change', (e) => {
-        const id = e.target.value;
-        if (!id) {
-            document.getElementById('uploadManager').hidden = true;
-            document.getElementById('empty').hidden = false;
-            return;
-        }
-        loadAnime(id);
-    });
-
-    // Custom toggles
-    setupCustom('videoQuality', 'videoCustomQuality');
-    setupCustom('subtitleLang', 'subtitleCustom');
-    setupCustom('audioLang', 'audioCustom');
-
-    // Add buttons
-    document.getElementById('addVideoBtn').addEventListener('click', addVideoUrl);
-    document.getElementById('addSubtitleBtn').addEventListener('click', addSubtitleUrl);
-    document.getElementById('addAudioBtn').addEventListener('click', addAudioUrl);
-
-    // File uploads
-    document.getElementById('videoFile').addEventListener('change', uploadVideoFile);
-    document.getElementById('subtitleFile').addEventListener('change', uploadSubtitleFile);
-    document.getElementById('audioFile').addEventListener('change', uploadAudioFile);
-
-    // Form submit
-    document.getElementById('episodeForm').addEventListener('submit', saveEpisode);
-    document.getElementById('resetBtn').addEventListener('click', resetForm);
-
-    await loadAnimeList();
-
-    // If URL has ?id=, auto-select
-    const preselect = getQueryParam('id');
-    if (preselect && allAnime[preselect]) {
-        document.getElementById('animeSelect').value = preselect;
-        loadAnime(preselect);
-    }
+$('sel').addEventListener('change',e=>{
+    if(!e.target.value){$('mgr').hidden=true;$('emp').hidden=false;return;}
+    load(e.target.value);
 });
 
-/* Load dropdown */
-async function loadAnimeList() {
-    const snap = await db.ref('animes').once('value');
-    allAnime = snap.val() || {};
-    const series = Object.entries(allAnime)
-        .filter(([_, a]) => (a.type || 'series') === 'series');
-
-    document.getElementById('animeSelect').innerHTML =
-        '<option value="">-- Choose Anime --</option>' +
-        series.map(([id, a]) => `<option value="${escapeHTML(id)}">${escapeHTML(a.title)}</option>`).join('');
+function load(id){
+    aid=id;const a=anime[id];
+    $('emp').hidden=true;$('mgr').hidden=false;
+    $('atitle').textContent=a.title;renderEps();
 }
 
-/* Load selected anime */
-function loadAnime(id) {
-    selectedAnimeId = id;
-    const anime = allAnime[id];
-    if (!anime) return;
-
-    document.getElementById('empty').hidden = true;
-    document.getElementById('uploadManager').hidden = false;
-    document.getElementById('animeTitle').textContent = anime.title;
-
-    renderEpisodeList();
-}
-
-/* Custom toggle setup */
-function setupCustom(selectId, customId) {
-    const sel = document.getElementById(selectId);
-    const inp = document.getElementById(customId);
-    sel.addEventListener('change', () => {
-        inp.hidden = sel.value !== '__custom__';
-        if (!inp.hidden) inp.focus();
+['vq','sl','al'].forEach(k=>{
+    $(k).addEventListener('change',e=>{
+        const inp=$(k+'c');
+        inp.hidden=e.target.value!=='__c';
+        if(!inp.hidden)inp.focus();
     });
-}
+});
 
-/* ---------- VIDEO ---------- */
-async function addVideoUrl() {
-    let quality = document.getElementById('videoQuality').value;
-    if (quality === '__custom__') {
-        quality = document.getElementById('videoCustomQuality').value.trim();
-        if (!quality) return;
-    }
-    const url = document.getElementById('videoUrl').value.trim();
-    if (!url) { showMsg(document.getElementById('message'), 'Video URL required', true); return; }
+$('vadd').addEventListener('click',()=>{
+    let q=$('vq').value;if(q==='__c'){q=$('vqc').value.trim();if(!q)return;}
+    const u=$('vurl').value.trim();if(!u)return;
+    src[q]={url:u};renderT('v');$('vurl').value='';$('vqc').value='';$('vqc').hidden=true;$('vq').value='720p';
+});
 
-    epSources[quality] = { url };
-    renderTracks('video');
-    document.getElementById('videoUrl').value = '';
-    document.getElementById('videoCustomQuality').value = '';
-    document.getElementById('videoCustomQuality').hidden = true;
-    document.getElementById('videoQuality').value = '720p';
-}
+$('sadd').addEventListener('click',()=>{
+    let l=$('sl').value;if(l==='__c'){l=$('slc').value.trim();if(!l)return;}
+    const u=$('surl').value.trim();if(!u)return;
+    const d=$('sdef').checked;
+    if(d)Object.keys(sub).forEach(k=>sub[k].default=false);
+    sub[l]={label:cap(l),url:u,default:d};renderT('s');
+    $('surl').value='';$('slc').value='';$('slc').hidden=true;$('sdef').checked=false;$('sl').value='english';
+});
 
-async function uploadVideoFile(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const num = document.getElementById('epNumber').value;
-    if (!selectedAnimeId || !num) {
-        alert('Enter episode number first');
-        e.target.value = '';
-        return;
-    }
-    let quality = document.getElementById('videoQuality').value;
-    if (quality === '__custom__') quality = document.getElementById('videoCustomQuality').value.trim() || 'custom';
+$('aadd').addEventListener('click',()=>{
+    let l=$('al').value;if(l==='__c'){l=$('alc').value.trim();if(!l)return;}
+    const u=$('aurl').value.trim();if(!u)return;
+    const d=$('adef').checked;
+    if(d)Object.keys(aud).forEach(k=>aud[k].default=false);
+    aud[l]={label:cap(l),url:u,default:d};renderT('a');
+    $('aurl').value='';$('alc').value='';$('alc').hidden=true;$('adef').checked=false;$('al').value='hindi';
+});
 
-    const path = `anime-max/episodes/${selectedAnimeId}/${num}/video-${quality}-${Date.now()}.${file.name.split('.').pop()}`;
-    try {
-        const url = await uploadFile(file, path, updateProgress);
-        epSources[quality] = { url };
-        renderTracks('video');
-        showMsg(document.getElementById('message'), `✅ Uploaded ${quality}`);
-    } catch (err) {
-        alert('Upload failed: ' + err.message);
-    }
-    e.target.value = '';
-}
+$('vf').addEventListener('change',async e=>{
+    const f=e.target.files[0];if(!f)return;
+    const n=$('num').value;if(!aid||!n){alert('Enter episode number');e.target.value='';return;}
+    let q=$('vq').value;if(q==='__c')q=$('vqc').value.trim()||'custom';
+    try{const u=await up(f,`anime-max/episodes/${aid}/${n}/video-${q}-${Date.now()}.${f.name.split('.').pop()}`);src[q]={url:u};renderT('v');toast('Uploaded '+q);}catch(x){alert('Upload failed');}
+    e.target.value='';
+});
 
-/* ---------- SUBTITLE ---------- */
-async function addSubtitleUrl() {
-    let lang = document.getElementById('subtitleLang').value;
-    if (lang === '__custom__') {
-        lang = document.getElementById('subtitleCustom').value.trim();
-        if (!lang) return;
-    }
-    const url = document.getElementById('subtitleUrl').value.trim();
-    if (!url) { showMsg(document.getElementById('message'), 'Subtitle URL required', true); return; }
+$('sf').addEventListener('change',async e=>{
+    const f=e.target.files[0];if(!f)return;
+    const n=$('num').value;if(!aid||!n){alert('Enter episode number');e.target.value='';return;}
+    let l=$('sl').value;if(l==='__c')l=$('slc').value.trim()||'custom';
+    try{const u=await up(f,`anime-max/episodes/${aid}/${n}/sub-${l}-${Date.now()}.${f.name.split('.').pop()}`);const d=$('sdef').checked;if(d)Object.keys(sub).forEach(k=>sub[k].default=false);sub[l]={label:cap(l),url:u,default:d};renderT('s');}catch(x){alert('Upload failed');}
+    e.target.value='';
+});
 
-    const isDefault = document.getElementById('subtitleDefault').checked;
-    if (isDefault) Object.keys(epSubtitles).forEach(k => epSubtitles[k].default = false);
+$('af').addEventListener('change',async e=>{
+    const f=e.target.files[0];if(!f)return;
+    const n=$('num').value;if(!aid||!n){alert('Enter episode number');e.target.value='';return;}
+    let l=$('al').value;if(l==='__c')l=$('alc').value.trim()||'custom';
+    try{const u=await up(f,`anime-max/episodes/${aid}/${n}/audio-${l}-${Date.now()}.${f.name.split('.').pop()}`);const d=$('adef').checked;if(d)Object.keys(aud).forEach(k=>aud[k].default=false);aud[l]={label:cap(l),url:u,default:d};renderT('a');}catch(x){alert('Upload failed');}
+    e.target.value='';
+});
 
-    epSubtitles[lang] = { label: capitalize(lang), url, default: isDefault };
-    renderTracks('subtitle');
-    document.getElementById('subtitleUrl').value = '';
-    document.getElementById('subtitleCustom').value = '';
-    document.getElementById('subtitleCustom').hidden = true;
-    document.getElementById('subtitleDefault').checked = false;
-    document.getElementById('subtitleLang').value = 'english';
-}
+function up(f,p){return new Promise((res,rej)=>{const prog=$('prog');prog.hidden=false;const r=st.ref(p),t=r.put(f);t.on('state_changed',s=>{const pct=(s.bytesTransferred/s.totalBytes)*100;prog.querySelector('.pfill').style.width=pct+'%';prog.querySelector('.ptxt').textContent=`Uploading... ${pct.toFixed(0)}%`;},rej,async()=>{prog.hidden=true;res(await t.snapshot.ref.getDownloadURL());});});}
 
-async function uploadSubtitleFile(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const num = document.getElementById('epNumber').value;
-    if (!selectedAnimeId || !num) { alert('Enter episode number first'); e.target.value = ''; return; }
-
-    let lang = document.getElementById('subtitleLang').value;
-    if (lang === '__custom__') lang = document.getElementById('subtitleCustom').value.trim() || 'custom';
-
-    const path = `anime-max/episodes/${selectedAnimeId}/${num}/subtitle-${lang}-${Date.now()}.${file.name.split('.').pop()}`;
-    try {
-        const url = await uploadFile(file, path, updateProgress);
-        const isDefault = document.getElementById('subtitleDefault').checked;
-        if (isDefault) Object.keys(epSubtitles).forEach(k => epSubtitles[k].default = false);
-        epSubtitles[lang] = { label: capitalize(lang), url, default: isDefault };
-        renderTracks('subtitle');
-    } catch (err) { alert('Upload failed: ' + err.message); }
-    e.target.value = '';
-}
-
-/* ---------- AUDIO ---------- */
-async function addAudioUrl() {
-    let lang = document.getElementById('audioLang').value;
-    if (lang === '__custom__') {
-        lang = document.getElementById('audioCustom').value.trim();
-        if (!lang) return;
-    }
-    const url = document.getElementById('audioUrl').value.trim();
-    if (!url) { showMsg(document.getElementById('message'), 'Audio URL required', true); return; }
-
-    const isDefault = document.getElementById('audioDefault').checked;
-    if (isDefault) Object.keys(epAudio).forEach(k => epAudio[k].default = false);
-
-    epAudio[lang] = { label: capitalize(lang), url, default: isDefault };
-    renderTracks('audio');
-    document.getElementById('audioUrl').value = '';
-    document.getElementById('audioCustom').value = '';
-    document.getElementById('audioCustom').hidden = true;
-    document.getElementById('audioDefault').checked = false;
-    document.getElementById('audioLang').value = 'hindi';
-}
-
-async function uploadAudioFile(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const num = document.getElementById('epNumber').value;
-    if (!selectedAnimeId || !num) { alert('Enter episode number first'); e.target.value = ''; return; }
-
-    let lang = document.getElementById('audioLang').value;
-    if (lang === '__custom__') lang = document.getElementById('audioCustom').value.trim() || 'custom';
-
-    const path = `anime-max/episodes/${selectedAnimeId}/${num}/audio-${lang}-${Date.now()}.${file.name.split('.').pop()}`;
-    try {
-        const url = await uploadFile(file, path, updateProgress);
-        const isDefault = document.getElementById('audioDefault').checked;
-        if (isDefault) Object.keys(epAudio).forEach(k => epAudio[k].default = false);
-        epAudio[lang] = { label: capitalize(lang), url, default: isDefault };
-        renderTracks('audio');
-    } catch (err) { alert('Upload failed: ' + err.message); }
-    e.target.value = '';
-}
-
-/* ---------- RENDER TRACKS ---------- */
-function renderTracks(kind) {
-    const map = kind === 'video' ? epSources : kind === 'subtitle' ? epSubtitles : epAudio;
-    const container = document.getElementById(kind + 'List');
-
-    const keys = Object.keys(map);
-    if (!keys.length) { container.innerHTML = ''; return; }
-
-    container.innerHTML = keys.map(key => {
-        const item = map[key];
-        const url = typeof item === 'string' ? item : item.url;
-        const isDefault = typeof item === 'object' && item.default;
-        const badge = kind === 'video' ? key : (item.label || capitalize(key));
-
-        return `
-            <div class="track-item">
-                <span class="track-badge">${escapeHTML(badge)}</span>
-                <span class="track-url">${escapeHTML(url)}</span>
-                ${isDefault ? '<span class="track-default-tag">DEFAULT</span>' : ''}
-                <button type="button" class="track-remove" data-kind="${kind}" data-key="${escapeHTML(key)}">×</button>
-            </div>
-        `;
+function renderT(k){
+    const map=k==='v'?src:k==='s'?sub:aud;
+    const el=$(k+'list');
+    const keys=Object.keys(map);
+    if(!keys.length){el.innerHTML='';return;}
+    el.innerHTML=keys.map(key=>{
+        const it=map[key],url=typeof it==='string'?it:it.url,d=typeof it==='object'&&it.default;
+        const b=k==='v'?key:(it.label||cap(key));
+        return `<div class="track"><span class="bdg">${esc(b)}</span><span class="turl">${esc(url)}</span>${d?'<span class="dtag">DEFAULT</span>':''}<button type="button" class="rm" data-k="${k}" data-key="${esc(key)}">×</button></div>`;
     }).join('');
-
-    container.querySelectorAll('.track-remove').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const k = btn.dataset.kind;
-            const key = btn.dataset.key;
-            if (k === 'video') delete epSources[key];
-            if (k === 'subtitle') delete epSubtitles[key];
-            if (k === 'audio') delete epAudio[key];
-            renderTracks(k);
-        });
-    });
+    el.querySelectorAll('.rm').forEach(btn=>btn.addEventListener('click',()=>{
+        const kk=btn.dataset.k,key=btn.dataset.key;
+        if(kk==='v')delete src[key];if(kk==='s')delete sub[key];if(kk==='a')delete aud[key];
+        renderT(kk);
+    }));
 }
 
-/* ---------- SAVE EPISODE ---------- */
-async function saveEpisode(e) {
+$('epf').addEventListener('submit',async e=>{
     e.preventDefault();
-    const msg = document.getElementById('message');
+    const msg=$('msg');
+    if(!aid){showMsg(msg,'Select anime first',true);return;}
+    const n=parseInt($('num').value);if(!n){showMsg(msg,'Episode number required',true);return;}
+    if(!Object.keys(src).length){showMsg(msg,'Add at least one video',true);return;}
+    const data={number:n,title:$('eptitle').value.trim()||('Episode '+n),thumbnail:$('thumb').value.trim(),duration:$('dur').value.trim(),sources:src,subtitles:sub,audio:aud,addedAt:editN?(anime[aid]?.episodes?.[editN]?.addedAt||Date.now()):Date.now(),updatedAt:Date.now()};
+    const btn=$('sv');btn.disabled=true;btn.textContent='Saving...';
+    try{
+        await db.ref(`animes/${aid}/episodes/${n}`).set(data);
+        if(editN&&editN!==n)await db.ref(`animes/${aid}/episodes/${editN}`).remove();
+        if(!anime[aid].episodes)anime[aid].episodes={};
+        anime[aid].episodes[n]=data;
+        showMsg(msg,'✅ Saved!');toast('Episode saved');reset();renderEps();
+    }catch(ex){showMsg(msg,'❌ '+ex.message,true);}
+    finally{btn.disabled=false;btn.textContent='Save Episode';}
+});
 
-    if (!selectedAnimeId) { showMsg(msg, 'Select anime first', true); return; }
-    const num = parseInt(document.getElementById('epNumber').value);
-    if (!num) { showMsg(msg, 'Episode number required', true); return; }
-    if (!Object.keys(epSources).length) { showMsg(msg, 'Add at least one video source', true); return; }
-
-    const data = {
-        number: num,
-        title: document.getElementById('epTitle').value.trim() || ('Episode ' + num),
-        thumbnail: document.getElementById('epThumbnail').value.trim(),
-        duration: document.getElementById('epDuration').value.trim(),
-        sources: epSources,
-        subtitles: epSubtitles,
-        audio: epAudio,
-        addedAt: Date.now(),
-        updatedAt: Date.now()
-    };
-
-    try {
-        const btn = document.getElementById('saveBtn');
-        btn.disabled = true;
-        btn.textContent = 'Saving...';
-
-        await db.ref(`animes/${selectedAnimeId}/episodes/${num}`).set(data);
-
-        if (!allAnime[selectedAnimeId].episodes) allAnime[selectedAnimeId].episodes = {};
-        allAnime[selectedAnimeId].episodes[num] = data;
-
-        showMsg(msg, '✅ Episode saved!');
-        resetForm();
-        renderEpisodeList();
-    } catch (err) {
-        showMsg(msg, '❌ ' + err.message, true);
-    } finally {
-        const btn = document.getElementById('saveBtn');
-        btn.disabled = false;
-        btn.textContent = 'Save Episode';
-    }
+$('rs').addEventListener('click',reset);
+function reset(){
+    $('epf').reset();src={};sub={};aud={};editN=null;
+    renderT('v');renderT('s');renderT('a');
+    $('vqc').hidden=true;$('slc').hidden=true;$('alc').hidden=true;
+    $('sv').textContent='Save Episode';
 }
 
-function resetForm() {
-    document.getElementById('episodeForm').reset();
-    epSources = {};
-    epSubtitles = {};
-    epAudio = {};
-    editingEpNum = null;
-    renderTracks('video');
-    renderTracks('subtitle');
-    renderTracks('audio');
-    document.getElementById('videoCustomQuality').hidden = true;
-    document.getElementById('subtitleCustom').hidden = true;
-    document.getElementById('audioCustom').hidden = true;
-}
-
-/* ---------- EPISODE LIST ---------- */
-function renderEpisodeList() {
-    const anime = allAnime[selectedAnimeId];
-    const eps = anime.episodes || {};
-    const list = Object.entries(eps).map(([n, ep]) => ({ num: parseInt(n), ...ep })).sort((a, b) => a.num - b.num);
-
-    document.getElementById('epCount').textContent = list.length + ' episodes';
-
-    const container = document.getElementById('episodeList');
-    if (!list.length) {
-        container.innerHTML = '<p class="empty">No episodes yet. Add first one above.</p>';
-        return;
-    }
-
-    container.innerHTML = list.map(ep => {
-        const srcCount = ep.sources ? Object.keys(ep.sources).length : 0;
-        const subCount = ep.subtitles ? Object.keys(ep.subtitles).length : 0;
-        const audCount = ep.audio ? Object.keys(ep.audio).length : 0;
-
-        return `
-            <div class="content-item">
-                <div class="content-thumb" style="display:grid;place-items:center;font-weight:700;color:var(--accent-hi);background:var(--bg-soft);">${ep.num}</div>
-                <div class="content-info">
-                    <h4>${escapeHTML(ep.title || 'Episode ' + ep.num)}</h4>
-                    <div class="meta-row">
-                        ${ep.duration ? `<span>⏱ ${escapeHTML(ep.duration)}</span>` : ''}
-                        <span>🎬 ${srcCount}</span>
-                        <span>💬 ${subCount}</span>
-                        <span>🔊 ${audCount}</span>
-                    </div>
-                </div>
-                <div class="content-actions">
-                    <button class="btn-sm" data-edit-ep="${ep.num}">Edit</button>
-                    <button class="btn-sm danger" data-del-ep="${ep.num}">Delete</button>
-                </div>
-            </div>
-        `;
+function renderEps(){
+    const a=anime[aid];const eps=a.episodes||{};
+    const list=Object.entries(eps).map(([n,e])=>({n:parseInt(n),...e})).sort((a,b)=>a.n-b.n);
+    $('ecount').textContent=list.length+' episodes';
+    const el=$('eplist');
+    if(!list.length){el.innerHTML='<p class="empty">No episodes yet</p>';return;}
+    el.innerHTML=list.map(ep=>{
+        const sc=ep.sources?Object.keys(ep.sources).length:0,sc2=ep.subtitles?Object.keys(ep.subtitles).length:0,ac=ep.audio?Object.keys(ep.audio).length:0;
+        return `<div class="ep"><div class="epn">${ep.n}</div><div class="epinfo"><h4>${esc(ep.title||'Episode '+ep.n)}</h4><div class="epmeta">${ep.duration?`<span>⏱ ${esc(ep.duration)}</span>`:''}<span>🎬 ${sc}</span><span>💬 ${sc2}</span><span>🔊 ${ac}</span></div></div><div class="epact"><button class="act-s" onclick="edEp(${ep.n})">Edit</button><button class="act-s danger" onclick="dlEp(${ep.n})">Delete</button></div></div>`;
     }).join('');
-
-    container.querySelectorAll('[data-del-ep]').forEach(btn => {
-        btn.addEventListener('click', () => deleteEpisode(parseInt(btn.dataset.delEp)));
-    });
-    container.querySelectorAll('[data-edit-ep]').forEach(btn => {
-        btn.addEventListener('click', () => editEpisode(parseInt(btn.dataset.editEp)));
-    });
 }
 
-function editEpisode(num) {
-    const ep = allAnime[selectedAnimeId]?.episodes?.[num];
-    if (!ep) return;
+window.edEp=n=>{
+    const ep=anime[aid]?.episodes?.[n];if(!ep)return;
+    $('num').value=ep.number||n;$('eptitle').value=ep.title||'';
+    $('dur').value=ep.duration||'';$('thumb').value=ep.thumbnail||'';
+    src=ep.sources?JSON.parse(JSON.stringify(ep.sources)):{};
+    sub=ep.subtitles?JSON.parse(JSON.stringify(ep.subtitles)):{};
+    aud=ep.audio?JSON.parse(JSON.stringify(ep.audio)):{};
+    renderT('v');renderT('s');renderT('a');
+    editN=n;$('sv').textContent='Update Episode';
+    $('epf').scrollIntoView({behavior:'smooth'});
+};
 
-    document.getElementById('epNumber').value = ep.number || num;
-    document.getElementById('epTitle').value = ep.title || '';
-    document.getElementById('epDuration').value = ep.duration || '';
-    document.getElementById('epThumbnail').value = ep.thumbnail || '';
+window.dlEp=async n=>{
+    if(!confirm(`Delete episode ${n}?`))return;
+    await db.ref(`animes/${aid}/episodes/${n}`).remove();
+    if(anime[aid].episodes)delete anime[aid].episodes[n];
+    renderEps();toast('Deleted');
+};
 
-    epSources = ep.sources ? JSON.parse(JSON.stringify(ep.sources)) : {};
-    epSubtitles = ep.subtitles ? JSON.parse(JSON.stringify(ep.subtitles)) : {};
-    epAudio = ep.audio ? JSON.parse(JSON.stringify(ep.audio)) : {};
-
-    renderTracks('video');
-    renderTracks('subtitle');
-    renderTracks('audio');
-
-    editingEpNum = num;
-    document.getElementById('saveBtn').textContent = 'Update Episode';
-    document.getElementById('episodeForm').scrollIntoView({ behavior: 'smooth' });
-}
-
-async function deleteEpisode(num) {
-    if (!confirm(`Delete episode ${num}?`)) return;
-    try {
-        await db.ref(`animes/${selectedAnimeId}/episodes/${num}`).remove();
-        if (allAnime[selectedAnimeId].episodes) delete allAnime[selectedAnimeId].episodes[num];
-        renderEpisodeList();
-    } catch (err) { alert('Delete failed: ' + err.message); }
-}
-
-/* ---------- UPLOAD PROGRESS ---------- */
-function updateProgress(pct) {
-    const wrap = document.getElementById('progress');
-    wrap.hidden = false;
-    wrap.querySelector('.progress-fill').style.width = pct + '%';
-    wrap.querySelector('.progress-text').textContent = `Uploading... ${pct.toFixed(0)}%`;
-    if (pct >= 100) setTimeout(() => { wrap.hidden = true; }, 800);
-}
+function cap(s){return String(s).charAt(0).toUpperCase()+String(s).slice(1);}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function showMsg(el,t,e){el.textContent=t;el.classList.toggle('err',!!e);if(t)setTimeout(()=>{el.textContent='';el.classList.remove('err');},4000);}
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2500);}
 </script>
 </body>
 </html>
