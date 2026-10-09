@@ -3,16 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <title>Redirecting...</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-body{background:#07070d;color:#fff;font-family:'Inter',sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;text-align:center}
+body{background:#07070d;color:#fff;font-family:'Inter',system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;text-align:center}
 .spinner{width:44px;height:44px;border:3px solid rgba(124,77,255,.2);border-top-color:#7c4dff;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 20px}
 @keyframes spin{to{transform:rotate(360deg)}}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 15% 20%,rgba(124,77,255,.12),transparent 45%),radial-gradient(circle at 85% 70%,rgba(77,159,255,.1),transparent 45%);z-index:-1;pointer-events:none}
 </style>
 </head>
 <body>
 <div>
     <div class="spinner"></div>
-    <p style="color:#a5a5b3">Redirecting to edit page...</p>
+    <p style="color:#a5a5b3;font-size:14px;font-weight:500">Redirecting to edit page...</p>
 </div>
 <script>
 const id = new URLSearchParams(location.search).get('id');
