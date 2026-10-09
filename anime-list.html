@@ -24,7 +24,7 @@
                 <strong>MAX</strong>
             </div>
             <div class="loader-spinner"></div>
-            <p>Loading...</p>
+            <p>Loading Anime List...</p>
         </div>
     </div>
 
@@ -60,7 +60,7 @@
                 <div>
                     <span class="section-label">CONTENT</span>
                     <h1>Anime List</h1>
-                    <p>Saari anime series yahan manage karein.</p>
+                    <p>Saari anime series manage karein. Edit icon par tap karke change karein.</p>
                 </div>
 
                 <button type="button" id="addAnimeButton" class="icon-button" aria-label="Add Anime">
@@ -77,7 +77,7 @@
                         id="animeListSearch"
                         class="management-search"
                         type="search"
-                        placeholder="Search anime by title, genre..."
+                        placeholder="Search anime by title or genre..."
                         aria-label="Search anime">
                 </div>
 
@@ -94,8 +94,11 @@
 
         </main>
 
-        <!-- FIXED BOTTOM NAVIGATION -->
+        <!-- =================================================
+             FIXED BOTTOM NAVIGATION (5 ITEMS)
+        ================================================== -->
         <nav class="bottom-navigation" id="bottomNavigation" aria-label="Main navigation">
+
             <a href="index.html" class="bottom-nav-link">
                 <i class="fa fa-th-large" aria-hidden="true"></i>
                 <span>Dashboard</span>
@@ -104,6 +107,11 @@
             <a href="anime-list.html" class="bottom-nav-link active" aria-current="page">
                 <i class="fa fa-list" aria-hidden="true"></i>
                 <span>Anime List</span>
+            </a>
+
+            <a href="upload.html" class="bottom-nav-link">
+                <i class="fa fa-cloud-upload" aria-hidden="true"></i>
+                <span>Upload</span>
             </a>
 
             <a href="anime-title.html" class="bottom-nav-link">
@@ -115,6 +123,7 @@
                 <i class="fa fa-user" aria-hidden="true"></i>
                 <span>Profile</span>
             </a>
+
         </nav>
 
         <!-- Admin details for JavaScript compatibility -->
