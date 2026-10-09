@@ -3,308 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0b0b12">
-    <meta name="description" content="Anime Max Admin Panel — Manage anime, movies, episodes, video servers and notifications.">
-    <meta name="robots" content="noindex, nofollow">
-
-    <title>Admin Dashboard | Anime Max</title>
-
-    <link rel="icon" type="image/png" href="assets/favicon.png">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Admin Login - Anime Max</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-database-compat.js"></script>
 </head>
+<body>
 
-<body class="admin-body" data-page="dashboard">
-
-    <!-- LOADING SCREEN -->
-    <div id="pageLoader" class="page-loader" role="status" aria-live="polite">
-        <div class="loader-content">
-            <div class="loader-logo">
-                <span>ANIME</span>
-                <strong>MAX</strong>
-            </div>
-            <div class="loader-spinner"></div>
-            <p>Loading...</p>
-        </div>
+<div class="login-screen">
+    <div class="login-card">
+        <div class="login-logo"><span>ANIME</span><strong>MAX</strong></div>
+        <h1>Admin Login</h1>
+        <p>Enter your admin credentials</p>
+        <form id="loginForm">
+            <input type="email" id="loginEmail" placeholder="Email" required autocomplete="email">
+            <input type="password" id="loginPassword" placeholder="Password" required autocomplete="current-password">
+            <button type="submit" class="btn-primary">Login</button>
+        </form>
+        <p id="loginError" class="login-error"></p>
     </div>
+</div>
 
-    <!-- NOTIFICATION -->
-    <div id="notificationMessage" class="notification-message" role="status" aria-live="polite" hidden></div>
+<script>
+    const ADMIN_EMAIL = 'admin@animemax.com';
+    const FIREBASE_CONFIG = {
+        apiKey: "AIzaSyCpfrluxsBhnz48ve9RykIy1IxzbBfk7dA",
+        authDomain: "sm-studio-7.firebaseapp.com",
+        databaseURL: "https://sm-studio-7-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "sm-studio-7",
+        storageBucket: "sm-studio-7.firebasestorage.app",
+        messagingSenderId: "126291501472",
+        appId: "1:126291501472:web:a55c94b5b87581177204c5"
+    };
 
-    <!-- LOGIN SCREEN -->
-    <main id="loginScreen" class="login-screen">
-        <section class="login-card">
+    firebase.initializeApp(FIREBASE_CONFIG);
+    const auth = firebase.auth();
 
-            <div class="login-brand">
-                <div class="brand-icon">
-                    <i class="fa fa-play-circle" aria-hidden="true"></i>
-                </div>
-                <div class="brand-name">
-                    <span>ANIME</span>
-                    <strong>MAX</strong>
-                </div>
-            </div>
+    const loginForm = document.getElementById('loginForm');
+    const loginError = document.getElementById('loginError');
 
-            <div class="login-heading">
-                <span class="section-label">ADMINISTRATOR</span>
-                <h1>Welcome Back</h1>
-                <p>Sign in to manage your Anime Max website.</p>
-            </div>
+    // If already logged in, redirect
+    auth.onAuthStateChanged((user) => {
+        if (user && user.email === ADMIN_EMAIL) {
+            window.location.href = 'dashboard.html';
+        }
+    });
 
-            <form id="adminLoginForm" class="login-form" autocomplete="on">
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        loginError.textContent = '';
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
 
-                <div class="form-group">
-                    <label for="adminEmail">Email Address</label>
-                    <div class="input-wrapper">
-                        <i class="fa fa-envelope" aria-hidden="true"></i>
-                        <input type="email" id="adminEmail" name="email"
-                               placeholder="Enter your admin email"
-                               autocomplete="username" inputmode="email"
-                               autocapitalize="none" spellcheck="false" required>
-                    </div>
-                </div>
+        if (email !== ADMIN_EMAIL) {
+            loginError.textContent = 'Not an admin account.';
+            return;
+        }
 
-                <div class="form-group">
-                    <label for="adminPassword">Password</label>
-                    <div class="input-wrapper">
-                        <i class="fa fa-lock" aria-hidden="true"></i>
-                        <input type="password" id="adminPassword" name="password"
-                               placeholder="Enter your password"
-                               autocomplete="current-password" required>
-                        <button type="button" id="togglePassword" class="password-toggle"
-                                aria-label="Show password" aria-pressed="false">
-                            <i class="fa fa-eye" aria-hidden="true"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="login-options">
-                    <label class="remember-option">
-                        <input type="checkbox" id="rememberAdmin">
-                        <span>Remember me</span>
-                    </label>
-                    <button type="button" id="forgotPasswordButton" class="text-button">
-                        Forgot password?
-                    </button>
-                </div>
-
-                <button type="submit" id="adminLoginButton" class="primary-button login-button">
-                    <span>Sign In</span>
-                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
-                </button>
-
-                <p id="loginError" class="form-error" role="alert"
-                   aria-live="assertive" hidden></p>
-            </form>
-
-            <div class="login-security">
-                <i class="fa fa-shield" aria-hidden="true"></i>
-                <span>Secure administrator access</span>
-            </div>
-
-        </section>
-
-        <footer class="login-footer">
-            <p>&copy; <span id="currentYear"></span> Anime Max. All rights reserved.</p>
-        </footer>
-    </main>
-
-    <!-- ADMIN APPLICATION -->
-    <div id="adminApp" class="admin-app" hidden>
-
-        <!-- HEADER -->
-        <header class="admin-header">
-            <a href="index.html" class="header-brand" aria-label="Anime Max Dashboard">
-                <span>ANIME</span>
-                <strong>MAX</strong>
-            </a>
-
-            <div class="header-actions">
-                <button type="button" class="icon-button" id="headerNotificationButton"
-                        data-page="notifications" aria-label="Notifications">
-                    <i class="fa fa-bell" aria-hidden="true"></i>
-                </button>
-
-                <a href="profile.html" class="profile-avatar" id="headerProfileButton" aria-label="Admin profile">
-                    <i class="fa fa-user" aria-hidden="true"></i>
-                </a>
-            </div>
-        </header>
-
-        <!-- MAIN CONTENT -->
-        <main id="adminMainContent" class="admin-main">
-
-            <section class="admin-page" data-page-content="dashboard">
-
-                <div class="page-heading">
-                    <div>
-                        <span class="section-label">OVERVIEW</span>
-                        <h1>Dashboard</h1>
-                        <p>Welcome to your Anime Max Admin Panel.</p>
-                    </div>
-                    <button type="button" id="refreshDashboardButton" class="icon-button refresh-button"
-                            aria-label="Refresh dashboard">
-                        <i class="fa fa-refresh" aria-hidden="true"></i>
-                    </button>
-                </div>
-
-                <!-- STATISTICS -->
-                <div class="stats-grid">
-                    <article class="stat-card">
-                        <div class="stat-icon purple"><i class="fa fa-television" aria-hidden="true"></i></div>
-                        <div>
-                            <span>Total Anime</span>
-                            <strong id="totalAnimeCount">—</strong>
-                            <small>Anime series</small>
-                        </div>
-                    </article>
-
-                    <article class="stat-card">
-                        <div class="stat-icon blue"><i class="fa fa-film" aria-hidden="true"></i></div>
-                        <div>
-                            <span>Total Movies</span>
-                            <strong id="totalMoviesCount">—</strong>
-                            <small>Movies in library</small>
-                        </div>
-                    </article>
-
-                    <article class="stat-card">
-                        <div class="stat-icon pink"><i class="fa fa-play-circle" aria-hidden="true"></i></div>
-                        <div>
-                            <span>Total Episodes</span>
-                            <strong id="totalEpisodesCount">—</strong>
-                            <small>Episodes in library</small>
-                        </div>
-                    </article>
-
-                    <article class="stat-card">
-                        <div class="stat-icon green"><i class="fa fa-users" aria-hidden="true"></i></div>
-                        <div>
-                            <span>Total Users</span>
-                            <strong id="totalUsersCount">—</strong>
-                            <small>Registered users</small>
-                        </div>
-                    </article>
-                </div>
-
-                <!-- QUICK ACTIONS -->
-                <section class="content-card">
-                    <div class="card-heading">
-                        <div>
-                            <h2>Quick Actions</h2>
-                            <p>Manage your content quickly.</p>
-                        </div>
-                    </div>
-
-                    <div class="quick-actions-grid">
-                        <a href="anime-list.html?add=1" class="quick-action" style="text-decoration:none;">
-                            <span class="quick-action-icon purple"><i class="fa fa-plus" aria-hidden="true"></i></span>
-                            <span>Add Anime</span>
-                        </a>
-
-                        <a href="upload.html" class="quick-action" style="text-decoration:none;">
-                            <span class="quick-action-icon blue"><i class="fa fa-cloud-upload" aria-hidden="true"></i></span>
-                            <span>Upload</span>
-                        </a>
-
-                        <button type="button" class="quick-action" data-action="add-movie">
-                            <span class="quick-action-icon pink"><i class="fa fa-film" aria-hidden="true"></i></span>
-                            <span>Add Movie</span>
-                        </button>
-
-                        <button type="button" class="quick-action" data-action="send-notification">
-                            <span class="quick-action-icon green"><i class="fa fa-bell" aria-hidden="true"></i></span>
-                            <span>Notification</span>
-                        </button>
-                    </div>
-                </section>
-
-                <!-- RECENT CONTENT -->
-                <section class="content-card">
-                    <div class="card-heading">
-                        <div>
-                            <h2>Recent Content</h2>
-                            <p>Recently added anime and movies.</p>
-                        </div>
-                        <a href="anime-list.html" class="text-button" style="text-decoration:none;">View All</a>
-                    </div>
-
-                    <div id="recentContentList" class="recent-content-list">
-                        <div class="empty-state">
-                            <i class="fa fa-folder-open-o" aria-hidden="true"></i>
-                            <h3>No content available</h3>
-                            <p>Your recently added content will appear here.</p>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- SYSTEM STATUS -->
-                <section class="content-card">
-                    <div class="card-heading">
-                        <div>
-                            <h2>System Status</h2>
-                            <p>Connection and service information.</p>
-                        </div>
-                    </div>
-
-                    <div class="system-status-list">
-                        <div class="system-status-item">
-                            <span>Firebase Connection</span>
-                            <span id="firebaseStatus" class="status-badge status-pending">Checking...</span>
-                        </div>
-                        <div class="system-status-item">
-                            <span>Admin Authentication</span>
-                            <span id="authStatus" class="status-badge status-pending">Checking...</span>
-                        </div>
-                    </div>
-                </section>
-
-                <footer class="admin-footer">
-                    <p>&copy; <span id="dashboardYear"></span> Anime Max Admin Panel</p>
-                </footer>
-            </section>
-
-        </main>
-
-        <!-- =================================================
-             FIXED BOTTOM NAVIGATION (5 ITEMS)
-        ================================================== -->
-        <nav class="bottom-navigation" id="bottomNavigation" aria-label="Main navigation">
-
-            <a href="index.html" class="bottom-nav-link active" aria-current="page">
-                <i class="fa fa-th-large" aria-hidden="true"></i>
-                <span>Dashboard</span>
-            </a>
-
-            <a href="anime-list.html" class="bottom-nav-link">
-                <i class="fa fa-list" aria-hidden="true"></i>
-                <span>Anime List</span>
-            </a>
-
-            <a href="upload.html" class="bottom-nav-link">
-                <i class="fa fa-cloud-upload" aria-hidden="true"></i>
-                <span>Upload</span>
-            </a>
-
-            <a href="anime-title.html" class="bottom-nav-link">
-                <i class="fa fa-television" aria-hidden="true"></i>
-                <span>Anime Title</span>
-            </a>
-
-            <a href="profile.html" class="bottom-nav-link">
-                <i class="fa fa-user" aria-hidden="true"></i>
-                <span>Profile</span>
-            </a>
-
-        </nav>
-
-        <!-- Admin details for JavaScript compatibility -->
-        <span id="sidebarAdminName" hidden>Administrator</span>
-        <span id="sidebarAdminEmail" hidden>Admin Account</span>
-    </div>
-
-    <!-- MAIN JAVASCRIPT -->
-    <script type="module" src="js/script.js"></script>
-
+        try {
+            await auth.signInWithEmailAndPassword(email, password);
+        } catch (err) {
+            const c = err.code || '';
+            if (c.includes('user-not-found')) loginError.textContent = 'No admin account.';
+            else if (c.includes('wrong-password')) loginError.textContent = 'Wrong password.';
+            else loginError.textContent = 'Login failed.';
+        }
+    });
+</script>
 </body>
 </html>
