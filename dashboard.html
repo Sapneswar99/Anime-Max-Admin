@@ -70,11 +70,9 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
 .qa .arrow{color:var(--tx3);transition:transform .3s}
 .qa:hover .arrow{transform:translateX(4px);color:var(--pur2)}
 
-/* Highlight style for Video List quick action */
 .qa.highlight .ic{background:linear-gradient(135deg,rgba(77,255,157,.2),rgba(77,159,255,.2));color:var(--grn)}
 .qa.highlight:hover{border-color:var(--grn);background:rgba(77,255,157,.08)}
 
-/* Danger style for Delete Title */
 .qa.danger .ic{background:linear-gradient(135deg,rgba(255,77,109,.2),rgba(255,77,157,.2));color:var(--red)}
 .qa.danger:hover{border-color:var(--red);background:rgba(255,77,109,.08)}
 .qa.danger:hover .arrow{color:var(--red)}
@@ -124,12 +122,10 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
                 </svg>
                 Upload Movies
             </a>
-            <!-- ===== DELETE TITLE NAV ITEM ===== -->
             <a href="delete-title.html" class="nav danger">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
                 Delete Title
             </a>
-            <!-- ================================ -->
         </nav>
         <div class="footer-side">
             <div class="user"><div class="avatar" id="av">A</div><span id="em">admin</span></div>
@@ -188,13 +184,11 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
                 <span>View All Content</span>
                 <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
-            <!-- ===== DELETE TITLE QUICK ACTION ===== -->
             <a href="delete-title.html" class="qa danger">
                 <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></div>
                 <span>Delete Title</span>
                 <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
-            <!-- =================================== -->
         </div>
     </main>
 </div>
@@ -219,10 +213,23 @@ async function load(){
         const s=await db.ref('animes').once('value');
         const d=s.val()||{};
         const items=Object.entries(d).map(([id,a])=>({id,...a}));
+
+        // Total titles (series + movies)
         $('t1').textContent=items.length;
+
+        // Series count
         $('t2').textContent=items.filter(a=>(a.type||'series')==='series').length;
+
+        // Movies count (type === 'movie')
         $('t3').textContent=items.filter(a=>a.type==='movie').length;
-        let eps=0;items.forEach(a=>{if(a.episodes)eps+=Object.keys(a.episodes).length;});
+
+        // Episodes count (sum of all episodes under series)
+        let eps=0;
+        items.forEach(a=>{
+            if(a.type!=='movie' && a.episodes){
+                eps+=Object.keys(a.episodes).length;
+            }
+        });
         $('t4').textContent=eps;
     }catch(e){console.error(e);}
 }
