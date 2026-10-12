@@ -26,7 +26,7 @@ button,input,textarea,select{font-family:inherit;color:inherit;max-width:100%}
 .logo{font-size:22px;font-weight:900;letter-spacing:-1px;padding:8px 12px 24px;border-bottom:1px solid var(--bd);margin-bottom:16px;display:flex;align-items:center;gap:10px}
 .logo b{background:var(--grd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .badge{font-size:9px;font-weight:800;letter-spacing:1.5px;padding:4px 8px;background:rgba(124,77,255,.15);color:var(--pur2);border-radius:6px;border:1px solid rgba(124,77,255,.3)}
-nav{display:flex;flex-direction:column;gap:4px;flex:1}
+nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
 .nav{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;color:var(--tx2);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;background:transparent;border:none;text-align:left;width:100%}
 .nav svg{width:18px;height:18px;flex-shrink:0}
 .nav:hover{color:#fff;background:rgba(124,77,255,.08)}
@@ -40,6 +40,10 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1}
 .logout:hover{background:rgba(255,77,109,.15)}
 .main{padding:36px 44px 60px;max-width:1100px;width:100%;min-width:0}
 .hdr{margin-bottom:28px}
+.hdr-top{display:flex;align-items:center;gap:16px;margin-bottom:10px;flex-wrap:wrap}
+.back-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;background:rgba(255,255,255,.04);border:1px solid var(--bd2);border-radius:12px;color:var(--tx2);font-size:13px;font-weight:700;cursor:pointer;transition:all .25s;flex-shrink:0}
+.back-btn:hover{background:rgba(124,77,255,.12);border-color:var(--pur);color:#fff;transform:translateX(-2px)}
+.back-btn svg{width:16px;height:16px}
 .hdr h1{font-size:36px;font-weight:900;letter-spacing:-1.5px;margin-bottom:6px;background:linear-gradient(135deg,#fff 30%,#b8b8cc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;word-break:break-word}
 .hdr p{color:var(--tx3);font-size:15px;font-weight:500;word-break:break-word}
 .sel{width:100%;padding:16px;background:var(--card);border:1.5px solid var(--bd2);border-radius:14px;font-size:15px;font-weight:600;margin-bottom:24px;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236f6f8a' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");background-repeat:no-repeat;background-position:right 16px center;padding-right:44px}
@@ -91,10 +95,6 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1}
 .empty{padding:60px 20px;text-align:center;color:var(--tx3);font-size:15px}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);padding:14px 24px;background:var(--card);border:1px solid var(--pur);border-radius:14px;font-size:13px;font-weight:700;color:#fff;box-shadow:0 20px 60px rgba(0,0,0,.6);opacity:0;transition:all .3s;z-index:9999;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.preview{aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#1b1b28,#15151f);border:1px solid var(--bd);position:relative;display:grid;place-items:center;color:var(--tx3);font-size:12px;font-weight:600;margin-top:8px}
-.preview img{width:100%;height:100%;object-fit:cover;display:block}
-.preview .ph{display:flex;flex-direction:column;align-items:center;gap:8px}
-.preview .ph svg{width:40px;height:40px;opacity:.4}
 
 @media(max-width:900px){
     .layout{grid-template-columns:1fr;width:100%}
@@ -103,6 +103,7 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1}
     .hdr{margin-bottom:20px}
     .hdr h1{font-size:24px;letter-spacing:-.8px}
     .hdr p{font-size:13px}
+    .back-btn{padding:9px 14px;font-size:12px}
     .sel{padding:14px;font-size:14px;margin-bottom:18px;padding-right:40px}
     .info-bar{margin-bottom:18px}
     .info-bar h3{font-size:17px}
@@ -170,11 +171,17 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1}
 
     <main class="main">
         <div class="hdr">
+            <div class="hdr-top">
+                <button class="back-btn" onclick="history.length>1?history.back():location.href='dashboard.html'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    Back
+                </button>
+            </div>
             <h1>Upload Movies</h1>
             <p>Add anime movies with multiple qualities, subtitles & audio tracks</p>
         </div>
 
-        <select class="sel" id="sel"><option value="">-- Choose Anime --</option></select>
+        <select class="sel" id="sel"><option value="">-- Choose Movie --</option></select>
 
         <div id="mgr" hidden>
             <div class="info-bar">
@@ -238,7 +245,7 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1}
             </form>
         </div>
 
-        <p class="empty" id="emp">Select an anime to start uploading movies</p>
+        <p class="empty" id="emp">Select a movie to start uploading</p>
     </main>
 </div>
 
@@ -262,10 +269,14 @@ $('lo').addEventListener('click',()=>auth.signOut());
 async function init(){
     const s=await db.ref('animes').once('value');
     anime=s.val()||{};
-    const list=Object.entries(anime);
-    $('sel').innerHTML='<option value="">-- Choose Anime --</option>'+list.map(([id,a])=>`<option value="${esc(id)}">${esc(a.title)}</option>`).join('');
+    // ✅ ONLY movies (type='movie'), not series
+    const movies=Object.entries(anime).filter(([_,a])=>a.type==='movie');
+    $('sel').innerHTML='<option value="">-- Choose Movie --</option>'+movies.map(([id,a])=>`<option value="${esc(id)}">${esc(a.title)}</option>`).join('');
+    if(!movies.length){
+        $('emp').textContent='No movies yet. Add a movie from Anime Title page first.';
+    }
     const p=new URLSearchParams(location.search).get('id');
-    if(p&&anime[p]){$('sel').value=p;load(p);}
+    if(p&&anime[p]&&anime[p].type==='movie'){$('sel').value=p;load(p);}
 }
 
 $('sel').addEventListener('change',e=>{
@@ -315,7 +326,7 @@ $('aadd').addEventListener('click',()=>{
 
 $('vf').addEventListener('change',async e=>{
     const f=e.target.files[0];if(!f)return;
-    if(!aid){alert('Choose anime first');e.target.value='';return;}
+    if(!aid){alert('Choose movie first');e.target.value='';return;}
     let q=$('vq').value;if(q==='__c')q=$('vqc').value.trim()||'custom';
     try{const u=await up(f,`anime-max/movies/${aid}/video-${q}-${Date.now()}.${f.name.split('.').pop()}`);src[q]={url:u};renderT('v');toast('Uploaded '+q);}catch(x){alert('Upload failed');}
     e.target.value='';
@@ -323,7 +334,7 @@ $('vf').addEventListener('change',async e=>{
 
 $('sf').addEventListener('change',async e=>{
     const f=e.target.files[0];if(!f)return;
-    if(!aid){alert('Choose anime first');e.target.value='';return;}
+    if(!aid){alert('Choose movie first');e.target.value='';return;}
     let l=$('sl').value;if(l==='__c')l=$('slc').value.trim()||'custom';
     try{const u=await up(f,`anime-max/movies/${aid}/sub-${l}-${Date.now()}.${f.name.split('.').pop()}`);const d=$('sdef').checked;if(d)Object.keys(sub).forEach(k=>sub[k].default=false);sub[l]={label:cap(l),url:u,default:d};renderT('s');}catch(x){alert('Upload failed');}
     e.target.value='';
@@ -331,7 +342,7 @@ $('sf').addEventListener('change',async e=>{
 
 $('af').addEventListener('change',async e=>{
     const f=e.target.files[0];if(!f)return;
-    if(!aid){alert('Choose anime first');e.target.value='';return;}
+    if(!aid){alert('Choose movie first');e.target.value='';return;}
     let l=$('al').value;if(l==='__c')l=$('alc').value.trim()||'custom';
     try{const u=await up(f,`anime-max/movies/${aid}/audio-${l}-${Date.now()}.${f.name.split('.').pop()}`);const d=$('adef').checked;if(d)Object.keys(aud).forEach(k=>aud[k].default=false);aud[l]={label:cap(l),url:u,default:d};renderT('a');}catch(x){alert('Upload failed');}
     e.target.value='';
@@ -359,12 +370,11 @@ function renderT(k){
 $('epf').addEventListener('submit',async e=>{
     e.preventDefault();
     const msg=$('msg');
-    if(!aid){showMsg(msg,'Select anime first',true);return;}
+    if(!aid){showMsg(msg,'Select movie first',true);return;}
     const title=$('mtitle').value.trim();
     if(!title){showMsg(msg,'Movie title required',true);return;}
     if(!Object.keys(src).length){showMsg(msg,'Add at least one video',true);return;}
 
-    // Generate a safe key from title
     const key=slugify(title);
     const data={
         title,
