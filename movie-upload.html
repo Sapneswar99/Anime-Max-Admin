@@ -198,7 +198,7 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
                 <div class="sec">🎞️ Movie Details</div>
                 <div class="grid">
                     <div class="fg full"><label>Movie Title *</label><input id="mtitle" placeholder="e.g. Jujutsu Kaisen 0"></div>
-                    <div class="fg"><label>Release Year</label><input id="year" type="number" min="1900" max="2100" placeholder="2024"></div>
+                    <div class="fg"><label>Release Year</label><input id="year" type="text" inputmode="numeric" maxlength="4" placeholder="2024"></div>
                     <div class="fg"><label>Duration</label><input id="dur" placeholder="1h 45m"></div>
                     <div class="fg full"><label>Genres (comma separated)</label><input id="gen" placeholder="Action, Fantasy"></div>
                     <div class="fg full"><label>Poster URL</label><input id="poster" placeholder="https://..."></div>
@@ -274,7 +274,6 @@ $('lo').addEventListener('click',()=>auth.signOut());
 async function init(){
     const s=await db.ref('animes').once('value');
     anime=s.val()||{};
-    // ✅ ONLY movies (type='movie')
     const movies=Object.entries(anime).filter(([_,a])=>a.type==='movie');
     $('sel').innerHTML='<option value="">-- Choose Movie --</option>'+movies.map(([id,a])=>`<option value="${esc(id)}">${esc(a.title)}</option>`).join('');
     if(!movies.length){
@@ -295,7 +294,7 @@ function load(id){
     $('emp').hidden=true;$('mgr').hidden=false;
     $('atitle').textContent=a.title||'Movie';
 
-    // ✅ Pre-fill movie details from anime node (flat structure)
+    // ✅ Pre-fill (year is now a text input — read directly)
     $('mtitle').value=a.title||'';
     $('year').value=a.year||'';
     $('dur').value=a.duration||'';
@@ -303,7 +302,6 @@ function load(id){
     $('poster').value=a.poster||a.thumbnail||'';
     $('desc').value=a.description||'';
 
-    // ✅ Pre-fill tracks from anime node directly (flat)
     src=a.sources?JSON.parse(JSON.stringify(a.sources)):{};
     sub=a.subtitles?JSON.parse(JSON.stringify(a.subtitles)):{};
     aud=a.audio?JSON.parse(JSON.stringify(a.audio)):{};
@@ -405,30 +403,38 @@ $('epf').addEventListener('submit',async e=>{
     const btn=$('sv');btn.disabled=true;btn.textContent='Saving...';
 
     try{
-        // ✅ Save DIRECTLY into anime node (flat structure — no movies/ subfolder)
-        await db.ref('animes/'+aid).update({
-            title,
-            year:parseInt($('year').value)||null,
-            duration:$('dur').value.trim(),
-            genres:$('gen').value.trim(),
-            poster:$('poster').value.trim(),
-            description:$('desc').value.trim(),
-            sources:src,
-            subtitles:sub,
-            audio:aud,
-            updatedAt:Date.now()
-        });
+        // ✅ FIX: Build update data carefully
+        // Firebase rules validate: year must be STRING with length < 10.
+        // Earlier we sent parseInt(...) || null — Number or null — which failed validation.
+        const yearStr = $('year').value.trim();
+
+        const updateData = {
+            title: title,
+            duration: $('dur').value.trim(),
+            genres: $('gen').value.trim(),
+            poster: $('poster').value.trim(),
+            description: $('desc').value.trim(),
+            sources: src,
+            subtitles: sub,
+            audio: aud,
+            updatedAt: Date.now()
+        };
+
+        // ✅ Only include year if non-empty, and as a STRING
+        if (yearStr) updateData.year = yearStr;
+
+        await db.ref('animes/'+aid).update(updateData);
 
         // Update local cache
         anime[aid].title=title;
-        anime[aid].year=$('year').value;
-        anime[aid].duration=$('dur').value.trim();
-        anime[aid].genres=$('gen').value.trim();
-        anime[aid].poster=$('poster').value.trim();
-        anime[aid].description=$('desc').value.trim();
+        anime[aid].duration=updateData.duration;
+        anime[aid].genres=updateData.genres;
+        anime[aid].poster=updateData.poster;
+        anime[aid].description=updateData.description;
         anime[aid].sources=src;
         anime[aid].subtitles=sub;
         anime[aid].audio=aud;
+        if (yearStr) anime[aid].year = yearStr;
 
         $('atitle').textContent=title;
         showMsg(msg,'✅ Saved!');
