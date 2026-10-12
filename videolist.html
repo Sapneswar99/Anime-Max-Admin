@@ -166,12 +166,10 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M10 9l5 3-5 3V9z" fill="currentColor" stroke="none"/></svg>
                 Upload Movies
             </a>
-            <!-- ===== DELETE TITLE NAV ITEM ===== -->
             <a href="delete-title.html" class="nav danger">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
                 Delete Title
             </a>
-            <!-- ================================ -->
         </nav>
         <div class="footer-side">
             <div class="user"><div class="avatar" id="av">A</div><span id="em">admin</span></div>
@@ -266,48 +264,47 @@ async function loadVideos(){
             const animeTitle=anime.title||anime.name||'Unknown';
             const animeType=anime.type||'series';
 
-            // ---- Episodes ----
-            const episodes=anime.episodes||{};
-            Object.entries(episodes).forEach(([epKey,ep])=>{
-                const sources=ep.sources||{};
-                const sourceKeys=Object.keys(sources);
-                allItems.push({
-                    kind:'episode',
-                    id:epKey,
-                    parentId:animeId,
-                    parentTitle:animeTitle,
-                    title:ep.title||ep.name||`Episode ${ep.number||epKey}`,
-                    thumbnail:ep.thumbnail||ep.thumb||'',
-                    episodeNumber:ep.number||ep.episodeNumber||ep.ep||epKey,
-                    duration:ep.duration||'',
-                    qualities:sourceKeys,
-                    subsCount:ep.subtitles?Object.keys(ep.subtitles).length:0,
-                    audioCount:ep.audio?Object.keys(ep.audio).length:0,
-                    addedAt:ep.addedAt||ep.createdAt||0
-                });
-            });
-
-            // ---- Movies ----
-            const movies=anime.movies||{};
-            Object.entries(movies).forEach(([mvKey,mv])=>{
-                const sources=mv.sources||{};
+            if(animeType==='movie'){
+                // ✅ NEW: Movie data stored DIRECTLY in anime node (flat)
+                const sources=anime.sources||{};
                 const sourceKeys=Object.keys(sources);
                 allItems.push({
                     kind:'movie',
-                    id:mvKey,
+                    id:'main',                 // movie ID = anime ID, use 'main' as key
                     parentId:animeId,
                     parentTitle:animeTitle,
-                    title:mv.title||mv.name||'Untitled Movie',
-                    thumbnail:mv.thumbnail||mv.thumb||'',
-                    year:mv.year||'',
-                    duration:mv.duration||'',
-                    genre:mv.genre||'',
+                    title:anime.title||'Untitled Movie',
+                    thumbnail:anime.poster||anime.banner||anime.thumbnail||'',
+                    year:anime.year||'',
+                    duration:anime.duration||'',
+                    genre:anime.genres||anime.genre||'',
                     qualities:sourceKeys,
-                    subsCount:mv.subtitles?Object.keys(mv.subtitles).length:0,
-                    audioCount:mv.audio?Object.keys(mv.audio).length:0,
-                    addedAt:mv.addedAt||mv.createdAt||0
+                    subsCount:anime.subtitles?Object.keys(anime.subtitles).length:0,
+                    audioCount:anime.audio?Object.keys(anime.audio).length:0,
+                    addedAt:anime.updatedAt||anime.createdAt||0
                 });
-            });
+            }else{
+                // ✅ Series: episodes from episodes/ subfolder
+                const episodes=anime.episodes||{};
+                Object.entries(episodes).forEach(([epKey,ep])=>{
+                    const sources=ep.sources||{};
+                    const sourceKeys=Object.keys(sources);
+                    allItems.push({
+                        kind:'episode',
+                        id:epKey,
+                        parentId:animeId,
+                        parentTitle:animeTitle,
+                        title:ep.title||ep.name||`Episode ${ep.number||epKey}`,
+                        thumbnail:ep.thumbnail||ep.thumb||'',
+                        episodeNumber:ep.number||ep.episodeNumber||ep.ep||epKey,
+                        duration:ep.duration||'',
+                        qualities:sourceKeys,
+                        subsCount:ep.subtitles?Object.keys(ep.subtitles).length:0,
+                        audioCount:ep.audio?Object.keys(ep.audio).length:0,
+                        addedAt:ep.addedAt||ep.createdAt||0
+                    });
+                });
+            }
         });
 
         // Sort: newest first
@@ -341,11 +338,8 @@ function render(){
     const grid=$('grid');
 
     const filtered=allItems.filter(v=>{
-        // Type filter
         if(currentType!=='all' && v.kind!==currentType) return false;
-        // Search
         const matchSearch=!q||v.title.toLowerCase().includes(q)||v.parentTitle.toLowerCase().includes(q);
-        // Parent filter
         const matchParent=!filterParent||v.parentTitle===filterParent;
         return matchSearch&&matchParent;
     });
@@ -378,9 +372,9 @@ function render(){
             ? `<img src="${escapeHtml(v.thumbnail)}" alt="${escapeHtml(v.title)}" loading="lazy" onerror="this.style.display='none'">`
             : `<div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M10 9l5 3-5 3V9z"/></svg></div>`;
 
-        // Edit URL — both go to unified edit-video.html now
+        // Edit URL — both go to unified edit-video.html
         const editUrl=isMovie
-            ? `edit-video.html?anime=${encodeURIComponent(v.parentId)}&movie=${encodeURIComponent(v.id)}`
+            ? `edit-video.html?anime=${encodeURIComponent(v.parentId)}&movie=main`
             : `edit-video.html?anime=${encodeURIComponent(v.parentId)}&episode=${encodeURIComponent(v.id)}`;
 
         return `
@@ -414,7 +408,6 @@ function render(){
         </div>`;
     }).join('');
 
-    // Delete listeners
     grid.querySelectorAll('.act.del').forEach(btn=>{
         btn.addEventListener('click',()=>deleteItem(btn.dataset.kind,btn.dataset.parent,btn.dataset.id,btn.dataset.title));
     });
@@ -425,21 +418,30 @@ function escapeHtml(s){
 }
 
 async function deleteItem(kind,parentId,id,title){
-    const label=kind==='movie'?'movie':'episode';
-    if(!confirm(`Delete ${label} "${title}"?\n\nThis cannot be undone.`))return;
-    try{
-        const path=kind==='movie'
-            ? `animes/${parentId}/movies/${id}`
-            : `animes/${parentId}/episodes/${id}`;
-        await db.ref(path).remove();
-        allItems=allItems.filter(v=>!(v.kind===kind&&v.parentId===parentId&&v.id===id));
-        $('cAll').textContent=allItems.length;
-        $('cEp').textContent=allItems.filter(i=>i.kind==='episode').length;
-        $('cMv').textContent=allItems.filter(i=>i.kind==='movie').length;
-        render();
-    }catch(e){
-        alert('Delete failed: '+e.message);
+    if(kind==='movie'){
+        // ✅ Movie delete = remove whole anime node (metadata + sources)
+        if(!confirm(`Delete movie "${title}"?\n\nThis will remove the movie title AND all its sources.\n\nThis cannot be undone.`))return;
+        try{
+            await db.ref('animes/'+parentId).remove();
+            allItems=allItems.filter(v=>!(v.kind==='movie'&&v.parentId===parentId));
+            refreshCountsAndRender();
+        }catch(e){alert('Delete failed: '+e.message);}
+    }else{
+        // Episode delete
+        if(!confirm(`Delete episode "${title}"?\n\nThis cannot be undone.`))return;
+        try{
+            await db.ref(`animes/${parentId}/episodes/${id}`).remove();
+            allItems=allItems.filter(v=>!(v.kind==='episode'&&v.parentId===parentId&&v.id===id));
+            refreshCountsAndRender();
+        }catch(e){alert('Delete failed: '+e.message);}
     }
+}
+
+function refreshCountsAndRender(){
+    $('cAll').textContent=allItems.length;
+    $('cEp').textContent=allItems.filter(i=>i.kind==='episode').length;
+    $('cMv').textContent=allItems.filter(i=>i.kind==='movie').length;
+    render();
 }
 </script>
 </body>
