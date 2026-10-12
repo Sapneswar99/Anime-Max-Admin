@@ -32,6 +32,7 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
 .nav:hover{color:#fff;background:rgba(124,77,255,.08)}
 .nav.active{color:#fff;background:rgba(124,77,255,.15);box-shadow:inset 3px 0 0 var(--pur)}
 .nav.active svg{color:var(--pur2)}
+.nav.danger:hover{color:var(--red);background:rgba(255,77,109,.08)}
 .footer-side{padding-top:16px;border-top:1px solid var(--bd)}
 .user{display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg2);border:1px solid var(--bd);border-radius:12px;margin-bottom:8px;overflow:hidden}
 .avatar{width:32px;height:32px;border-radius:50%;background:var(--grd);display:grid;place-items:center;font-weight:800;font-size:12px;flex-shrink:0}
@@ -161,6 +162,10 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M10 9l5 3-5 3V9z" fill="currentColor" stroke="none"/></svg>
                 Upload Movies
             </a>
+            <a href="delete-title.html" class="nav danger">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                Delete Title
+            </a>
         </nav>
         <div class="footer-side">
             <div class="user"><div class="avatar" id="av">A</div><span id="em">admin</span></div>
@@ -266,10 +271,11 @@ $('lo').addEventListener('click',()=>auth.signOut());
 async function init(){
     const s=await db.ref('animes').once('value');
     anime=s.val()||{};
+    // ✅ Only series in dropdown (episodes are for series)
     const series=Object.entries(anime).filter(([_,a])=>(a.type||'series')==='series');
     $('sel').innerHTML='<option value="">-- Choose Anime --</option>'+series.map(([id,a])=>`<option value="${esc(id)}">${esc(a.title)}</option>`).join('');
     const p=new URLSearchParams(location.search).get('id');
-    if(p&&anime[p]){$('sel').value=p;load(p);}
+    if(p&&anime[p]&&(anime[p].type||'series')==='series'){$('sel').value=p;load(p);}
 }
 
 $('sel').addEventListener('change',e=>{
