@@ -59,24 +59,32 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
 .count-badge{padding:10px 18px;background:rgba(124,77,255,.12);border:1px solid rgba(124,77,255,.3);border-radius:12px;font-size:13px;font-weight:700;color:var(--pur2);white-space:nowrap}
 
 /* Grid */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
 .card{background:rgba(21,21,31,.7);backdrop-filter:blur(20px);border:1px solid var(--bd2);border-radius:16px;overflow:hidden;transition:all .3s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column}
 .card:hover{transform:translateY(-4px);border-color:var(--pur);box-shadow:0 20px 40px rgba(0,0,0,.4),0 0 30px rgba(124,77,255,.15)}
 .thumb{position:relative;aspect-ratio:16/9;background:linear-gradient(135deg,#1b1b28,#15151f);overflow:hidden}
 .thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
 .card:hover .thumb img{transform:scale(1.06)}
+.thumb .ph{position:absolute;inset:0;display:grid;place-items:center;color:var(--tx3)}
+.thumb .ph svg{width:48px;height:48px;opacity:.3}
 .thumb .play-overlay{position:absolute;inset:0;background:rgba(0,0,0,.4);display:grid;place-items:center;opacity:0;transition:opacity .3s}
 .card:hover .play-overlay{opacity:1}
-.play-overlay svg{width:48px;height:48px;color:#fff;filter:drop-shadow(0 4px 12px rgba(0,0,0,.5))}
-.ep-badge{position:absolute;top:10px;left:10px;padding:4px 10px;background:rgba(124,77,255,.9);color:#fff;font-size:11px;font-weight:800;border-radius:6px;letter-spacing:.5px}
-.dur-badge{position:absolute;bottom:10px;right:10px;padding:4px 10px;background:rgba(0,0,0,.75);color:#fff;font-size:11px;font-weight:700;border-radius:6px}
+.play-overlay svg{width:52px;height:52px;color:#fff;filter:drop-shadow(0 4px 12px rgba(0,0,0,.5))}
+.ep-badge{position:absolute;top:10px;left:10px;padding:5px 11px;background:rgba(124,77,255,.95);color:#fff;font-size:11px;font-weight:800;border-radius:7px;letter-spacing:.5px;backdrop-filter:blur(10px)}
+.dur-badge{position:absolute;bottom:10px;right:10px;padding:4px 10px;background:rgba(0,0,0,.8);color:#fff;font-size:11px;font-weight:700;border-radius:6px;backdrop-filter:blur(10px)}
 
-.card-body{padding:16px;display:flex;flex-direction:column;gap:6px;flex:1}
+.card-body{padding:16px;display:flex;flex-direction:column;gap:8px;flex:1}
 .card-title{font-size:15px;font-weight:700;letter-spacing:-.3px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .card-anime{font-size:12px;color:var(--tx3);font-weight:600;display:flex;align-items:center;gap:6px}
-.card-anime svg{width:12px;height:12px;color:var(--pur2)}
+.card-anime svg{width:12px;height:12px;color:var(--pur2);flex-shrink:0}
 
-.card-actions{display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--bd)}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.tag{padding:3px 9px;border-radius:6px;font-size:10px;font-weight:800;letter-spacing:.3px}
+.tag.q{background:rgba(124,77,255,.15);color:var(--pur2);border:1px solid rgba(124,77,255,.25)}
+.tag.s{background:rgba(77,255,157,.12);color:var(--grn);border:1px solid rgba(77,255,157,.22)}
+.tag.a{background:rgba(255,157,77,.12);color:var(--org);border:1px solid rgba(255,157,77,.22)}
+
+.card-actions{display:flex;gap:8px;margin-top:auto;padding-top:12px;border-top:1px solid var(--bd)}
 .act{flex:1;padding:9px;border-radius:10px;border:1px solid var(--bd2);background:rgba(255,255,255,.03);color:var(--tx2);font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
 .act svg{width:14px;height:14px}
 .act:hover{background:rgba(124,77,255,.12);border-color:var(--pur);color:#fff}
@@ -87,7 +95,7 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
 .empty h3{font-size:18px;font-weight:700;color:var(--tx2);margin-bottom:6px}
 .empty p{font-size:14px}
 
-.loader{grid-column:1/-1;text-align:center;padding:60px}
+.loader{grid-column:1/-1;text-align:center;padding:60px;color:var(--tx3)}
 .spinner{width:40px;height:40px;border:3px solid var(--bd2);border-top-color:var(--pur);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -188,23 +196,37 @@ async function loadVideos(){
         Object.entries(data).forEach(([animeId,anime])=>{
             const animeTitle=anime.title||anime.name||'Unknown Anime';
             const episodes=anime.episodes||{};
-            Object.entries(episodes).forEach(([epId,ep])=>{
+
+            Object.entries(episodes).forEach(([epKey,ep])=>{
+                // Video sources → pick first thumbnail from any source or ep.thumbnail
+                const sources=ep.sources||{};
+                const sourceKeys=Object.keys(sources);
+                const firstSource=sourceKeys.length?sources[sourceKeys[0]]:null;
+                const videoUrl=(firstSource&&(firstSource.url||firstSource))||ep.videoUrl||ep.url||'';
+                const thumb=ep.thumbnail||ep.thumb||'';
+
                 allVideos.push({
-                    id:epId,
+                    id:epKey,
                     animeId,
                     animeTitle,
-                    title:ep.title||ep.name||`Episode ${ep.episodeNumber||''}`,
-                    thumbnail:ep.thumbnail||ep.thumb||'',
-                    videoUrl:ep.videoUrl||ep.url||'',
-                    episodeNumber:ep.episodeNumber||ep.ep||'',
+                    title:ep.title||ep.name||`Episode ${ep.number||ep.episodeNumber||epKey}`,
+                    thumbnail:thumb,
+                    videoUrl,
+                    episodeNumber:ep.number||ep.episodeNumber||ep.ep||epKey,
                     duration:ep.duration||'',
-                    createdAt:ep.createdAt||0
+                    qualities:sourceKeys,
+                    subsCount:ep.subtitles?Object.keys(ep.subtitles).length:0,
+                    audioCount:ep.audio?Object.keys(ep.audio).length:0,
+                    addedAt:ep.addedAt||ep.createdAt||0
                 });
             });
         });
 
-        // Sort newest first
-        allVideos.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+        // Sort: newest first (by addedAt), fallback to episode number
+        allVideos.sort((a,b)=>{
+            if(b.addedAt&&a.addedAt)return b.addedAt-a.addedAt;
+            return (parseInt(a.episodeNumber)||0)-(parseInt(b.episodeNumber)||0);
+        });
 
         populateAnimeFilter();
         render();
@@ -213,14 +235,14 @@ async function loadVideos(){
         $('filterAnime').addEventListener('change',render);
     }catch(e){
         console.error(e);
-        $('grid').innerHTML=`<div class="empty"><h3>Error loading videos</h3><p>${e.message}</p></div>`;
+        $('grid').innerHTML=`<div class="empty"><h3>Error loading videos</h3><p>${escapeHtml(e.message)}</p></div>`;
     }
 }
 
 function populateAnimeFilter(){
     const select=$('filterAnime');
     const animes=[...new Set(allVideos.map(v=>v.animeTitle))].sort();
-    select.innerHTML='<option value="">All Anime</option>'+animes.map(a=>`<option value="${a}">${a}</option>`).join('');
+    select.innerHTML='<option value="">All Anime</option>'+animes.map(a=>`<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('');
 }
 
 function render(){
@@ -228,7 +250,7 @@ function render(){
     const animeFilter=$('filterAnime').value;
     const grid=$('grid');
 
-    let filtered=allVideos.filter(v=>{
+    const filtered=allVideos.filter(v=>{
         const matchSearch=!q||v.title.toLowerCase().includes(q)||v.animeTitle.toLowerCase().includes(q);
         const matchAnime=!animeFilter||v.animeTitle===animeFilter;
         return matchSearch&&matchAnime;
@@ -246,13 +268,23 @@ function render(){
     }
 
     grid.innerHTML=filtered.map(v=>{
-        const thumb=v.thumbnail||'';
         const epLabel=v.episodeNumber?`EP ${v.episodeNumber}`:'';
-        const dur=v.duration?`<span class="dur-badge">${v.duration}</span>`:'';
+        const dur=v.duration?`<span class="dur-badge">${escapeHtml(v.duration)}</span>`:'';
+
+        // Build quality tags (show up to 3)
+        const qTags=v.qualities.slice(0,3).map(k=>`<span class="tag q">${escapeHtml(k)}</span>`).join('');
+        const moreQ=v.qualities.length>3?`<span class="tag q">+${v.qualities.length-3}</span>`:'';
+        const sTag=v.subsCount?`<span class="tag s">💬 ${v.subsCount}</span>`:'';
+        const aTag=v.audioCount?`<span class="tag a">🔊 ${v.audioCount}</span>`:'';
+
+        const thumbHtml=v.thumbnail
+            ? `<img src="${escapeHtml(v.thumbnail)}" alt="${escapeHtml(v.title)}" loading="lazy" onerror="this.style.display='none'">`
+            : `<div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M10 9l5 3-5 3V9z"/></svg></div>`;
+
         return `
         <div class="card">
             <div class="thumb">
-                ${thumb?`<img src="${thumb}" alt="${escapeHtml(v.title)}" loading="lazy" onerror="this.style.display='none'">`:''}
+                ${thumbHtml}
                 <div class="play-overlay">
                     <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" opacity=".3"/><polygon points="10 8 16 12 10 16 10 8" fill="#fff"/></svg>
                 </div>
@@ -265,12 +297,13 @@ function render(){
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18"/></svg>
                     ${escapeHtml(v.animeTitle)}
                 </div>
+                ${(qTags||moreQ||sTag||aTag)?`<div class="tags">${qTags}${moreQ}${sTag}${aTag}</div>`:''}
                 <div class="card-actions">
-                    <a href="upload.html?anime=${v.animeId}&episode=${v.id}" class="act">
+                    <a href="edit-video.html?anime=${encodeURIComponent(v.animeId)}&episode=${encodeURIComponent(v.id)}" class="act">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         Edit
                     </a>
-                    <button class="act del" onclick="deleteVideo('${v.animeId}','${v.id}','${escapeHtml(v.title).replace(/'/g,"\\'")}')">
+                    <button class="act del" data-anime="${escapeHtml(v.animeId)}" data-ep="${escapeHtml(v.id)}" data-title="${escapeHtml(v.title)}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                         Delete
                     </button>
@@ -278,10 +311,15 @@ function render(){
             </div>
         </div>`;
     }).join('');
+
+    // Attach delete listeners
+    grid.querySelectorAll('.act.del').forEach(btn=>{
+        btn.addEventListener('click',()=>deleteVideo(btn.dataset.anime,btn.dataset.ep,btn.dataset.title));
+    });
 }
 
 function escapeHtml(s){
-    return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 async function deleteVideo(animeId,epId,title){
