@@ -32,6 +32,7 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
 .nav:hover{color:#fff;background:rgba(124,77,255,.08)}
 .nav.active{color:#fff;background:rgba(124,77,255,.15);box-shadow:inset 3px 0 0 var(--pur)}
 .nav.active svg{color:var(--pur2)}
+.nav.danger:hover{color:var(--red);background:rgba(255,77,109,.08)}
 .footer-side{padding-top:16px;border-top:1px solid var(--bd)}
 .user{display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg2);border:1px solid var(--bd);border-radius:12px;margin-bottom:8px;overflow:hidden}
 .avatar{width:32px;height:32px;border-radius:50%;background:var(--grd);display:grid;place-items:center;font-weight:800;font-size:12px;flex-shrink:0}
@@ -170,6 +171,10 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M10 9l5 3-5 3V9z" fill="currentColor" stroke="none"/></svg>
                 Upload Movies
             </a>
+            <a href="delete-title.html" class="nav danger">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                Delete Title
+            </a>
         </nav>
         <div class="footer-side">
             <div class="user"><div class="avatar" id="av">A</div><span id="em">admin</span></div>
@@ -289,7 +294,7 @@ const $=id=>document.getElementById(id);
 
 let anime={},aid='',src={},sub={},aud={};
 let mode='episode';         // 'episode' or 'movie'
-let editKey=null;           // ep number (int) OR movie slug (string)
+let editKey=null;           // ep number (int) for episode mode
 let originalKey=null;
 let originalData=null;
 
@@ -305,18 +310,15 @@ async function init(){
     aid=params.get('anime');
 
     const epParam=params.get('episode');
-    const mvParam=params.get('movie');
+    const mvParam=params.get('movie');   // any value triggers movie mode
 
     if(!aid || (!epParam && !mvParam)){
-        $('loading').hidden=true;
-        $('emp').hidden=false;
-        return;
+        fail(); return;
     }
 
     // Determine mode
     if(mvParam){
         mode='movie';
-        editKey=mvParam;
     }else{
         mode='episode';
         editKey=parseInt(epParam);
@@ -330,14 +332,15 @@ async function init(){
 
         let item=null;
         if(mode==='episode'){
-            if(!a.episodes||!a.episodes[editKey]){ fail(); return; }
+            if(!a.episodes || !a.episodes[editKey]){ fail(); return; }
             item=a.episodes[editKey];
+            originalKey=editKey;
         }else{
-            if(!a.movies||!a.movies[editKey]){ fail(); return; }
-            item=a.movies[editKey];
+            // ✅ Movie data is stored DIRECTLY in the anime node now
+            item=a;
+            originalKey='__movie__';
         }
 
-        originalKey=editKey;
         originalData=JSON.parse(JSON.stringify(item));
 
         // Header
@@ -373,8 +376,8 @@ async function init(){
             $('mtitle').value=item.title||'';
             $('year').value=item.year||'';
             $('mdur').value=item.duration||'';
-            $('genre').value=item.genre||'';
-            $('mthumb').value=item.thumbnail||'';
+            $('genre').value=item.genres||item.genre||'';
+            $('mthumb').value=item.poster||item.thumbnail||'';
             $('mdesc').value=item.description||'';
         }
 
@@ -400,8 +403,7 @@ function updateCount(){
         const c=a.episodes?Object.keys(a.episodes).length:0;
         $('ecount').textContent=c+' episode'+(c!==1?'s':'');
     }else{
-        const c=a.movies?Object.keys(a.movies).length:0;
-        $('ecount').textContent=c+' movie'+(c!==1?'s':'');
+        $('ecount').textContent='Movie';
     }
 }
 
@@ -523,16 +525,15 @@ $('epf').addEventListener('submit',async e=>{
     if(!aid){showMsg(msg,'Missing anime ID',true);return;}
     if(!Object.keys(src).length){showMsg(msg,'Add at least one video',true);return;}
 
-    const old=anime[aid]?.episodes?.[originalKey] || anime[aid]?.movies?.[originalKey] || {};
-
     const btn=$('sv');btn.disabled=true;btn.textContent='Saving...';
 
     try{
         if(mode==='episode'){
-            // ---- SAVE EPISODE ----
+            // ============ SAVE EPISODE ============
             const n=parseInt($('num').value);
             if(!n){showMsg(msg,'Episode number required',true);btn.disabled=false;btn.textContent='Update Episode';return;}
 
+            const oldEp=anime[aid]?.episodes?.[originalKey]||{};
             const data={
                 number:n,
                 title:$('eptitle').value.trim()||('Episode '+n),
@@ -541,7 +542,7 @@ $('epf').addEventListener('submit',async e=>{
                 sources:src,
                 subtitles:sub,
                 audio:aud,
-                addedAt:old.addedAt||Date.now(),
+                addedAt:oldEp.addedAt||Date.now(),
                 updatedAt:Date.now()
             };
 
@@ -556,33 +557,28 @@ $('epf').addEventListener('submit',async e=>{
             showMsg(msg,'✅ Episode updated!');
             toast('Episode saved');
         }else{
-            // ---- SAVE MOVIE ----
-            const title=$('mtitle').value.trim();
-            if(!title){showMsg(msg,'Movie title required',true);btn.disabled=false;btn.textContent='Update Movie';return;}
-            const newKey=slugify(title);
-
+            // ============ SAVE MOVIE ============
+            // ✅ Movie fields are stored DIRECTLY in the anime node.
+            // Use .update() so we only touch movie-related fields —
+            // poster, banner, rating, status etc. (set in anime-title.html) stay intact.
             const data={
-                title,
+                title:$('mtitle').value.trim()||anime[aid].title,
                 year:parseInt($('year').value)||null,
                 duration:$('mdur').value.trim(),
-                genre:$('genre').value.trim(),
-                thumbnail:$('mthumb').value.trim(),
+                genres:$('genre').value.trim(),
+                poster:$('mthumb').value.trim() || anime[aid].poster || '',
                 description:$('mdesc').value.trim(),
                 sources:src,
                 subtitles:sub,
                 audio:aud,
-                addedAt:old.addedAt||Date.now(),
                 updatedAt:Date.now()
             };
 
-            await db.ref(`animes/${aid}/movies/${newKey}`).set(data);
-            if(originalKey!==newKey) await db.ref(`animes/${aid}/movies/${originalKey}`).remove();
+            await db.ref('animes/'+aid).update(data);
 
-            if(!anime[aid].movies) anime[aid].movies={};
-            if(originalKey!==newKey) delete anime[aid].movies[originalKey];
-            anime[aid].movies[newKey]=data;
-            originalKey=newKey;
-            updateCount();
+            // Update local cache
+            Object.assign(anime[aid], data);
+
             showMsg(msg,'✅ Movie updated!');
             toast('Movie saved');
         }
@@ -594,7 +590,6 @@ $('epf').addEventListener('submit',async e=>{
     }
 });
 
-function slugify(s){return String(s).toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,60)||('movie-'+Date.now());}
 function cap(s){return String(s).charAt(0).toUpperCase()+String(s).slice(1);}
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 function showMsg(el,t,e){el.textContent=t;el.classList.toggle('err',!!e);if(t&&!e)setTimeout(()=>{el.textContent='';el.classList.remove('err');},4000);}
