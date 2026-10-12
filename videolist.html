@@ -12,15 +12,16 @@
 <style>
 :root{--bg:#07070d;--bg2:#0f0f18;--card:#15151f;--card2:#1b1b28;--bd:#232332;--bd2:#2e2e42;--tx:#fff;--tx2:#b8b8cc;--tx3:#6f6f8a;--pur:#7c4dff;--pur2:#9d70ff;--blu:#4d9fff;--grn:#4dff9d;--org:#ff9d4d;--red:#ff4d6d;--grd:linear-gradient(135deg,#7c4dff,#4d9fff);--grd2:linear-gradient(135deg,#4dff9d,#4d9fff);--grd3:linear-gradient(135deg,#ff9d4d,#ff4d6d)}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden}
+html,body{max-width:100%;overflow-x:hidden}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden;position:relative;width:100%}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 15% 20%,rgba(124,77,255,.12),transparent 45%),radial-gradient(circle at 85% 70%,rgba(77,159,255,.1),transparent 45%);z-index:-1;pointer-events:none}
 a{color:inherit;text-decoration:none}
-button,input,select{font-family:inherit;color:inherit}
+button,input,select{font-family:inherit;color:inherit;max-width:100%}
 ::-webkit-scrollbar{width:8px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--grd);border-radius:10px}
 
-.layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+.layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh;width:100%}
 .sidebar{background:rgba(11,11,18,.85);backdrop-filter:blur(20px);border-right:1px solid var(--bd);padding:24px 16px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
 .logo{font-size:22px;font-weight:900;letter-spacing:-1px;padding:8px 12px 24px;border-bottom:1px solid var(--bd);margin-bottom:16px;display:flex;align-items:center;gap:10px}
 .logo b{background:var(--grd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
@@ -38,29 +39,42 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
 .logout{width:100%;padding:10px;background:rgba(255,77,109,.08);color:var(--red);border:1px solid rgba(255,77,109,.2);border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
 .logout:hover{background:rgba(255,77,109,.15)}
 
-.main{padding:36px 44px 60px;max-width:1400px}
-.hdr{margin-bottom:28px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px}
-.hdr h1{font-size:36px;font-weight:900;letter-spacing:-1.5px;margin-bottom:6px;background:linear-gradient(135deg,#fff 30%,#b8b8cc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.main{padding:36px 44px 60px;max-width:1400px;width:100%;min-width:0}
+.hdr{margin-bottom:28px}
+.hdr-top{display:flex;align-items:center;gap:16px;margin-bottom:10px;flex-wrap:wrap;justify-content:space-between}
+.back-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;background:rgba(255,255,255,.04);border:1px solid var(--bd2);border-radius:12px;color:var(--tx2);font-size:13px;font-weight:700;cursor:pointer;transition:all .25s;flex-shrink:0}
+.back-btn:hover{background:rgba(124,77,255,.12);border-color:var(--pur);color:#fff;transform:translateX(-2px)}
+.back-btn svg{width:16px;height:16px}
+.hdr h1{font-size:36px;font-weight:900;letter-spacing:-1.5px;margin-bottom:6px;background:linear-gradient(135deg,#fff 30%,#b8b8cc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;word-break:break-word}
 .hdr p{color:var(--tx3);font-size:15px;font-weight:500}
-.btn-add{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;background:var(--grd);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;transition:all .25s;box-shadow:0 8px 24px rgba(124,77,255,.35);text-decoration:none}
+.btn-add{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;background:var(--grd);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;transition:all .25s;box-shadow:0 8px 24px rgba(124,77,255,.35);text-decoration:none;flex-shrink:0}
 .btn-add:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(124,77,255,.5)}
 .btn-add svg{width:18px;height:18px}
 
+/* Type Tabs */
+.type-tabs{display:flex;gap:8px;margin-bottom:22px;background:rgba(21,21,31,.7);padding:6px;border-radius:14px;border:1px solid var(--bd2);width:fit-content;flex-wrap:wrap}
+.tab{padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;transition:all .25s;background:transparent;border:none;color:var(--tx3);display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.tab:hover{color:#fff}
+.tab.active{background:var(--grd);color:#fff;box-shadow:0 6px 18px rgba(124,77,255,.35)}
+.tab svg{width:15px;height:15px}
+.tab .cnt{padding:2px 8px;background:rgba(255,255,255,.15);border-radius:20px;font-size:10px;font-weight:800}
+.tab.active .cnt{background:rgba(255,255,255,.25)}
+
 /* Controls */
 .controls{display:flex;gap:12px;margin-bottom:28px;flex-wrap:wrap;align-items:center}
-.search-box{flex:1;min-width:220px;position:relative}
+.search-box{flex:1;min-width:200px;position:relative}
 .search-box svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--tx3);pointer-events:none}
 .search-box input{width:100%;padding:14px 16px 14px 46px;background:rgba(21,21,31,.7);border:1.5px solid var(--bd2);border-radius:12px;color:var(--tx);font-size:14px;font-weight:500;outline:none;transition:all .25s}
 .search-box input:focus{border-color:var(--pur);background:rgba(124,77,255,.08);box-shadow:0 0 0 4px rgba(124,77,255,.12)}
 .search-box input::placeholder{color:var(--tx3)}
-.filter-select{padding:14px 18px;background:rgba(21,21,31,.7);border:1.5px solid var(--bd2);border-radius:12px;color:var(--tx);font-size:14px;font-weight:600;outline:none;cursor:pointer;transition:all .25s;min-width:180px}
+.filter-select{padding:14px 18px;background:rgba(21,21,31,.7);border:1.5px solid var(--bd2);border-radius:12px;color:var(--tx);font-size:14px;font-weight:600;outline:none;cursor:pointer;transition:all .25s;min-width:160px;appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236f6f8a' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px}
 .filter-select:focus{border-color:var(--pur)}
 .filter-select option{background:var(--card);color:var(--tx)}
 .count-badge{padding:10px 18px;background:rgba(124,77,255,.12);border:1px solid rgba(124,77,255,.3);border-radius:12px;font-size:13px;font-weight:700;color:var(--pur2);white-space:nowrap}
 
 /* Grid */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
-.card{background:rgba(21,21,31,.7);backdrop-filter:blur(20px);border:1px solid var(--bd2);border-radius:16px;overflow:hidden;transition:all .3s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column}
+.card{background:rgba(21,21,31,.7);backdrop-filter:blur(20px);border:1px solid var(--bd2);border-radius:16px;overflow:hidden;transition:all .3s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column;position:relative}
 .card:hover{transform:translateY(-4px);border-color:var(--pur);box-shadow:0 20px 40px rgba(0,0,0,.4),0 0 30px rgba(124,77,255,.15)}
 .thumb{position:relative;aspect-ratio:16/9;background:linear-gradient(135deg,#1b1b28,#15151f);overflow:hidden}
 .thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
@@ -71,6 +85,8 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
 .card:hover .play-overlay{opacity:1}
 .play-overlay svg{width:52px;height:52px;color:#fff;filter:drop-shadow(0 4px 12px rgba(0,0,0,.5))}
 .ep-badge{position:absolute;top:10px;left:10px;padding:5px 11px;background:rgba(124,77,255,.95);color:#fff;font-size:11px;font-weight:800;border-radius:7px;letter-spacing:.5px;backdrop-filter:blur(10px)}
+.movie-badge{position:absolute;top:10px;left:10px;padding:5px 11px;background:linear-gradient(135deg,#ff9d4d,#ff4d6d);color:#fff;font-size:11px;font-weight:800;border-radius:7px;letter-spacing:.5px;backdrop-filter:blur(10px);display:inline-flex;align-items:center;gap:4px}
+.movie-badge svg{width:11px;height:11px}
 .dur-badge{position:absolute;bottom:10px;right:10px;padding:4px 10px;background:rgba(0,0,0,.8);color:#fff;font-size:11px;font-weight:700;border-radius:6px;backdrop-filter:blur(10px)}
 
 .card-body{padding:16px;display:flex;flex-direction:column;gap:8px;flex:1}
@@ -86,7 +102,7 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
 
 .card-actions{display:flex;gap:8px;margin-top:auto;padding-top:12px;border-top:1px solid var(--bd)}
 .act{flex:1;padding:9px;border-radius:10px;border:1px solid var(--bd2);background:rgba(255,255,255,.03);color:var(--tx2);font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
-.act svg{width:14px;height:14px}
+.act svg{width:14px;height:14px;flex-shrink:0}
 .act:hover{background:rgba(124,77,255,.12);border-color:var(--pur);color:#fff}
 .act.del:hover{background:rgba(255,77,109,.12);border-color:var(--red);color:var(--red)}
 
@@ -102,9 +118,20 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
 @media(max-width:900px){
     .layout{grid-template-columns:1fr}
     .sidebar{display:none}
-    .main{padding:24px 20px 60px}
+    .main{padding:24px 16px 60px}
     .hdr h1{font-size:26px}
-    .grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+    .hdr-top{gap:12px}
+    .back-btn{padding:9px 14px;font-size:12px}
+    .btn-add{padding:10px 16px;font-size:13px}
+    .type-tabs{width:100%;overflow-x:auto}
+    .tab{padding:9px 14px;font-size:12px;flex:1;justify-content:center}
+    .grid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+    .controls{gap:10px}
+    .count-badge{padding:8px 14px;font-size:12px}
+}
+@media(max-width:380px){
+    .hdr h1{font-size:22px}
+    .grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -132,7 +159,11 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
             </a>
             <a href="upload.html" class="nav">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                Upload
+                Upload Episodes
+            </a>
+            <a href="movie-upload.html" class="nav">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M10 9l5 3-5 3V9z" fill="currentColor" stroke="none"/></svg>
+                Upload Movies
             </a>
         </nav>
         <div class="footer-side">
@@ -143,14 +174,34 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
 
     <main class="main">
         <div class="hdr">
-            <div>
-                <h1>Video List</h1>
-                <p>Manage all episodes and videos across your content.</p>
+            <div class="hdr-top">
+                <button class="back-btn" onclick="history.length>1?history.back():location.href='dashboard.html'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    Back
+                </button>
+                <a href="upload.html" class="btn-add">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Upload New
+                </a>
             </div>
-            <a href="upload.html" class="btn-add">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Upload New
-            </a>
+            <h1>Video List</h1>
+            <p>Manage all episodes and movies across your content.</p>
+        </div>
+
+        <!-- Type Tabs -->
+        <div class="type-tabs" id="typeTabs">
+            <button class="tab active" data-type="all">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M10 9l5 3-5 3V9z" fill="currentColor" stroke="none"/></svg>
+                All <span class="cnt" id="cAll">0</span>
+            </button>
+            <button class="tab" data-type="episode">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18"/></svg>
+                Episodes <span class="cnt" id="cEp">0</span>
+            </button>
+            <button class="tab" data-type="movie">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M10 9l5 3-5 3V9z" fill="currentColor" stroke="none"/></svg>
+                Movies <span class="cnt" id="cMv">0</span>
+            </button>
         </div>
 
         <div class="controls">
@@ -161,7 +212,7 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
             <select class="filter-select" id="filterAnime">
                 <option value="">All Anime</option>
             </select>
-            <div class="count-badge" id="count">0 Videos</div>
+            <div class="count-badge" id="count">0 Items</div>
         </div>
 
         <div class="grid" id="grid">
@@ -177,7 +228,8 @@ firebase.initializeApp(CFG);
 const auth=firebase.auth(),db=firebase.database();
 const $=id=>document.getElementById(id);
 
-let allVideos=[];
+let allItems=[];
+let currentType='all';
 
 auth.onAuthStateChanged(u=>{
     if(!u||u.email!==ADMIN_EMAIL){location.href='index.html';return;}
@@ -187,31 +239,38 @@ auth.onAuthStateChanged(u=>{
 
 $('lo').addEventListener('click',()=>auth.signOut());
 
+// Type tabs
+document.querySelectorAll('.tab').forEach(t=>{
+    t.addEventListener('click',()=>{
+        document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+        t.classList.add('active');
+        currentType=t.dataset.type;
+        render();
+    });
+});
+
 async function loadVideos(){
     try{
         const snap=await db.ref('animes').once('value');
         const data=snap.val()||{};
-        allVideos=[];
+        allItems=[];
 
         Object.entries(data).forEach(([animeId,anime])=>{
-            const animeTitle=anime.title||anime.name||'Unknown Anime';
-            const episodes=anime.episodes||{};
+            const animeTitle=anime.title||anime.name||'Unknown';
+            const animeType=anime.type||'series';
 
+            // ---- Episodes ----
+            const episodes=anime.episodes||{};
             Object.entries(episodes).forEach(([epKey,ep])=>{
-                // Video sources → pick first thumbnail from any source or ep.thumbnail
                 const sources=ep.sources||{};
                 const sourceKeys=Object.keys(sources);
-                const firstSource=sourceKeys.length?sources[sourceKeys[0]]:null;
-                const videoUrl=(firstSource&&(firstSource.url||firstSource))||ep.videoUrl||ep.url||'';
-                const thumb=ep.thumbnail||ep.thumb||'';
-
-                allVideos.push({
+                allItems.push({
+                    kind:'episode',
                     id:epKey,
-                    animeId,
-                    animeTitle,
-                    title:ep.title||ep.name||`Episode ${ep.number||ep.episodeNumber||epKey}`,
-                    thumbnail:thumb,
-                    videoUrl,
+                    parentId:animeId,
+                    parentTitle:animeTitle,
+                    title:ep.title||ep.name||`Episode ${ep.number||epKey}`,
+                    thumbnail:ep.thumbnail||ep.thumb||'',
                     episodeNumber:ep.number||ep.episodeNumber||ep.ep||epKey,
                     duration:ep.duration||'',
                     qualities:sourceKeys,
@@ -220,13 +279,37 @@ async function loadVideos(){
                     addedAt:ep.addedAt||ep.createdAt||0
                 });
             });
+
+            // ---- Movies ----
+            const movies=anime.movies||{};
+            Object.entries(movies).forEach(([mvKey,mv])=>{
+                const sources=mv.sources||{};
+                const sourceKeys=Object.keys(sources);
+                allItems.push({
+                    kind:'movie',
+                    id:mvKey,
+                    parentId:animeId,
+                    parentTitle:animeTitle,
+                    title:mv.title||mv.name||'Untitled Movie',
+                    thumbnail:mv.thumbnail||mv.thumb||'',
+                    year:mv.year||'',
+                    duration:mv.duration||'',
+                    genre:mv.genre||'',
+                    qualities:sourceKeys,
+                    subsCount:mv.subtitles?Object.keys(mv.subtitles).length:0,
+                    audioCount:mv.audio?Object.keys(mv.audio).length:0,
+                    addedAt:mv.addedAt||mv.createdAt||0
+                });
+            });
         });
 
-        // Sort: newest first (by addedAt), fallback to episode number
-        allVideos.sort((a,b)=>{
-            if(b.addedAt&&a.addedAt)return b.addedAt-a.addedAt;
-            return (parseInt(a.episodeNumber)||0)-(parseInt(b.episodeNumber)||0);
-        });
+        // Sort: newest first
+        allItems.sort((a,b)=> (b.addedAt||0)-(a.addedAt||0));
+
+        // Counts
+        $('cAll').textContent=allItems.length;
+        $('cEp').textContent=allItems.filter(i=>i.kind==='episode').length;
+        $('cMv').textContent=allItems.filter(i=>i.kind==='movie').length;
 
         populateAnimeFilter();
         render();
@@ -241,45 +324,57 @@ async function loadVideos(){
 
 function populateAnimeFilter(){
     const select=$('filterAnime');
-    const animes=[...new Set(allVideos.map(v=>v.animeTitle))].sort();
-    select.innerHTML='<option value="">All Anime</option>'+animes.map(a=>`<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('');
+    const parents=[...new Set(allItems.map(v=>v.parentTitle))].sort();
+    select.innerHTML='<option value="">All Anime</option>'+parents.map(a=>`<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('');
 }
 
 function render(){
     const q=$('search').value.trim().toLowerCase();
-    const animeFilter=$('filterAnime').value;
+    const filterParent=$('filterAnime').value;
     const grid=$('grid');
 
-    const filtered=allVideos.filter(v=>{
-        const matchSearch=!q||v.title.toLowerCase().includes(q)||v.animeTitle.toLowerCase().includes(q);
-        const matchAnime=!animeFilter||v.animeTitle===animeFilter;
-        return matchSearch&&matchAnime;
+    const filtered=allItems.filter(v=>{
+        // Type filter
+        if(currentType!=='all' && v.kind!==currentType) return false;
+        // Search
+        const matchSearch=!q||v.title.toLowerCase().includes(q)||v.parentTitle.toLowerCase().includes(q);
+        // Parent filter
+        const matchParent=!filterParent||v.parentTitle===filterParent;
+        return matchSearch&&matchParent;
     });
 
-    $('count').textContent=`${filtered.length} Video${filtered.length!==1?'s':''}`;
+    $('count').textContent=`${filtered.length} Item${filtered.length!==1?'s':''}`;
 
     if(!filtered.length){
         grid.innerHTML=`<div class="empty">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M10 9l5 3-5 3V9z"/></svg>
-            <h3>No videos found</h3>
-            <p>Try adjusting your search or filter.</p>
+            <h3>No items found</h3>
+            <p>Try adjusting your search, tab, or filter.</p>
         </div>`;
         return;
     }
 
     grid.innerHTML=filtered.map(v=>{
-        const epLabel=v.episodeNumber?`EP ${v.episodeNumber}`:'';
+        const isMovie=v.kind==='movie';
+        const badge=isMovie
+            ? `<span class="movie-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M10 9l5 3-5 3V9z" fill="currentColor" stroke="none"/></svg>MOVIE</span>`
+            : (v.episodeNumber?`<span class="ep-badge">EP ${escapeHtml(v.episodeNumber)}</span>`:'');
         const dur=v.duration?`<span class="dur-badge">${escapeHtml(v.duration)}</span>`:'';
 
-        // Build quality tags (show up to 3)
         const qTags=v.qualities.slice(0,3).map(k=>`<span class="tag q">${escapeHtml(k)}</span>`).join('');
         const moreQ=v.qualities.length>3?`<span class="tag q">+${v.qualities.length-3}</span>`:'';
         const sTag=v.subsCount?`<span class="tag s">💬 ${v.subsCount}</span>`:'';
         const aTag=v.audioCount?`<span class="tag a">🔊 ${v.audioCount}</span>`:'';
+        const yrTag=(isMovie&&v.year)?`<span class="tag q">${escapeHtml(v.year)}</span>`:'';
 
         const thumbHtml=v.thumbnail
             ? `<img src="${escapeHtml(v.thumbnail)}" alt="${escapeHtml(v.title)}" loading="lazy" onerror="this.style.display='none'">`
             : `<div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M10 9l5 3-5 3V9z"/></svg></div>`;
+
+        // Edit URL differs by kind
+        const editUrl=isMovie
+            ? `movie-edit.html?anime=${encodeURIComponent(v.parentId)}&movie=${encodeURIComponent(v.id)}`
+            : `edit-video.html?anime=${encodeURIComponent(v.parentId)}&episode=${encodeURIComponent(v.id)}`;
 
         return `
         <div class="card">
@@ -288,22 +383,22 @@ function render(){
                 <div class="play-overlay">
                     <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" opacity=".3"/><polygon points="10 8 16 12 10 16 10 8" fill="#fff"/></svg>
                 </div>
-                ${epLabel?`<span class="ep-badge">${epLabel}</span>`:''}
+                ${badge}
                 ${dur}
             </div>
             <div class="card-body">
                 <div class="card-title">${escapeHtml(v.title)}</div>
                 <div class="card-anime">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18"/></svg>
-                    ${escapeHtml(v.animeTitle)}
+                    ${escapeHtml(v.parentTitle)}
                 </div>
-                ${(qTags||moreQ||sTag||aTag)?`<div class="tags">${qTags}${moreQ}${sTag}${aTag}</div>`:''}
+                ${(qTags||moreQ||sTag||aTag||yrTag)?`<div class="tags">${yrTag}${qTags}${moreQ}${sTag}${aTag}</div>`:''}
                 <div class="card-actions">
-                    <a href="edit-video.html?anime=${encodeURIComponent(v.animeId)}&episode=${encodeURIComponent(v.id)}" class="act">
+                    <a href="${editUrl}" class="act">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         Edit
                     </a>
-                    <button class="act del" data-anime="${escapeHtml(v.animeId)}" data-ep="${escapeHtml(v.id)}" data-title="${escapeHtml(v.title)}">
+                    <button class="act del" data-kind="${v.kind}" data-parent="${escapeHtml(v.parentId)}" data-id="${escapeHtml(v.id)}" data-title="${escapeHtml(v.title)}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                         Delete
                     </button>
@@ -312,9 +407,9 @@ function render(){
         </div>`;
     }).join('');
 
-    // Attach delete listeners
+    // Delete listeners
     grid.querySelectorAll('.act.del').forEach(btn=>{
-        btn.addEventListener('click',()=>deleteVideo(btn.dataset.anime,btn.dataset.ep,btn.dataset.title));
+        btn.addEventListener('click',()=>deleteItem(btn.dataset.kind,btn.dataset.parent,btn.dataset.id,btn.dataset.title));
     });
 }
 
@@ -322,11 +417,18 @@ function escapeHtml(s){
     return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
-async function deleteVideo(animeId,epId,title){
-    if(!confirm(`Delete "${title}"?\n\nThis cannot be undone.`))return;
+async function deleteItem(kind,parentId,id,title){
+    const label=kind==='movie'?'movie':'episode';
+    if(!confirm(`Delete ${label} "${title}"?\n\nThis cannot be undone.`))return;
     try{
-        await db.ref(`animes/${animeId}/episodes/${epId}`).remove();
-        allVideos=allVideos.filter(v=>!(v.animeId===animeId&&v.id===epId));
+        const path=kind==='movie'
+            ? `animes/${parentId}/movies/${id}`
+            : `animes/${parentId}/episodes/${id}`;
+        await db.ref(path).remove();
+        allItems=allItems.filter(v=>!(v.kind===kind&&v.parentId===parentId&&v.id===id));
+        $('cAll').textContent=allItems.length;
+        $('cEp').textContent=allItems.filter(i=>i.kind==='episode').length;
+        $('cMv').textContent=allItems.filter(i=>i.kind==='movie').length;
         render();
     }catch(e){
         alert('Delete failed: '+e.message);
