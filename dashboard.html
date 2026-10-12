@@ -96,7 +96,6 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
                 Video & Movies
             </a>
-            <!-- ===== VIDEO LIST NAV ITEM ===== -->
             <a href="videolist.html" class="nav">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="2" y="4" width="20" height="16" rx="3"/>
@@ -104,15 +103,23 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
                 </svg>
                 Video List
             </a>
-            <!-- ============================== -->
             <a href="anime-title.html" class="nav">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 Anime Title
             </a>
             <a href="upload.html" class="nav">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                Upload
+                Upload Episodes
             </a>
+            <!-- ===== MOVIE UPLOAD NAV ITEM ===== -->
+            <a href="movie-upload.html" class="nav">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="4" width="20" height="16" rx="3"/>
+                    <path d="M10 9l5 3-5 3V9z" fill="currentColor" stroke="none"/>
+                </svg>
+                Upload Movies
+            </a>
+            <!-- ================================ -->
         </nav>
         <div class="footer-side">
             <div class="user"><div class="avatar" id="av">A</div><span id="em">admin</span></div>
@@ -161,15 +168,18 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
                 <span>Upload Episode</span>
                 <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
-            <a href="videolist.html" class="qa">
-                <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <rect x="2" y="4" width="16" height="16" rx="3"/>
-    <path d="M10 9l5 3-5 3V9z" fill="currentColor" stroke="none"/>
-</svg></svg></div>
-                <span>View All Content</span>
+            <!-- ===== MOVIE UPLOAD QUICK ACTION ===== -->
+            <a href="movie-upload.html" class="qa">
+                <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M10 9l5 3-5 3V9z" fill="currentColor" stroke="none"/></svg></div>
+                <span>Upload Movie</span>
                 <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
             <!-- =================================== -->
+            <a href="videolist.html" class="qa">
+                <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M10 9l5 3-5 3V9z" fill="currentColor" stroke="none"/></svg></div>
+                <span>View All Content</span>
+                <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
         </div>
     </main>
 </div>
