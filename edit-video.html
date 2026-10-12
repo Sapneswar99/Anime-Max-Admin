@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Video - Anime Max Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-database-compat.js"></script>
+<style>
+:root{--bg:#07070d;--bg2:#0f0f18;--card:#15151f;--card2:#1b1b28;--bd:#232332;--bd2:#2e2e42;--tx:#fff;--tx2:#b8b8cc;--tx3:#6f6f8a;--pur:#7c4dff;--pur2:#9d70ff;--blu:#4d9fff;--grn:#4dff9d;--org:#ff9d4d;--red:#ff4d6d;--grd:linear-gradient(135deg,#7c4dff,#4d9fff);--grd2:linear-gradient(135deg,#4dff9d,#4d9fff)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 15% 20%,rgba(124,77,255,.12),transparent 45%),radial-gradient(circle at 85% 70%,rgba(77,159,255,.1),transparent 45%);z-index:-1;pointer-events:none}
+a{color:inherit;text-decoration:none}
+button,input,textarea,select{font-family:inherit;color:inherit}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--grd);border-radius:10px}
+
+.layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+.sidebar{background:rgba(11,11,18,.85);backdrop-filter:blur(20px);border-right:1px solid var(--bd);padding:24px 16px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.logo{font-size:22px;font-weight:900;letter-spacing:-1px;padding:8px 12px 24px;border-bottom:1px solid var(--bd);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.logo b{background:var(--grd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.badge{font-size:9px;font-weight:800;letter-spacing:1.5px;padding:4px 8px;background:rgba(124,77,255,.15);color:var(--pur2);border-radius:6px;border:1px solid rgba(124,77,255,.3)}
+nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
+.nav{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;color:var(--tx2);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;background:transparent;border:none;text-align:left;width:100%}
+.nav svg{width:18px;height:18px;flex-shrink:0}
+.nav:hover{color:#fff;background:rgba(124,77,255,.08)}
+.nav.active{color:#fff;background:rgba(124,77,255,.15);box-shadow:inset 3px 0 0 var(--pur)}
+.nav.active svg{color:var(--pur2)}
+.footer-side{padding-top:16px;border-top:1px solid var(--bd)}
+.user{display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg2);border:1px solid var(--bd);border-radius:12px;margin-bottom:8px;overflow:hidden}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--grd);display:grid;place-items:center;font-weight:800;font-size:12px;flex-shrink:0}
+.user span{flex:1;font-size:11px;color:var(--tx2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.logout{width:100%;padding:10px;background:rgba(255,77,109,.08);color:var(--red);border:1px solid rgba(255,77,109,.2);border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.logout:hover{background:rgba(255,77,109,.15)}
+
+.main{padding:36px 44px 60px;max-width:1100px}
+.hdr{margin-bottom:28px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.hdr h1{font-size:32px;font-weight:900;letter-spacing:-1.5px;margin-bottom:6px;background:linear-gradient(135deg,#fff 30%,#b8b8cc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hdr p{color:var(--tx3);font-size:14px;font-weight:500}
+.back-btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;background:rgba(255,255,255,.04);border:1px solid var(--bd2);border-radius:12px;color:var(--tx2);font-size:13px;font-weight:700;cursor:pointer;transition:all .25s;text-decoration:none}
+.back-btn:hover{background:rgba(124,77,255,.1);border-color:var(--pur);color:#fff}
+.back-btn svg{width:16px;height:16px}
+
+.form-card{background:rgba(21,21,31,.7);backdrop-filter:blur(20px);border:1px solid var(--bd2);border-radius:20px;padding:32px;margin-bottom:20px}
+.form-card h2{font-size:16px;font-weight:800;letter-spacing:-.3px;margin-bottom:22px;display:flex;align-items:center;gap:10px;color:var(--tx2)}
+.form-card h2::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--bd2),transparent)}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.field{margin-bottom:18px}
+.field:last-child{margin-bottom:0}
+.field label{display:block;font-size:11px;font-weight:800;color:var(--tx3);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:8px}
+.field input,.field textarea,.field select{width:100%;padding:14px 16px;background:rgba(10,10,18,.7);border:1.5px solid var(--bd);border-radius:12px;color:var(--tx);font-size:14px;font-weight:500;outline:none;transition:all .25s;resize:vertical}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--pur);background:rgba(124,77,255,.08);box-shadow:0 0 0 4px rgba(124,77,255,.12)}
+.field input::placeholder,.field textarea::placeholder{color:var(--tx3)}
+.field textarea{min-height:90px;line-height:1.5}
+.field select option{background:var(--card);color:var(--tx)}
+.hint{font-size:11px;color:var(--tx3);margin-top:6px;font-weight:500}
+
+.preview{aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#1b1b28,#15151f);border:1px solid var(--bd);position:relative;display:grid;place-items:center;color:var(--tx3);font-size:12px;font-weight:600}
+.preview img{width:100%;height:100%;object-fit:cover;display:block}
+.preview .ph{display:flex;flex-direction:column;align-items:center;gap:8px}
+.preview .ph svg{width:40px;height:40px;opacity:.4}
+
+.actions{display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap;margin-top:8px}
+.btn{padding:14px 26px;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;transition:all .25s;display:inline-flex;align-items:center;gap:8px;letter-spacing:.2px}
+.btn svg{width:16px;height:16px}
+.btn-primary{background:var(--grd);color:#fff;box-shadow:0 8px 24px rgba(124,77,255,.4)}
+.btn-primary:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 12px 32px rgba(124,77,255,.55)}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed}
+.btn-secondary{background:rgba(255,255,255,.05);color:var(--tx2);border:1px solid var(--bd2)}
+.btn-secondary:hover{background:rgba(255,255,255,.08);color:#fff}
+
+.status{padding:14px 18px;border-radius:12px;font-size:13px;font-weight:600;margin-bottom:20px;display:none;align-items:center;gap:10px}
+.status.show{display:flex}
+.status.success{background:rgba(77,255,157,.1);border:1px solid rgba(77,255,157,.3);color:var(--grn)}
+.status.error{background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.3);color:var(--red)}
+.status svg{width:18px;height:18px;flex-shrink:0}
+
+.loader{text-align:center;padding:100px 20px}
+.spinner{width:44px;height:44px;border:3px solid var(--bd2);border-top-color:var(--pur);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:900px){
+    .layout{grid-template-columns:1fr}
+    .sidebar{display:none}
+    .main{padding:24px 20px 60px}
+    .hdr h1{font-size:24px}
+    .grid2{grid-template-columns:1fr}
+    .form-card{padding:22px}
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+    <aside class="sidebar">
+        <div class="logo">ANIME <b>MAX</b><span class="badge">ADMIN</span></div>
+        <nav>
+            <a href="dashboard.html" class="nav">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+                Dashboard
+            </a>
+            <a href="list.html" class="nav">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                Video & Movies
+            </a>
+            <a href="videolist.html" class="nav active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M10 9l5 3-5 3V9z" fill="currentColor" stroke="none"/></svg>
+                Video List
+            </a>
+            <a href="anime-title.html" class="nav">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Anime Title
+            </a>
+            <a href="upload.html" class="nav">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Upload
+            </a>
+        </nav>
+        <div class="footer-side">
+            <div class="user"><div class="avatar" id="av">A</div><span id="em">admin</span></div>
+            <button class="logout" id="lo">Sign Out</button>
+        </div>
+    </aside>
+
+    <main class="main">
+        <div class="hdr">
+            <div>
+                <h1>Edit Video</h1>
+                <p>Update episode details, thumbnail, or video source.</p>
+            </div>
+            <a href="videolist.html" class="back-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Back to List
+            </a>
+        </div>
+
+        <div id="status" class="status"></div>
+
+        <div id="content">
+            <div class="loader"><div class="spinner"></div><p>Loading video data...</p></div>
+        </div>
+    </main>
+</div>
+
+<script>
+const CFG={apiKey:"AIzaSyCpfrluxsBhnz48ve9RykIy1IxzbBfk7dA",authDomain:"sm-studio-7.firebaseapp.com",databaseURL:"https://sm-studio-7-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"sm-studio-7",storageBucket:"sm-studio-7.firebasestorage.app",messagingSenderId:"126291501472",appId:"1:126291501472:web:a55c94b5b87581177204c5"};
+const ADMIN_EMAIL='sapneswarmajhi45@gmail.com';
+firebase.initializeApp(CFG);
+const auth=firebase.auth(),db=firebase.database();
+const $=id=>document.getElementById(id);
+
+let animeId=null,epId=null;
+
+auth.onAuthStateChanged(u=>{
+    if(!u||u.email!==ADMIN_EMAIL){location.href='index.html';return;}
+    $('em').textContent=u.email;$('av').textContent=u.email[0].toUpperCase();
+
+    const params=new URLSearchParams(location.search);
+    animeId=params.get('anime');
+    epId=params.get('episode');
+
+    if(!animeId||!epId){
+        showStatus('error','Missing anime or episode ID in URL.');
+        $('content').innerHTML='';
+        return;
+    }
+    loadVideo();
+});
+
+$('lo').addEventListener('click',()=>auth.signOut());
+
+function showStatus(type,msg){
+    const s=$('status');
+    s.className='status show '+type;
+    s.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${type==='success'?'<polyline points="20 6 9 17 4 12"/>':'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}</svg><span>${msg}</span>`;
+    if(type==='success') setTimeout(()=>s.classList.remove('show'),4000);
+}
+
+async function loadVideo(){
+    try{
+        const [animeSnap,epSnap]=await Promise.all([
+            db.ref(`animes/${animeId}`).once('value'),
+            db.ref(`animes/${animeId}/episodes/${epId}`).once('value')
+        ]);
+        const anime=animeSnap.val()||{};
+        const ep=epSnap.val();
+
+        if(!ep){
+            showStatus('error','Episode not found in database.');
+            $('content').innerHTML='';
+            return;
+        }
+        renderForm(anime,ep);
+    }catch(e){
+        showStatus('error','Failed to load: '+e.message);
+        $('content').innerHTML='';
+    }
+}
+
+function renderForm(anime,ep){
+    const animeTitle=anime.title||anime.name||'Unknown Anime';
+    $('content').innerHTML=`
+        <div class="form-card">
+            <h2>Episode Details</h2>
+            <div class="grid2">
+                <div class="field">
+                    <label>Episode Title</label>
+                    <input type="text" id="f-title" placeholder="e.g. The Beginning" value="${esc(ep.title||ep.name||'')}">
+                </div>
+                <div class="field">
+                    <label>Episode Number</label>
+                    <input type="text" id="f-epnum" placeholder="e.g. 1" value="${esc(ep.episodeNumber||ep.ep||'')}">
+                </div>
+            </div>
+            <div class="field">
+                <label>Anime / Series</label>
+                <input type="text" id="f-anime" value="${esc(animeTitle)}" readonly style="opacity:.7;cursor:not-allowed">
+                <div class="hint">Anime title can only be changed from the Anime Title page.</div>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <h2>Media Sources</h2>
+            <div class="field">
+                <label>Thumbnail URL</label>
+                <input type="url" id="f-thumb" placeholder="https://..." value="${esc(ep.thumbnail||ep.thumb||'')}">
+            </div>
+            <div class="field">
+                <label>Video / Stream URL</label>
+                <input type="url" id="f-video" placeholder="https://... (mp4, m3u8, embed)" value="${esc(ep.videoUrl||ep.url||'')}">
+            </div>
+            <div class="field">
+                <label>Duration</label>
+                <input type="text" id="f-dur" placeholder="e.g. 24:15" value="${esc(ep.duration||'')}">
+            </div>
+        </div>
+
+        <div class="form-card">
+            <h2>Description</h2>
+            <div class="field">
+                <label>Synopsis / Description</label>
+                <textarea id="f-desc" placeholder="Brief episode summary...">${esc(ep.description||ep.desc||'')}</textarea>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <h2>Preview</h2>
+            <div class="preview" id="preview">
+                ${(ep.thumbnail||ep.thumb)?`<img src="${esc(ep.thumbnail||ep.thumb)}" alt="preview" onerror="this.parentElement.innerHTML='<div class=\\'ph\\'><svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.5\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\'/><path d=\\'M3 9h18M9 21V9\\'/></svg><span>Thumbnail preview</span></div>'">`:`<div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><span>No thumbnail set</span></div>`}
+            </div>
+        </div>
+
+        <div class="actions">
+            <a href="videolist.html" class="btn btn-secondary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                Cancel
+            </a>
+            <button class="btn btn-primary" id="save">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Save Changes
+            </button>
+        </div>
+    `;
+
+    // Live thumbnail preview
+    const thumbInput=$('f-thumb');
+    thumbInput.addEventListener('input',()=>{
+        const url=thumbInput.value.trim();
+        const p=$('preview');
+        if(url){
+            p.innerHTML=`<img src="${url}" alt="preview" onerror="this.parentElement.innerHTML='<div class=\\'ph\\'><span>Invalid image URL</span></div>'">`;
+        }else{
+            p.innerHTML='<div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><span>No thumbnail set</span></div>';
+        }
+    });
+
+    $('save').addEventListener('click',saveVideo);
+}
+
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+async function saveVideo(){
+    const btn=$('save');
+    btn.disabled=true;
+    btn.innerHTML='<span style="width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;display:inline-block;animation:spin 1s linear infinite"></span> Saving...';
+
+    const updates={
+        title:$('f-title').value.trim(),
+        episodeNumber:$('f-epnum').value.trim(),
+        thumbnail:$('f-thumb').value.trim(),
+        videoUrl:$('f-video').value.trim(),
+        duration:$('f-dur').value.trim(),
+        description:$('f-desc').value.trim(),
+        updatedAt:Date.now()
+    };
+
+    try{
+        await db.ref(`animes/${animeId}/episodes/${epId}`).update(updates);
+        showStatus('success','Changes saved successfully!');
+        btn.disabled=false;
+        btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Changes';
+    }catch(e){
+        showStatus('error','Save failed: '+e.message);
+        btn.disabled=false;
+        btn.innerHTML='Save Changes';
+    }
+}
+</script>
+</body>
+</html>
