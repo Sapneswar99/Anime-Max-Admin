@@ -31,6 +31,7 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
 .nav:hover{color:#fff;background:rgba(124,77,255,.08)}
 .nav.active{color:#fff;background:rgba(124,77,255,.15);box-shadow:inset 3px 0 0 var(--pur)}
 .nav.active svg{color:var(--pur2)}
+.nav.danger:hover{color:var(--red);background:rgba(255,77,109,.08)}
 .footer-side{padding-top:16px;border-top:1px solid var(--bd)}
 .user{display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg2);border:1px solid var(--bd);border-radius:12px;margin-bottom:8px;overflow:hidden}
 .avatar{width:32px;height:32px;border-radius:50%;background:var(--grd);display:grid;place-items:center;font-weight:800;font-size:12px;flex-shrink:0}
@@ -73,6 +74,11 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
 .qa.highlight .ic{background:linear-gradient(135deg,rgba(77,255,157,.2),rgba(77,159,255,.2));color:var(--grn)}
 .qa.highlight:hover{border-color:var(--grn);background:rgba(77,255,157,.08)}
 
+/* Danger style for Delete Title */
+.qa.danger .ic{background:linear-gradient(135deg,rgba(255,77,109,.2),rgba(255,77,157,.2));color:var(--red)}
+.qa.danger:hover{border-color:var(--red);background:rgba(255,77,109,.08)}
+.qa.danger:hover .arrow{color:var(--red)}
+
 @media(max-width:900px){
     .layout{grid-template-columns:1fr}
     .sidebar{display:none}
@@ -111,13 +117,17 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                 Upload Episodes
             </a>
-            <!-- ===== MOVIE UPLOAD NAV ITEM ===== -->
             <a href="movie-upload.html" class="nav">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="2" y="4" width="20" height="16" rx="3"/>
                     <path d="M10 9l5 3-5 3V9z" fill="currentColor" stroke="none"/>
                 </svg>
                 Upload Movies
+            </a>
+            <!-- ===== DELETE TITLE NAV ITEM ===== -->
+            <a href="delete-title.html" class="nav danger">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                Delete Title
             </a>
             <!-- ================================ -->
         </nav>
@@ -168,18 +178,23 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
                 <span>Upload Episode</span>
                 <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
-            <!-- ===== MOVIE UPLOAD QUICK ACTION ===== -->
             <a href="movie-upload.html" class="qa">
                 <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M10 9l5 3-5 3V9z" fill="currentColor" stroke="none"/></svg></div>
                 <span>Upload Movie</span>
                 <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
-            <!-- =================================== -->
             <a href="videolist.html" class="qa">
                 <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M10 9l5 3-5 3V9z" fill="currentColor" stroke="none"/></svg></div>
                 <span>View All Content</span>
                 <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
+            <!-- ===== DELETE TITLE QUICK ACTION ===== -->
+            <a href="delete-title.html" class="qa danger">
+                <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></div>
+                <span>Delete Title</span>
+                <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <!-- =================================== -->
         </div>
     </main>
 </div>
