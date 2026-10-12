@@ -25,7 +25,7 @@ button,input{font-family:inherit;color:inherit}
 .logo{font-size:22px;font-weight:900;letter-spacing:-1px;padding:8px 12px 24px;border-bottom:1px solid var(--bd);margin-bottom:16px;display:flex;align-items:center;gap:10px}
 .logo b{background:var(--grd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .badge{font-size:9px;font-weight:800;letter-spacing:1.5px;padding:4px 8px;background:rgba(124,77,255,.15);color:var(--pur2);border-radius:6px;border:1px solid rgba(124,77,255,.3)}
-nav{display:flex;flex-direction:column;gap:4px;flex:1}
+nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
 .nav{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;color:var(--tx2);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;background:transparent;border:none;text-align:left;width:100%}
 .nav svg{width:18px;height:18px;flex-shrink:0}
 .nav:hover{color:#fff;background:rgba(124,77,255,.08)}
@@ -69,6 +69,10 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1}
 .qa .arrow{color:var(--tx3);transition:transform .3s}
 .qa:hover .arrow{transform:translateX(4px);color:var(--pur2)}
 
+/* Highlight style for Video List quick action */
+.qa.highlight .ic{background:linear-gradient(135deg,rgba(77,255,157,.2),rgba(77,159,255,.2));color:var(--grn)}
+.qa.highlight:hover{border-color:var(--grn);background:rgba(77,255,157,.08)}
+
 @media(max-width:900px){
     .layout{grid-template-columns:1fr}
     .sidebar{display:none}
@@ -92,6 +96,15 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
                 Video & Movies
             </a>
+            <!-- ===== VIDEO LIST NAV ITEM ===== -->
+            <a href="videolist.html" class="nav">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="4" width="20" height="16" rx="3"/>
+                    <path d="M10 9l5 3-5 3V9z" fill="currentColor" stroke="none"/>
+                </svg>
+                Video List
+            </a>
+            <!-- ============================== -->
             <a href="anime-title.html" class="nav">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 Anime Title
@@ -153,6 +166,13 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1}
                 <span>View All Content</span>
                 <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
+            <!-- ===== VIDEO LIST QUICK ACTION ===== -->
+            <a href="videolist.html" class="qa highlight">
+                <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M10 9l5 3-5 3V9z" fill="currentColor" stroke="none"/></svg></div>
+                <span>Video List</span>
+                <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <!-- =================================== -->
         </div>
     </main>
 </div>
