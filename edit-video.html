@@ -220,7 +220,7 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
                     <div class="sec">🎞️ Movie Details</div>
                     <div class="grid">
                         <div class="fg full"><label>Movie Title *</label><input id="mtitle" placeholder="e.g. Jujutsu Kaisen 0"></div>
-                        <div class="fg"><label>Release Year</label><input id="year" type="number" min="1900" max="2100" placeholder="2024"></div>
+                        <div class="fg"><label>Release Year</label><input id="year" type="text" inputmode="numeric" maxlength="4" placeholder="2024"></div>
                         <div class="fg"><label>Duration</label><input id="mdur" placeholder="1h 45m"></div>
                         <div class="fg"><label>Genre</label><input id="genre" placeholder="Action, Fantasy"></div>
                         <div class="fg"><label>Thumbnail URL</label><input id="mthumb" placeholder="https://..."></div>
@@ -293,8 +293,8 @@ const auth=firebase.auth(),db=firebase.database(),st=firebase.storage();
 const $=id=>document.getElementById(id);
 
 let anime={},aid='',src={},sub={},aud={};
-let mode='episode';         // 'episode' or 'movie'
-let editKey=null;           // ep number (int) for episode mode
+let mode='episode';
+let editKey=null;
 let originalKey=null;
 let originalData=null;
 
@@ -310,13 +310,12 @@ async function init(){
     aid=params.get('anime');
 
     const epParam=params.get('episode');
-    const mvParam=params.get('movie');   // any value triggers movie mode
+    const mvParam=params.get('movie');
 
     if(!aid || (!epParam && !mvParam)){
         fail(); return;
     }
 
-    // Determine mode
     if(mvParam){
         mode='movie';
     }else{
@@ -336,14 +335,12 @@ async function init(){
             item=a.episodes[editKey];
             originalKey=editKey;
         }else{
-            // ✅ Movie data is stored DIRECTLY in the anime node now
             item=a;
             originalKey='__movie__';
         }
 
         originalData=JSON.parse(JSON.stringify(item));
 
-        // Header
         $('pgTitle').innerHTML = mode==='episode'
             ? 'Edit <span class="badge-type ep">EPISODE</span>'
             : 'Edit <span class="badge-type mv">MOVIE</span>';
@@ -352,21 +349,17 @@ async function init(){
             : 'Update movie details, video sources, subtitles & audio tracks';
         $('sv').textContent = mode==='episode' ? 'Update Episode' : 'Update Movie';
 
-        // Toggle sections
         $('epSection').hidden = mode!=='episode';
         $('mvSection').hidden = mode!=='movie';
 
-        // Anime selector
         $('sel').innerHTML=`<option>${esc(a.title)}</option>`;
         $('sel').value=a.title;
 
-        // Info bar
         $('loading').hidden=true;
         $('mgr').hidden=false;
         $('atitle').textContent=a.title;
         updateCount();
 
-        // Prefill
         if(mode==='episode'){
             $('num').value=item.number||editKey;
             $('eptitle').value=item.title||'';
@@ -381,7 +374,6 @@ async function init(){
             $('mdesc').value=item.description||'';
         }
 
-        // Tracks
         src=item.sources?JSON.parse(JSON.stringify(item.sources)):{};
         sub=item.subtitles?JSON.parse(JSON.stringify(item.subtitles)):{};
         aud=item.audio?JSON.parse(JSON.stringify(item.audio)):{};
@@ -439,7 +431,6 @@ $('aadd').addEventListener('click',()=>{
     $('aurl').value='';$('alc').value='';$('alc').hidden=true;$('adef').checked=false;$('al').value='hindi';
 });
 
-// Determine upload folder path
 function uploadBase(){
     if(mode==='episode'){
         const n=$('num').value||'unknown';
@@ -558,26 +549,29 @@ $('epf').addEventListener('submit',async e=>{
             toast('Episode saved');
         }else{
             // ============ SAVE MOVIE ============
-            // ✅ Movie fields are stored DIRECTLY in the anime node.
-            // Use .update() so we only touch movie-related fields —
-            // poster, banner, rating, status etc. (set in anime-title.html) stay intact.
-            const data={
-                title:$('mtitle').value.trim()||anime[aid].title,
-                year:parseInt($('year').value)||null,
-                duration:$('mdur').value.trim(),
-                genres:$('genre').value.trim(),
-                poster:$('mthumb').value.trim() || anime[aid].poster || '',
-                description:$('mdesc').value.trim(),
-                sources:src,
-                subtitles:sub,
-                audio:aud,
-                updatedAt:Date.now()
+            // ✅ FIX: year must be STRING (Firebase rules validate isString).
+            // Send year only if non-empty, as string.
+            const yearStr = $('year').value.trim();
+
+            const updateData = {
+                title: $('mtitle').value.trim() || anime[aid].title,
+                duration: $('mdur').value.trim(),
+                genres: $('genre').value.trim(),
+                poster: $('mthumb').value.trim() || anime[aid].poster || '',
+                description: $('mdesc').value.trim(),
+                sources: src,
+                subtitles: sub,
+                audio: aud,
+                updatedAt: Date.now()
             };
 
-            await db.ref('animes/'+aid).update(data);
+            // ✅ Only include year if non-empty, as STRING
+            if (yearStr) updateData.year = yearStr;
+
+            await db.ref('animes/'+aid).update(updateData);
 
             // Update local cache
-            Object.assign(anime[aid], data);
+            Object.assign(anime[aid], updateData);
 
             showMsg(msg,'✅ Movie updated!');
             toast('Movie saved');
