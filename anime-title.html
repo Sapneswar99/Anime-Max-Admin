@@ -13,19 +13,20 @@
 <style>
 :root{--bg:#07070d;--bg2:#0f0f18;--card:#15151f;--card2:#1b1b28;--bd:#232332;--bd2:#2e2e42;--tx:#fff;--tx2:#b8b8cc;--tx3:#6f6f8a;--pur:#7c4dff;--pur2:#9d70ff;--blu:#4d9fff;--grn:#4dff9d;--red:#ff4d6d;--grd:linear-gradient(135deg,#7c4dff,#4d9fff)}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+html,body{max-width:100%;overflow-x:hidden}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden;position:relative;width:100%}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 15% 20%,rgba(124,77,255,.12),transparent 45%),radial-gradient(circle at 85% 70%,rgba(77,159,255,.1),transparent 45%);z-index:-1;pointer-events:none}
 a{color:inherit;text-decoration:none}
-button,input,textarea,select{font-family:inherit;color:inherit}
+button,input,textarea,select{font-family:inherit;color:inherit;max-width:100%}
 ::-webkit-scrollbar{width:8px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--grd);border-radius:10px}
-.layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+.layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh;width:100%}
 .sidebar{background:rgba(11,11,18,.85);backdrop-filter:blur(20px);border-right:1px solid var(--bd);padding:24px 16px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
 .logo{font-size:22px;font-weight:900;letter-spacing:-1px;padding:8px 12px 24px;border-bottom:1px solid var(--bd);margin-bottom:16px;display:flex;align-items:center;gap:10px}
 .logo b{background:var(--grd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .badge{font-size:9px;font-weight:800;letter-spacing:1.5px;padding:4px 8px;background:rgba(124,77,255,.15);color:var(--pur2);border-radius:6px;border:1px solid rgba(124,77,255,.3)}
-nav{display:flex;flex-direction:column;gap:4px;flex:1}
+nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
 .nav{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;color:var(--tx2);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;background:transparent;border:none;text-align:left;width:100%}
 .nav svg{width:18px;height:18px;flex-shrink:0}
 .nav:hover{color:#fff;background:rgba(124,77,255,.08)}
@@ -37,20 +38,24 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1}
 .user span{flex:1;font-size:11px;color:var(--tx2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .logout{width:100%;padding:10px;background:rgba(255,77,109,.08);color:var(--red);border:1px solid rgba(255,77,109,.2);border-radius:12px;font-size:13px;font-weight:600;cursor:pointer}
 .logout:hover{background:rgba(255,77,109,.15)}
-.main{padding:36px 44px 60px;max-width:1000px}
+.main{padding:36px 44px 60px;max-width:1000px;width:100%;min-width:0}
 .hdr{margin-bottom:32px}
-.hdr h1{font-size:36px;font-weight:900;letter-spacing:-1.5px;margin-bottom:6px;background:linear-gradient(135deg,#fff 30%,#b8b8cc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hdr-top{display:flex;align-items:center;gap:16px;margin-bottom:10px;flex-wrap:wrap}
+.back-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;background:rgba(255,255,255,.04);border:1px solid var(--bd2);border-radius:12px;color:var(--tx2);font-size:13px;font-weight:700;cursor:pointer;transition:all .25s;flex-shrink:0;text-decoration:none}
+.back-btn:hover{background:rgba(124,77,255,.12);border-color:var(--pur);color:#fff;transform:translateX(-2px)}
+.back-btn svg{width:16px;height:16px}
+.hdr h1{font-size:34px;font-weight:900;letter-spacing:-1.5px;margin-bottom:0;background:linear-gradient(135deg,#fff 30%,#b8b8cc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;word-break:break-word;min-width:0}
 .hdr p{color:var(--tx3);font-size:15px;font-weight:500}
-.card{background:rgba(21,21,31,.7);backdrop-filter:blur(20px);border:1px solid var(--bd2);border-radius:20px;padding:32px}
+.card{background:rgba(21,21,31,.7);backdrop-filter:blur(20px);border:1px solid var(--bd2);border-radius:20px;padding:32px;width:100%;min-width:0;overflow:hidden}
 .type-toggle{display:flex;gap:12px;margin-bottom:24px}
 .type{flex:1;padding:20px;background:var(--card2);border:2px solid var(--bd2);border-radius:14px;text-align:center;cursor:pointer;transition:all .25s;font-weight:700;font-size:15px}
 .type:has(input:checked){border-color:var(--pur);background:rgba(124,77,255,.1);color:var(--pur2);box-shadow:0 0 30px rgba(124,77,255,.2)}
 .type input{display:none}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.fg{display:flex;flex-direction:column;gap:8px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;width:100%;min-width:0}
+.fg{display:flex;flex-direction:column;gap:8px;min-width:0}
 .fg.full{grid-column:1/-1}
 .fg label{font-size:11px;font-weight:700;color:var(--tx3);letter-spacing:1.2px;text-transform:uppercase}
-.fg input,.fg textarea,.fg select{padding:14px 16px;background:var(--bg2);border:1.5px solid var(--bd2);border-radius:12px;font-size:14px;font-weight:500;outline:none;transition:all .25s;resize:vertical}
+.fg input,.fg textarea,.fg select{padding:14px 16px;background:var(--bg2);border:1.5px solid var(--bd2);border-radius:12px;font-size:14px;font-weight:500;outline:none;transition:all .25s;resize:vertical;width:100%;min-width:0}
 .fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--pur);box-shadow:0 0 0 4px rgba(124,77,255,.12)}
 .fg input::placeholder,.fg textarea::placeholder{color:var(--tx3)}
 .fg small{font-size:11px;color:var(--tx3);font-weight:500}
@@ -58,7 +63,7 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1}
 .preview.wide{aspect-ratio:16/9}
 .preview img{width:100%;height:100%;object-fit:cover}
 .preview .ph{color:var(--tx3);font-size:12px;font-weight:500}
-.upload-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 14px;background:var(--bg2);border:1px solid var(--bd2);border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;color:var(--tx2);margin-top:6px}
+.upload-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 14px;background:var(--bg2);border:1px solid var(--bd2);border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;color:var(--tx2);margin-top:6px;width:fit-content}
 .upload-btn:hover{border-color:var(--pur);color:var(--pur2);background:rgba(124,77,255,.08)}
 .checks{display:flex;flex-wrap:wrap;gap:14px;padding-top:4px}
 .chk{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg2);border:1px solid var(--bd2);border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;transition:all .2s}
@@ -73,9 +78,27 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1}
 .btn.ghost:hover{background:#2a2a36}
 .msg{margin-top:16px;font-size:13px;font-weight:600;color:var(--grn);min-height:18px}
 .msg.err{color:var(--red)}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);padding:14px 24px;background:var(--card);border:1px solid var(--pur);border-radius:14px;font-size:13px;font-weight:700;color:#fff;box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 40px rgba(124,77,255,.3);opacity:0;transition:all .3s;z-index:9999;pointer-events:none}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);padding:14px 24px;background:var(--card);border:1px solid var(--pur);border-radius:14px;font-size:13px;font-weight:700;color:#fff;box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 40px rgba(124,77,255,.3);opacity:0;transition:all .3s;z-index:9999;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-@media(max-width:900px){.layout{grid-template-columns:1fr}.sidebar{display:none}.main{padding:24px 20px}.hdr h1{font-size:26px}.grid{grid-template-columns:1fr}.card{padding:20px}}
+
+@media(max-width:900px){
+    .layout{grid-template-columns:1fr;width:100%}
+    .sidebar{display:none}
+    .main{padding:24px 16px 60px;max-width:100%}
+    .hdr{margin-bottom:22px}
+    .hdr h1{font-size:24px;letter-spacing:-.8px}
+    .hdr p{font-size:13px}
+    .back-btn{padding:9px 14px;font-size:12px}
+    .grid{grid-template-columns:1fr;gap:16px}
+    .card{padding:20px;border-radius:16px}
+    .type-toggle{gap:8px}
+    .type{padding:14px 10px;font-size:13px}
+    .btn.primary,.btn.ghost{width:100%}
+}
+@media(max-width:380px){
+    .hdr h1{font-size:20px}
+    .card{padding:14px}
+}
 </style>
 </head>
 <body>
@@ -84,10 +107,30 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1}
     <aside class="sidebar">
         <div class="logo">ANIME <b>MAX</b><span class="badge">ADMIN</span></div>
         <nav>
-            <a href="dashboard.html" class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Dashboard</a>
-            <a href="list.html" class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/></svg>Video & Movies</a>
-            <button class="nav active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Anime Title</button>
-            <a href="upload.html" class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload</a>
+            <a href="dashboard.html" class="nav">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+                Dashboard
+            </a>
+            <a href="list.html" class="nav">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                Video & Movies
+            </a>
+            <a href="videolist.html" class="nav">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M10 9l5 3-5 3V9z" fill="currentColor" stroke="none"/></svg>
+                Video List
+            </a>
+            <a href="anime-title.html" class="nav active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Anime Title
+            </a>
+            <a href="upload.html" class="nav">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Upload Episodes
+            </a>
+            <a href="movie-upload.html" class="nav">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M10 9l5 3-5 3V9z" fill="currentColor" stroke="none"/></svg>
+                Upload Movies
+            </a>
         </nav>
         <div class="footer-side">
             <div class="user"><div class="avatar" id="av">A</div><span id="em">admin</span></div>
@@ -97,6 +140,12 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1}
 
     <main class="main">
         <div class="hdr">
+            <div class="hdr-top">
+                <button class="back-btn" onclick="history.length>1?history.back():location.href='dashboard.html'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    Back
+                </button>
+            </div>
             <h1 id="pgTitle">Add Anime Title</h1>
             <p id="pgDesc">Add basic info, poster and banner for new anime or movie</p>
         </div>
@@ -264,6 +313,7 @@ $('form').addEventListener('submit',async e=>{
                 return;
             }
             if(old.episodes)data.episodes=old.episodes;
+            if(old.movies)data.movies=old.movies;
             if(old.createdAt)data.createdAt=old.createdAt;
         }
         if(!data.createdAt)data.createdAt=Date.now();
@@ -274,7 +324,7 @@ $('form').addEventListener('submit',async e=>{
 
         setTimeout(()=>{
             if(data.type==='series')location.href='upload.html?id='+id;
-            else location.href='list.html';
+            else location.href='movie-upload.html?id='+id;
         },1200);
     }catch(ex){
         showMsg(msg,'❌ '+ex.message,true);
