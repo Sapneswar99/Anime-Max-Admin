@@ -54,6 +54,7 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
 .stat:nth-child(2) .ico{background:var(--grd2)}
 .stat:nth-child(3) .ico{background:var(--grd3)}
 .stat:nth-child(4) .ico{background:linear-gradient(135deg,#7c4dff,#ff4d9d)}
+.stat:nth-child(5) .ico{background:linear-gradient(135deg,#4d9fff,#7c4dff)}
 .stat .ico svg{width:26px;height:26px}
 .stat .val{font-size:34px;font-weight:900;letter-spacing:-1px;margin-bottom:4px;line-height:1}
 .stat .lbl{font-size:11px;color:var(--tx3);font-weight:700;text-transform:uppercase;letter-spacing:1.5px}
@@ -72,6 +73,7 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
 
 .qa.highlight .ic{background:linear-gradient(135deg,rgba(77,255,157,.2),rgba(77,159,255,.2));color:var(--grn)}
 .qa.highlight:hover{border-color:var(--grn);background:rgba(77,255,157,.08)}
+.qa.highlight:hover .arrow{color:var(--grn)}
 
 .qa.danger .ic{background:linear-gradient(135deg,rgba(255,77,109,.2),rgba(255,77,157,.2));color:var(--red)}
 .qa.danger:hover{border-color:var(--red);background:rgba(255,77,109,.08)}
@@ -122,6 +124,10 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
                 </svg>
                 Upload Movies
             </a>
+            <a href="notification.html" class="nav">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                Notifications
+            </a>
             <a href="delete-title.html" class="nav danger">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
                 Delete Title
@@ -160,6 +166,11 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
                 <div class="val" id="t4">0</div>
                 <div class="lbl">Episodes</div>
             </div>
+            <div class="stat">
+                <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+                <div class="val" id="t5">0</div>
+                <div class="lbl">Notifications</div>
+            </div>
         </div>
 
         <div class="sec-title">Quick Actions</div>
@@ -182,6 +193,11 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
             <a href="videolist.html" class="qa">
                 <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M10 9l5 3-5 3V9z" fill="currentColor" stroke="none"/></svg></div>
                 <span>View All Content</span>
+                <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <a href="notification.html" class="qa highlight">
+                <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+                <span>Send Notification</span>
                 <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
             <a href="delete-title.html" class="qa danger">
@@ -231,6 +247,13 @@ async function load(){
             }
         });
         $('t4').textContent=eps;
+
+        // Notifications count
+        try{
+            const ns = await db.ref('notifications').once('value');
+            $('t5').textContent = ns.numChildren();
+        }catch(_){ $('t5').textContent = 0; }
+
     }catch(e){console.error(e);}
 }
 </script>
