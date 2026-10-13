@@ -10,16 +10,15 @@
 <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-database-compat.js"></script>
 <style>
-:root{--bg:#07070d;--bg2:#0f0f18;--card:#15151f;--card2:#1b1b28;--bd:#232332;--bd2:#2e2e42;--tx:#fff;--tx2:#b8b8cc;--tx3:#6f6f8a;--pur:#7c4dff;--pur2:#9d70ff;--blu:#4d9fff;--grn:#4dff9d;--org:#ff9d4d;--red:#ff4d6d;--grd:linear-gradient(135deg,#7c4dff,#4d9fff);--grd2:linear-gradient(135deg,#4dff9d,#4d9fff);--grd3:linear-gradient(135deg,#ff9d4d,#ff4d6d)}
+:root{--bg:#07070d;--bg2:#0f0f18;--card:#15151f;--bd:#232332;--bd2:#2e2e42;--tx:#fff;--tx2:#b8b8cc;--tx3:#6f6f8a;--pur:#7c4dff;--pur2:#9d70ff;--blu:#4d9fff;--grn:#4dff9d;--org:#ff9d4d;--red:#ff4d6d;--grd:linear-gradient(135deg,#7c4dff,#4d9fff)}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 15% 20%,rgba(124,77,255,.12),transparent 45%),radial-gradient(circle at 85% 70%,rgba(77,159,255,.1),transparent 45%);z-index:-1;pointer-events:none}
 a{color:inherit;text-decoration:none}
-button,input,textarea,select{font-family:inherit;color:inherit}
+button,input,textarea{font-family:inherit;color:inherit}
 ::-webkit-scrollbar{width:8px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--grd);border-radius:10px}
-
 .layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
 .sidebar{background:rgba(11,11,18,.85);backdrop-filter:blur(20px);border-right:1px solid var(--bd);padding:24px 16px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
 .logo{font-size:22px;font-weight:900;letter-spacing:-1px;padding:8px 12px 24px;border-bottom:1px solid var(--bd);margin-bottom:16px;display:flex;align-items:center;gap:10px}
@@ -38,41 +37,26 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
 .user span{flex:1;font-size:11px;color:var(--tx2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .logout{width:100%;padding:10px;background:rgba(255,77,109,.08);color:var(--red);border:1px solid rgba(255,77,109,.2);border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
 .logout:hover{background:rgba(255,77,109,.15)}
-
 .main{padding:36px 44px 60px;max-width:1400px}
 .hdr{margin-bottom:30px}
 .hdr h1{font-size:36px;font-weight:900;letter-spacing:-1.5px;margin-bottom:6px;background:linear-gradient(135deg,#fff 30%,#b8b8cc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .hdr p{color:var(--tx3);font-size:15px;font-weight:500}
-
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
 @media(max-width:1000px){.grid{grid-template-columns:1fr}}
-
 .panel{background:rgba(21,21,31,.7);backdrop-filter:blur(20px);border:1px solid var(--bd2);border-radius:20px;padding:28px}
 .panel h2{font-size:17px;font-weight:800;letter-spacing:-.4px;margin-bottom:20px;display:flex;align-items:center;gap:10px}
 .panel h2 svg{width:20px;height:20px;color:var(--pur2)}
-
 .field{margin-bottom:16px}
 .field label{display:block;font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px}
-.field input,.field textarea,.field select{width:100%;padding:13px 15px;background:var(--bg2);border:1px solid var(--bd2);border-radius:12px;font-size:14px;font-weight:500;color:#fff;outline:none;transition:all .2s}
-.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--pur);box-shadow:0 0 0 3px rgba(124,77,255,.15)}
+.field input,.field textarea{width:100%;padding:13px 15px;background:var(--bg2);border:1px solid var(--bd2);border-radius:12px;font-size:14px;font-weight:500;color:#fff;outline:none;transition:all .2s}
+.field input:focus,.field textarea:focus{border-color:var(--pur);box-shadow:0 0 0 3px rgba(124,77,255,.15)}
 .field textarea{resize:vertical;min-height:110px;line-height:1.5}
-.field select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23b8b8cc' stroke-width='3' stroke-linecap='round'><polyline points='6 9 12 15 18 9'/></svg>");background-repeat:no-repeat;background-position:right 16px center;padding-right:40px}
-
-.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-
-.chip-group{display:flex;gap:8px;flex-wrap:wrap}
-.chip{padding:9px 14px;background:var(--bg2);border:1px solid var(--bd2);border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;color:var(--tx2)}
-.chip:hover{border-color:var(--pur2);color:#fff}
-.chip.active{background:rgba(124,77,255,.15);border-color:var(--pur);color:var(--pur2)}
-.chip.active.high{background:rgba(255,157,77,.15);border-color:var(--org);color:var(--org)}
-.chip.active.urgent{background:rgba(255,77,109,.15);border-color:var(--red);color:var(--red)}
-
-.btn{width:100%;padding:15px;border:none;border-radius:14px;font-size:14px;font-weight:800;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:10px;letter-spacing:.3px}
+.field .hint{font-size:11px;color:var(--tx3);margin-top:6px;font-weight:500}
+.btn{width:100%;padding:15px;border:none;border-radius:14px;font-size:14px;font-weight:800;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:10px}
 .btn-primary{background:var(--grd);color:#fff;box-shadow:0 8px 24px rgba(124,77,255,.35)}
 .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(124,77,255,.5)}
 .btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none}
 .btn-primary svg{width:16px;height:16px}
-
 .preview{margin-top:18px;padding:16px;background:linear-gradient(135deg,rgba(124,77,255,.1),rgba(77,159,255,.08));border:1px dashed rgba(124,77,255,.4);border-radius:14px}
 .preview .pt{font-size:10px;font-weight:800;color:var(--pur2);letter-spacing:1.5px;margin-bottom:10px;text-transform:uppercase}
 .preview .pc{display:flex;gap:12px;align-items:flex-start}
@@ -81,12 +65,14 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
 .preview .pb{flex:1;min-width:0}
 .preview .ph{font-size:13px;font-weight:700;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .preview .pd{font-size:12px;color:var(--tx2);line-height:1.5;word-break:break-word}
-
 .list{max-height:600px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
-.ncard{padding:16px;background:var(--bg2);border:1px solid var(--bd2);border-radius:14px;transition:all .25s;position:relative}
+.ncard{padding:16px;background:var(--bg2);border:1px solid var(--bd2);border-radius:14px;position:relative;transition:all .25s}
 .ncard:hover{border-color:var(--pur2)}
 .ncard .nhead{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px}
-.ncard .nico{width:38px;height:38px;border-radius:10px;background:rgba(124,77,255,.15);display:grid;place-items:center;flex-shrink:0;color:var(--pur2)}
+.ncard .nico{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;flex-shrink:0}
+.ncard .nico.pending{background:rgba(255,157,77,.15);color:var(--org)}
+.ncard .nico.sent{background:rgba(77,255,157,.15);color:var(--grn)}
+.ncard .nico.failed{background:rgba(255,77,109,.15);color:var(--red)}
 .ncard .nico svg{width:18px;height:18px}
 .ncard .ninfo{flex:1;min-width:0}
 .ncard .ntitle{font-size:14px;font-weight:700;margin-bottom:3px}
@@ -94,37 +80,28 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
 .ncard .nbody{font-size:13px;color:var(--tx2);line-height:1.5;margin-bottom:10px;word-break:break-word}
 .ncard .ntags{display:flex;gap:6px;flex-wrap:wrap}
 .tag{font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;letter-spacing:.5px;text-transform:uppercase}
-.tag.pur{background:rgba(124,77,255,.15);color:var(--pur2)}
-.tag.grn{background:rgba(77,255,157,.15);color:var(--grn)}
 .tag.org{background:rgba(255,157,77,.15);color:var(--org)}
+.tag.grn{background:rgba(77,255,157,.15);color:var(--grn)}
 .tag.red{background:rgba(255,77,109,.15);color:var(--red)}
 .tag.blu{background:rgba(77,159,255,.15);color:var(--blu)}
 .ncard .del{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:9px;background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.25);color:var(--red);cursor:pointer;display:grid;place-items:center;transition:all .2s;opacity:0}
 .ncard:hover .del{opacity:1}
 .ncard .del:hover{background:rgba(255,77,109,.25)}
 .ncard .del svg{width:14px;height:14px}
-
 .empty{padding:50px 20px;text-align:center;color:var(--tx3);font-size:13px}
 .empty svg{width:44px;height:44px;opacity:.4;margin-bottom:12px}
-
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);padding:14px 22px;background:var(--card2);border:1px solid var(--bd2);border-radius:14px;font-size:13px;font-weight:700;box-shadow:0 12px 32px rgba(0,0,0,.5);transition:transform .35s cubic-bezier(.16,1,.3,1);z-index:100;display:flex;align-items:center;gap:10px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);padding:14px 22px;background:var(--card);border:1px solid var(--bd2);border-radius:14px;font-size:13px;font-weight:700;box-shadow:0 12px 32px rgba(0,0,0,.5);transition:transform .35s cubic-bezier(.16,1,.3,1);z-index:100;display:flex;align-items:center;gap:10px}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.ok{border-color:rgba(77,255,157,.4);color:var(--grn)}
 .toast.err{border-color:rgba(255,77,109,.4);color:var(--red)}
 .toast svg{width:16px;height:16px}
-
 .back-btn{display:inline-flex;align-items:center;gap:8px;color:var(--tx3);font-size:13px;font-weight:600;margin-bottom:20px;padding:8px 12px;border-radius:10px;transition:all .2s}
 .back-btn:hover{color:#fff;background:rgba(124,77,255,.1)}
 .back-btn svg{width:16px;height:16px}
-
-@media(max-width:900px){
-    .layout{grid-template-columns:1fr}
-    .sidebar{display:none}
-    .main{padding:24px 18px 60px}
-    .hdr h1{font-size:26px}
-    .panel{padding:20px}
-    .row{grid-template-columns:1fr}
-}
+.tokens-box{margin-top:16px;padding:14px;background:var(--bg2);border:1px solid var(--bd2);border-radius:12px;display:flex;align-items:center;gap:12px}
+.tokens-box .tn{font-size:28px;font-weight:900;background:var(--grd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.tokens-box .tl{font-size:11px;color:var(--tx3);font-weight:700;text-transform:uppercase;letter-spacing:1px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.sidebar{display:none}.main{padding:24px 18px 60px}.hdr h1{font-size:26px}.panel{padding:20px}}
 </style>
 </head>
 <body>
@@ -179,53 +156,30 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
         </a>
         <div class="hdr">
             <h1>Notifications</h1>
-            <p>Send push notifications to your users and manage history.</p>
+            <p>Queue push notifications for your users.</p>
         </div>
 
         <div class="grid">
-            <!-- Send Form -->
             <div class="panel">
                 <h2>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                    Send New Notification
+                    Create Notification
                 </h2>
 
                 <div class="field">
                     <label>Title *</label>
-                    <input type="text" id="title" placeholder="e.g. New Episode Released!" maxlength="60">
+                    <input type="text" id="title" placeholder="e.g. New Episode Released!" maxlength="200">
                 </div>
 
                 <div class="field">
                     <label>Message *</label>
-                    <textarea id="body" placeholder="e.g. One Piece Episode 1100 is now available to watch..." maxlength="250"></textarea>
+                    <textarea id="body" placeholder="e.g. One Piece Episode 1100 is now available..." maxlength="1000"></textarea>
                 </div>
 
                 <div class="field">
-                    <label>Image URL (Optional)</label>
-                    <input type="url" id="image" placeholder="https://example.com/banner.jpg">
-                </div>
-
-                <div class="field">
-                    <label>Target Audience</label>
-                    <div class="chip-group" id="targetGroup">
-                        <div class="chip active" data-val="all">All Users</div>
-                        <div class="chip" data-val="series">Series Fans</div>
-                        <div class="chip" data-val="movies">Movie Fans</div>
-                    </div>
-                </div>
-
-                <div class="field">
-                    <label>Priority</label>
-                    <div class="chip-group" id="priorityGroup">
-                        <div class="chip active" data-val="normal">Normal</div>
-                        <div class="chip high" data-val="high">High</div>
-                        <div class="chip urgent" data-val="urgent">Urgent</div>
-                    </div>
-                </div>
-
-                <div class="field">
-                    <label>Action Link (Optional)</label>
-                    <input type="text" id="link" placeholder="e.g. anime/one-piece or movie/123">
+                    <label>Action URL (Optional)</label>
+                    <input type="text" id="url" placeholder="e.g. /anime/one-piece or https://...">
+                    <div class="hint">Users click karne par is link pe jayenge</div>
                 </div>
 
                 <div class="preview" id="preview" style="display:none">
@@ -236,27 +190,33 @@ nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto}
                         </div>
                         <div class="pb">
                             <div class="ph" id="pvTitle">Notification Title</div>
-                            <div class="pd" id="pvBody">Notification message body will appear here...</div>
+                            <div class="pd" id="pvBody">Notification message body...</div>
                         </div>
                     </div>
                 </div>
 
                 <button class="btn btn-primary" id="sendBtn" style="margin-top:20px">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                    Send Notification
+                    Queue Notification
                 </button>
+
+                <div class="tokens-box">
+                    <div>
+                        <div class="tn" id="tokenCount">0</div>
+                        <div class="tl">Subscribed Devices</div>
+                    </div>
+                </div>
             </div>
 
-            <!-- History -->
             <div class="panel">
                 <h2>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    Recent Notifications
+                    Notification History
                 </h2>
                 <div class="list" id="list">
                     <div class="empty">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                        <div>No notifications sent yet</div>
+                        <div>No notifications queued yet</div>
                     </div>
                 </div>
             </div>
@@ -273,28 +233,14 @@ firebase.initializeApp(CFG);
 const auth=firebase.auth(),db=firebase.database();
 const $=id=>document.getElementById(id);
 
-let targetVal='all', priorityVal='normal';
-
 auth.onAuthStateChanged(u=>{
     if(!u||u.email!==ADMIN_EMAIL){location.href='index.html';return;}
     $('em').textContent=u.email;$('av').textContent=u.email[0].toUpperCase();
     loadList();
+    loadTokenCount();
 });
 
 $('lo').addEventListener('click',()=>auth.signOut());
-
-// Chip selection
-function setupChips(groupId,setter){
-    document.querySelectorAll('#'+groupId+' .chip').forEach(c=>{
-        c.addEventListener('click',()=>{
-            document.querySelectorAll('#'+groupId+' .chip').forEach(x=>x.classList.remove('active'));
-            c.classList.add('active');
-            setter(c.dataset.val);
-        });
-    });
-}
-setupChips('targetGroup',v=>targetVal=v);
-setupChips('priorityGroup',v=>priorityVal=v);
 
 // Live preview
 ['title','body'].forEach(id=>{
@@ -303,79 +249,60 @@ setupChips('priorityGroup',v=>priorityVal=v);
         if(t||b){
             $('preview').style.display='block';
             $('pvTitle').textContent=t||'Notification Title';
-            $('pvBody').textContent=b||'Notification message body will appear here...';
+            $('pvBody').textContent=b||'Notification message body...';
         } else {
             $('preview').style.display='none';
         }
     });
 });
 
-// Send
+// Queue notification
 $('sendBtn').addEventListener('click',async()=>{
     const title=$('title').value.trim();
     const body=$('body').value.trim();
-    const image=$('image').value.trim();
-    const link=$('link').value.trim();
+    const url=$('url').value.trim();
 
     if(!title){toast('Please enter a title','err');return;}
     if(!body){toast('Please enter a message','err');return;}
 
     const btn=$('sendBtn');
     btn.disabled=true;
-    btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Sending...';
+    btn.innerHTML='Sending...';
 
     try{
-        const ref=db.ref('notifications').push();
-        await ref.set({
-            id:ref.key,
+        const ref=db.ref('pendingNotifications').push();
+        const payload={
             title,
             body,
-            image:image||null,
-            link:link||null,
-            target:targetVal,
-            priority:priorityVal,
-            timestamp:firebase.database.ServerValue.TIMESTAMP,
-            sentBy:auth.currentUser.email,
-            active:true
-        });
+            status:'pending',
+            createdAt:firebase.database.ServerValue.TIMESTAMP
+        };
+        // url only add karo agar diya gaya ho (rules validation ke liye)
+        if(url) payload.url=url;
 
-        // Also update meta for latest notification
-        await db.ref('notifications_meta/latest').set({
-            id:ref.key,
-            title,
-            body,
-            image:image||null,
-            link:link||null,
-            timestamp:firebase.database.ServerValue.TIMESTAMP
-        });
+        await ref.set(payload);
 
-        toast('Notification sent successfully!','ok');
-
-        // Reset form
+        toast('Notification queued successfully!','ok');
         $('title').value='';
         $('body').value='';
-        $('image').value='';
-        $('link').value='';
+        $('url').value='';
         $('preview').style.display='none';
-        document.querySelectorAll('#targetGroup .chip').forEach((x,i)=>x.classList.toggle('active',i===0));
-        document.querySelectorAll('#priorityGroup .chip').forEach((x,i)=>x.classList.toggle('active',i===0));
-        targetVal='all'; priorityVal='normal';
 
         loadList();
     }catch(e){
         console.error(e);
-        toast('Failed to send: '+e.message,'err');
+        toast('Failed: '+e.message,'err');
     }finally{
         btn.disabled=false;
-        btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send Notification';
+        btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Queue Notification';
     }
 });
 
-// Load list
+// Load history
 async function loadList(){
     const list=$('list');
     try{
-        const snap=await db.ref('notifications').orderByChild('timestamp').once('value');
+        const snap=await db.ref('pendingNotifications').orderByChild('createdAt').once('value');
         const arr=[];
         snap.forEach(c=>arr.push(c.val()));
         arr.reverse();
@@ -383,43 +310,47 @@ async function loadList(){
         if(!arr.length){
             list.innerHTML=`<div class="empty">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                <div>No notifications sent yet</div>
+                <div>No notifications queued yet</div>
             </div>`;
             return;
         }
 
         list.innerHTML=arr.map(n=>{
-            const pClass=n.priority==='urgent'?'red':n.priority==='high'?'org':'pur';
-            const tClass=n.target==='series'?'grn':n.target==='movies'?'blu':'pur';
+            const st=n.status||'pending';
+            const stIcon = st==='sent'?'<polyline points="20 6 9 17 4 12"/>'
+                : st==='failed'?'<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'
+                : '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>';
+            const stColor = st==='sent'?'grn':st==='failed'?'red':'org';
             return `<div class="ncard">
-                <button class="del" data-id="${n.id}" title="Delete">
+                <button class="del" data-id="${n.id||''}" title="Delete">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
                 </button>
                 <div class="nhead">
-                    <div class="nico">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    <div class="nico ${st}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${stIcon}</svg>
                     </div>
                     <div class="ninfo">
                         <div class="ntitle">${esc(n.title||'Untitled')}</div>
-                        <div class="ntime">${fmtTime(n.timestamp)}</div>
+                        <div class="ntime">${fmtTime(n.createdAt)}</div>
                     </div>
                 </div>
                 <div class="nbody">${esc(n.body||'')}</div>
                 <div class="ntags">
-                    <span class="tag ${pClass}">${n.priority||'normal'}</span>
-                    <span class="tag ${tClass}">${n.target||'all'}</span>
-                    ${n.link?`<span class="tag pur">🔗 Link</span>`:''}
-                    ${n.image?`<span class="tag blu">🖼 Image</span>`:''}
+                    <span class="tag ${stColor}">${st}</span>
+                    ${n.url?`<span class="tag blu">🔗 Link</span>`:''}
+                    ${n.sentAt?`<span class="tag grn">Sent ${fmtTime(n.sentAt)}</span>`:''}
                 </div>
             </div>`;
         }).join('');
 
-        // Delete handlers
+        // Attach delete
         list.querySelectorAll('.del').forEach(b=>{
             b.addEventListener('click',async()=>{
+                const id=b.dataset.id;
+                if(!id) return;
                 if(!confirm('Delete this notification?'))return;
-                await db.ref('notifications/'+b.dataset.id).remove();
-                toast('Notification deleted','ok');
+                await db.ref('pendingNotifications/'+id).remove();
+                toast('Deleted','ok');
                 loadList();
             });
         });
@@ -429,26 +360,28 @@ async function loadList(){
     }
 }
 
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-
-function fmtTime(ts){
-    if(!ts)return 'just now';
-    const d=new Date(ts);
-    const diff=(Date.now()-ts)/1000;
-    if(diff<60)return 'just now';
-    if(diff<3600)return Math.floor(diff/60)+' min ago';
-    if(diff<86400)return Math.floor(diff/3600)+' hr ago';
-    if(diff<604800)return Math.floor(diff/86400)+' days ago';
-    return d.toLocaleDateString()+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+// Token count
+async function loadTokenCount(){
+    try{
+        const s=await db.ref('notificationTokens').once('value');
+        let count=0;
+        s.forEach(c=>{ if(c.child('enabled').val()===true) count++; });
+        $('tokenCount').textContent=count;
+    }catch(e){ console.error(e); }
 }
+
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function fmtTime(ts){if(!ts)return'just now';const d=new Date(ts);const diff=(Date.now()-ts)/1000;
+if(diff<60)return'just now';if(diff<3600)return Math.floor(diff/60)+' min ago';
+if(diff<86400)return Math.floor(diff/3600)+' hr ago';
+if(diff<604800)return Math.floor(diff/86400)+' days ago';
+return d.toLocaleDateString()+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
 
 let toastTimer;
 function toast(msg,type){
     const t=$('toast');
     t.className='toast show '+(type||'');
-    const icon=type==='ok'
-        ?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
-        :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+    const icon=type==='ok'?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
     t.innerHTML=icon+'<span>'+msg+'</span>';
     clearTimeout(toastTimer);
     toastTimer=setTimeout(()=>t.classList.remove('show'),2600);
